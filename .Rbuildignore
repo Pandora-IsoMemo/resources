@@ -18,3 +18,4 @@ dia$
 ^\.wget-hsts$
 ^JenkinsfileMPI$
 ^bin$
+^LICENSE\.md$
