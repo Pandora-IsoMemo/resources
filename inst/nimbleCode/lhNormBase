@@ -1,0 +1,37 @@
+# likelihood
+for (h_ in 1:nTargets){ # targets
+  for (k_ in 1:nProxies){  # proxies
+    for (j_ in 1:nFractions){  #  fractions
+      component.contrib_[h_, j_, k_] <- W_[k_,j_] * sum(alpha_[h_,1:nSources] *C_[h_,1:nSources,j_] * 
+                                                          (Par_Sources_Comb)) /
+        sum(alpha_[h_,1:nSources] *C_[h_,1:nSources,j_])
+    }
+    # Measurements on targets
+    mu[h_,k_] <- sum(component.contrib_[h_,1:nFractions,k_]) / sum(W_[k_, 1:nFractions]) ADDTERMS
+    ReplaceTargets
+  }
+  ReplaceTargetsMult
+}
+
+#contribution of components
+for (h_ in 1:nTargets){ # targets	
+  for (j_ in 1:nFractions){  #  fractions
+    beta_[h_, j_] <- sum(alpha_[h_,1:nSources]*C_[h_,1:nSources,j_]) / sum(alpha_[h_,1:nSources]%*%C_[h_,1:nSources,1:nFractions])
+  }
+}
+
+#contribution of a source towards a proxy signal
+for (h_ in 1:nTargets){ # targets	
+  for (i_ in 1:nSources){  #  sources
+    for (j_ in 1:nFractions){  #  fractions
+      aux6_[h_,i_,j_] <- alpha_[h_,i_]*C_[h_,i_,j_]/sum(alpha_[h_,1:nSources]*C_[h_,1:nSources,j_])
+    }
+  }
+  
+  for (k_ in 1:nProxies){ # proxies
+    for (i_ in 1:nSources){  #  sources
+      theta_[h_,k_, i_] <- sum(aux6_[h_,i_,1:nFractions]*W_[k_,1:nFractions]) / 
+        sum(aux6_[h_,1:nSources,1:nFractions] %*% W_[k_,1:nFractions])
+    }
+  }
+}

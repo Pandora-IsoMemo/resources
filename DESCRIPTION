@@ -1,0 +1,48 @@
+Package: ReSources
+Title: Food Reconstruction Using Isotopic Transferred Signals
+Version: 1.1.5
+Authors@R: c(
+    person("Marcus", "Gross", email = "marcus.gross@inwt-statistics.de", role = c("aut", "cre")),
+    person("Ricardo", "Fernandes", email = "ldv1452@gmail.com", role = c("aut")),
+    person("Andreas", "Neudecker", email = "andreas.neudecker@inwt-statistics.de", role = c("ctb"))
+    )
+Maintainer: Marcus Gross <marcus.gross@inwt-statistics.de>
+Description: Food Reconstruction Using Isotopic Transferred Signals (FRUITS): A Bayesian Model for Diet Reconstruction (<doi:10.1371/journal.pone.0087436>).
+             This package provides a user-friendly shiny interface for human and animal diet reconstruction that rely on tissue chemical signatures.
+Depends: R (>= 3.5.0), nimble (>= 0.6.12)
+Imports:
+  abind,
+  alphahull,
+  car,
+  coda,
+  colourpicker,
+  dplyr,
+  DT,
+  jsonlite,
+  futile.logger,
+  ggplot2,
+  grDevices,
+  htmltools,
+  openxlsx,
+  plotly,
+  RColorBrewer,
+  readxl,
+  readr,
+  rgl,
+  shiny,
+  shinyjs,
+  shinyMatrix (>= 0.2.1),
+  shinythemes,
+  shinyWidgets,
+  templates,
+  tibble,
+  tidyr
+License: closed
+Encoding: UTF-8
+LazyData: true
+LinkingTo: nimble (>= 0.11.1)
+Suggests:
+  lintr,
+  testthat,
+  MpiIsoApp (>= 1.2.5)
+RoxygenNote: 7.1.1

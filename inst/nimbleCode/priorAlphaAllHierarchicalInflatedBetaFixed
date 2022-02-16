@@ -1,0 +1,19 @@
+# priors
+#prior for intake estimates
+for (h_ in 1:nTargets){ # nTargets: number of individuals
+  dirParams[h_,1:nSources] <-  q[hierMatch[h_],1:nSources] * sourceDirichPrior[1:nSources]
+  alphaRAW_[h_,1:nSources] ~ ddirch(dirParams[h_,1:nSources])
+
+  for (j_ in 1:nSources){
+    infBPrior[h_,j_, 1:2] ~ ddirch(infBetaPrior[1:2])
+    a[h_,j_,1:2] ~ dmulti(size = 1, infBPrior[h_,j_, 1:2])
+    alphaRAW2_[h_,j_] <- alphaRAW_[h_,j_] * a[h_,j_,2] + (1 - a[h_,j_,1]) * a[h_,j_,1]
+    alpha_[h_,j_] <- (alphaRAW2_[h_,j_]/ sum(alphaRAW2_[h_,1:nSources] + 1E-6)) + 1E-6
+  }
+}
+
+for (i_ in 1:nSources){
+  for (g_ in 1:nHierLevels){ 
+    q[g_, i_] ~ dlnorm(0,1000)
+  }
+}

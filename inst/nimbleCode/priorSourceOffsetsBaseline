@@ -1,0 +1,10 @@
+# # prior for isotopic values of fractions in sources OFFSETS
+for (h_ in 1:nTargets) { # targets
+  for (k_ in 1:nProxies){  # proxies
+    for (j_ in 1:nFractions){  #  fractions
+      for (i_ in 1:nSources){  #  sources
+        S_[i_,j_,k_,h_] ~ dnorm(sourceOffset[i_,j_,k_,h_], pow(sourceOffsetUnc[i_,j_,k_,h_],-2))
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+# priors
+#prior for intake estimates
+for (h_ in 1:nTargets){ # nTargets: number of individuals
+  alpha_[h_,1:nSources] ~ ddirch(sourceDirichPrior[1:nSources]) 
+}
+
+# # prior for isotopic values of fractions in sources
+for (k_ in 1:nProxies){  # proxies
+  for (j_ in 1:nFractions){  #  fractions
+    for (i_ in 1:nSources){  #  sources
+      I_[i_,j_,k_] ~ dnorm(source[i_,j_,k_], pow(sourceUncert[i_,j_,k_],-2))
+    }
+  }
+}
+
+# prior for offset
+for (k_ in 1:nProxies){  # proxies measured per target
+  T_[k_] ~ dnorm(weightOffset[k_], pow(weightOffsetUncert[k_],-2))
+}
+
+# prior for concentration values of fractions in sources
+for (j_ in 1:nFractions){  # components of food group
+  for (i_ in 1:nSources){  # food groups
+    C_[i_,j_] ~ T(dnorm(concentration[i_,j_], pow(concentrationUncert[i_,j_],-2)),0,100)
+  }
+}
+
+# prior for  weight contribution
+for (k_ in 1:nProxies){  # proxies measured per target
+  for (j_ in 1:nFractions){  # fractions
+    W_[k_,j_] ~ T(dnorm(weights[k_,j_], pow(weightsUncert[k_,j_],-2)),0,100)
+  }
+}

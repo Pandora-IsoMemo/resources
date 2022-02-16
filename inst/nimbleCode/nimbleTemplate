@@ -1,0 +1,21 @@
+nimbleCode({
+  {{ likelihood }}
+
+  {{ priorAlpha }}
+  
+  {{ combineSources }}
+  
+  {{ priorSources }}
+  
+  {{ priorSourceOffsets }}
+
+  {{ priorOffsets }}
+  
+  {{ priorConcentrations }}
+
+  {{ priorWeights }}
+
+  {{ userDefinedPriors }}
+  
+  {{ userDefinedEstimates }}
+})

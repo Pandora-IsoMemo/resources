@@ -1,0 +1,6 @@
+# prior for concentration values of fractions in sources
+for (h_ in 1:nTargets) {
+  for (i_ in 1:nSources){  # food groups
+  TERM
+  }
+}

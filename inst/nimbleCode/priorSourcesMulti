@@ -1,0 +1,14 @@
+# # prior for isotopic values of fractions in sources
+for (i_ in 1:nSources){  # proxies
+    for (j_ in 1:nFractions){ 
+     for (k_ in 1:nProxies){ 
+        auxS0_[i_, (j_ - 1) * nProxies + k_] <- source[i_,j_,k_]
+  }
+  }
+  auxS_[i_, 1:(nFractions * nProxies)] ~ dmnorm(auxS0_[i_, 1:(nFractions * nProxies)], cov = sourceCov[1:(nFractions * nProxies), 1:(nFractions * nProxies)])
+  for (j_ in 1:nFractions){ 
+     for (k_ in 1:nProxies){ 
+        I0_[i_,j_,k_] <- auxS_[i_, (j_ - 1) * nProxies + k_]
+        }
+      }
+}

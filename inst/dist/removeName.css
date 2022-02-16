@@ -1,0 +1,9 @@
+.matrix-input span.remove {
+    float: right;
+    color: #95a5a6;
+    cursor: pointer;
+}
+
+.matrix-input span.remove:hover {
+    color: #b03232;
+}

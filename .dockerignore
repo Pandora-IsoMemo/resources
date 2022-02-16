@@ -1,0 +1,5 @@
+libLinux/*
+libWin/*
+libMac/*
+.git
+.Rprofile

@@ -1,0 +1,3 @@
+# priors
+#prior for intake estimates
+ alpha_[1:nSources] ~ ddirch(sourceDirichPrior[1:nSources])

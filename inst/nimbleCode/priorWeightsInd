@@ -1,0 +1,8 @@
+# prior for  weight contribution
+for (h_ in 1:nTargets) {
+for (k_ in 1:nProxies){  # proxies measured per target
+  for (j_ in 1:nFractions){  # fractions
+    TERM
+  }
+}
+}

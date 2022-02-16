@@ -1,0 +1,4 @@
+# prior for offset
+for (k_ in 1:nProxies){  # proxies measured per target
+  T_[k_] ~ dnorm(weightOffset[k_], pow(weightOffsetUncert[k_],-2))
+}

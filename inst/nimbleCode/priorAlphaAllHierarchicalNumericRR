@@ -1,0 +1,34 @@
+# priors
+#prior for intake estimates
+for (h_ in 1:nTargets){ # nTargets: number of individuals
+  dirParams[h_,1:nSources] <-  exp(q[hierMatch[h_],1:nSources] + muNum[h_, 1:nSources]) * sourceDirichPrior[1:nSources]
+  alpha_[h_,1:nSources] ~ ddirch(dirParams[h_,1:nSources])
+}
+
+for (i_ in 1:nSources){
+  for (g_ in 1:nHierLevels){
+    for (k_ in 1:numColsNum){
+      delta[g_, i_, k_] ~ dnorm(muDelta[i_, k_], sigmaDelta[i_, k_])
+      }
+    q[g_, i_] ~ dnorm(muQ, sdQ)
+  }
+}
+
+for (i_ in 1:nSources){
+  for (h_ in 1:nTargets){
+  if(numColsNum == 1){
+      muNum[h_, i_] <- covariatesNum[h_, 1] * delta[hierMatch[h_],i_,1]
+  } else {
+      muNum[h_, i_] <- sum(covariatesNum[h_, 1:numColsNum] * delta[hierMatch[h_],i_,1:numColsNum])
+  }
+}
+}
+muQ ~ dnorm(0,5)
+sdQ ~ dunif(0,5)
+
+for (i_ in 1:nSources){
+    for (k_ in 1:numColsNum){
+      muDelta[i_, k_] ~ dnorm(0,5)
+      sigmaDelta[i_, k_] ~ dunif(0,5)
+    }
+}

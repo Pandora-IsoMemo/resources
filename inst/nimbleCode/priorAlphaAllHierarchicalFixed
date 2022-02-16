@@ -1,0 +1,12 @@
+# priors
+#prior for intake estimates
+for (h_ in 1:nTargets){ # nTargets: number of individuals
+  dirParams[h_,1:nSources] <-  q[hierMatch[h_],1:nSources] * sourceDirichPrior[1:nSources]
+  alpha_[h_,1:nSources] ~ ddirch(dirParams[h_,1:nSources])
+}
+
+for (i_ in 1:nSources){
+  for (g_ in 1:nHierLevels){ 
+    q[g_, i_] ~ dlnorm(0,10000)
+  }
+}

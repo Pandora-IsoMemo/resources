@@ -1,0 +1,5 @@
+# priors
+#prior for intake estimates
+for (h_ in 1:nTargets){ # nTargets: number of individuals
+  alpha_[h_,1:nSources] ~ ddirch(sourceDirichPrior[1:nSources]) 
+}
