@@ -1,4 +1,4 @@
-# MPI FRUITS App
+# resources (MPI FRUITS App)
 
 ## Dateistruktur
 
@@ -9,6 +9,3 @@
 - 02-: Untermodule/tabs/Popups für shiny
 - 03-: Hilfsfunktionen für Shiny
 - 04-: Model (Bauen, validieren, ausführen)
-
-
-# resources
