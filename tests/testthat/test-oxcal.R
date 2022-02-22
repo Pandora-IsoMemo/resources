@@ -2,37 +2,88 @@ pasteLines <- function(...) {
     paste(..., sep = "\n")
 }
 
-test_that("Parse Curve File", {
-    rawContent <- readLines("oxcal_aquatic_curve.txt")
+# test_that("Parse Curve File", {
+#     rawContent <- readLines("oxcal_aquatic_curve.txt")
+# 
+#     curveDefinitions <- parseCurveFile(rawContent)
+# 
+#     expectedDefinitions <- list(
+#         list(
+#             title = "Marine20",
+#             formula = c(
+#               'Curve("Marine20","Marine20.14c");',
+#               'Delta_R("Aquatic2",%%Delta_R_2%%,%%Delta_R_SD_2%%);'
+#             ),
+#             mixture = list(
+#               'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", %%MEAN_B%%,%%SD_B%%);',
+#               'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", P(0,100,[0,%%BINS_B%%,0]));'
+#             )
+#         ),
+#         list(
+#             title = "IntCal20",
+#             formula = c(
+#               'Curve("IntCal20","IntCal20.14c");',
+#               'Delta_R("Aquatic2",%%Delta_R_2%%,%%Delta_R_SD_2%%);'
+#             ),
+#             mixture = list(
+#               'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", %%MEAN_B%%,%%SD_B%%);',
+#               'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", P(0,100,[0,%%BINS_B%%,0]));'
+#             )
+#         )
+#     )
+# 
+#     expect_equal(curveDefinitions, expectedDefinitions)
+# })
 
-    curveDefinitions <- parseCurveFile(rawContent)
+test_that("getCurveTitlesXlsx", {
+  file1 <- read.xlsx("https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/b7732618-7764-460a-b1fa-c614f4cdbe95/download/terrestrial.xlsx")
+  file2 <- read.xlsx("https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/2037632f-f984-4834-8e25-4af5498df163/download/aquatic1.xlsx")
+  file3 <- read.xlsx("https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/120d810e-ff7d-49b7-80b8-e9791e2980b3/download/aquatic2.xlsx")
+  
+  expect_equal(getCurveTitlesXlsx(file1), structure(1:3, .Names = c("IntCal20", "SHCal20", "Mix IntCal20 andSHCal20")))
+  expect_equal(getCurveTitlesXlsx(file2), structure(1:2, .Names = c("Marine20", "Same as terrestrial")))
+  expect_equal(getCurveTitlesXlsx(file3), structure(1:2, .Names = c("Marine20", "Same as terrestrial")))
+  })
 
-    expectedDefinitions <- list(
-        list(
-            title = "Marine20",
-            formula = c(
-              'Curve("Marine20","Marine20.14c");',
-              'Delta_R("Aquatic2",%%Delta_R_2%%,%%Delta_R_SD_2%%);'
-            ),
-            mixture = list(
-              'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", %%MEAN_B%%,%%SD_B%%);',
-              'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", P(0,100,[0,%%BINS_B%%,0]));'
-            )
-        ),
-        list(
-            title = "IntCal20",
-            formula = c(
-              'Curve("IntCal20","IntCal20.14c");',
-              'Delta_R("Aquatic2",%%Delta_R_2%%,%%Delta_R_SD_2%%);'
-            ),
-            mixture = list(
-              'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", %%MEAN_B%%,%%SD_B%%);',
-              'Mix_Curve(%%TARGET_ID%%,"Aquatic1","Aquatic2", P(0,100,[0,%%BINS_B%%,0]));'
-            )
-        )
+test_that("getCodeHeader(terrestrial)", {
+  file1 <- read.xlsx(
+    "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/b7732618-7764-460a-b1fa-c614f4cdbe95/download/terrestrial.xlsx"
     )
-
-    expect_equal(curveDefinitions, expectedDefinitions)
+  
+  expect_equal(
+    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[1]),],
+                mixOption = NULL,
+                mixParams = NULL),
+    "Curve(\"terrestrial\",\"IntCal20.14c\");"
+  )
+  
+  expect_equal(
+    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[2]),],
+                  mixOption = NULL,
+                  mixParams = NULL),
+    "Curve(\"terrestrial\",\"SHCal20.14c\");"
+  )
+  
+  expect_equal(
+    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[3]),],
+                  mixOption = "Option point",
+                  mixParams = c(3, 0)),
+    "Curve(\"IntCal20\",\"IntCal20.14c\");\r\nCurve(\"SHCal20\",\"SHCal20.14c\");\r\nMix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", 3);"
+  )
+  
+  expect_equal(
+    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[3]),],
+                  mixOption = "Option Mean SD",
+                  mixParams = c(2, 1)),
+    "Curve(\"IntCal20\",\"IntCal20.14c\");\r\nCurve(\"SHCal20\",\"SHCal20.14c\");\r\nMix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", 2,1);"
+  )
+  
+  expect_equal(
+    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[3]),],
+                  mixOption = "Option uniform",
+                  mixParams = c(0, 2)),
+    "Curve(\"IntCal20\",\"IntCal20.14c\");\r\nCurve(\"SHCal20\",\"SHCal20.14c\");\r\nMix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", U(0,2));"
+  )
 })
 
 test_that("Create OxCal Output", {
