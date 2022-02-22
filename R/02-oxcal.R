@@ -5,7 +5,7 @@ OxCalOutputUI <- function(id) {
         tags$br(),
         fluidRow(
             column(width = 3, selectInput(ns("terrestrialCurve"), label = "Terrestrial Curve", choices = NULL)),
-            column(width = 3, conditionalPanel(
+            column(width = 2, conditionalPanel(
               condition = "input.terrestrialCurve == '3'",
               ns = ns,
               radioButtons(ns("mixType"), "Type of mixture", 
@@ -38,11 +38,11 @@ OxCalOutputUI <- function(id) {
                      ns = ns,
                      numericInput(ns("mixMax"), "Mix Max", 1))
             ),
-            column(width = 2, offset = , actionButton(ns("help"), "Help"))
+            column(width = 1, offset = 2, actionButton(ns("help"), "Help"))
         ),
         fluidRow(
             column(width = 3, selectInput(ns("aquaticCurve1"), label = "Aquatic Curve 1", choices = NULL)),
-            column(width = 3, selectInput(ns("OxCalA"), "Estimate",  choices = c("none"))),
+            column(width = 2, selectInput(ns("OxCalA"), "Estimate 1",  choices = c("none"))),
             column(width = 2, numericInput(ns("meanDeltaR1"), "Mean Delta R 1", 0)),
             column(width = 2, numericInput(ns("sdDeltaR1"), "SD Delta R 1", 1)),
             column(width = 2, radioButtons(ns("bins"), "Type of estimate", choices = c("mean + sd" = "meansd",
@@ -50,7 +50,7 @@ OxCalOutputUI <- function(id) {
         ),
         fluidRow(
             column(width = 3, selectInput(ns("aquaticCurve2"), label = "Aquatic Curve 2", choices = NULL)),
-            column(width = 3, selectInput(ns("OxCalB"), "Estimate 2",  choices = c("none"))),
+            column(width = 2, selectInput(ns("OxCalB"), "Estimate 2",  choices = c("none"))),
             column(width = 2, numericInput(ns("meanDeltaR2"), "Mean Delta R 2", 0)),
             column(width = 2, numericInput(ns("sdDeltaR2"), "SD Delta R 2", 1))
         ),
