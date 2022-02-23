@@ -15,7 +15,9 @@ dbContent <- function(input, output, session, table) {
 
   output$table <- renderDT(data())
 
-  callModule(exportData, "export", data = reactive(function() { getDbContent(table) }))
+  callModule(exportData, "export", data = reactive(function() {
+    getDbContent(table)
+  }))
 }
 
 getDbContent <- function(table) {
@@ -37,8 +39,7 @@ dbContentDialog <- function(id, ns) {
 }
 
 tableLabels <- function(id) {
-  switch(
-    id,
+  switch(id,
     feeding = "Feeding experiments",
     suess = "Suess effect",
     diet = "Diet-to-consumer parameters",

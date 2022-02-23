@@ -18,7 +18,7 @@ Check if class is in a set of accepted classes
 }
 \examples{
 ReSources:::checkClass(c(1, 2, 3), c("numeric", "integer"))
-\donttest{
+\dontrun{
 ReSources:::checkClass("This is not a list", argName = "x")
 }
 }

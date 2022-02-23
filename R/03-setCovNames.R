@@ -1,22 +1,22 @@
 setCovNames <- function(obj, names) {
-    if (is.list(obj)) {
-        obj <- lapply(obj, setCovNames, names = names)
-    }
+  if (is.list(obj)) {
+    obj <- lapply(obj, setCovNames, names = names)
+  }
 
-    if (is.matrix(obj)) {
-        new <- diag(length(names))
-        mode(new) <- mode(obj)
-        
-        colnames(new) <- names
-        rownames(new) <- names
+  if (is.matrix(obj)) {
+    new <- diag(length(names))
+    mode(new) <- mode(obj)
 
-        mincol <- pmin(ncol(new), ncol(obj))
-        minrow <- pmin(nrow(new), nrow(obj))
+    colnames(new) <- names
+    rownames(new) <- names
 
-        new[seq_len(minrow), seq_len(mincol)] <- obj[seq_len(minrow), seq_len(mincol)]
-        
-        obj <- new
-    }
+    mincol <- pmin(ncol(new), ncol(obj))
+    minrow <- pmin(nrow(new), nrow(obj))
 
-    return(obj)
+    new[seq_len(minrow), seq_len(mincol)] <- obj[seq_len(minrow), seq_len(mincol)]
+
+    obj <- new
+  }
+
+  return(obj)
 }

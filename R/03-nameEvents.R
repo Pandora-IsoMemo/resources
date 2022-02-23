@@ -12,13 +12,13 @@ createNameEvents <- function(old, new, row, col, update = TRUE) {
     createRemoveEvent(old, new, row, rownames),
     createRemoveEvent(old, new, col, colnames)
   )
-  
+
   res <- c(
     res,
     createInsertEvent(old, new, row, rownames),
     createInsertEvent(old, new, col, colnames)
   )
-  
+
   if (update) {
     res <- c(
       res,
@@ -71,7 +71,7 @@ createUpdateEvent <- function(old, new, variable, nameFunction = rownames) {
   updated <- oldNames != newNames
   updated <- updated &
     !(newNames %in% oldNames[!updated]) &
-    !(oldNames %in% oldNames[!updated])   # fire insert here
+    !(oldNames %in% oldNames[!updated]) # fire insert here
 
   d <- data.frame(
     old = oldNames[updated],
@@ -90,7 +90,9 @@ createRemoveEvent <- function(old, new, variable, nameFunction = rownames) {
   oldLength <- length(nameFunction(old))
   newLength <- length(nameFunction(new))
 
-  if (oldLength <= newLength) return(list())
+  if (oldLength <= newLength) {
+    return(list())
+  }
 
   removeNames <- nameFunction(old)[seq(newLength, oldLength)]
   removeNames <- unique(removeNames[!(removeNames %in% nameFunction(new))])
@@ -159,15 +161,16 @@ processNameEventsListNames <- function(l, events, lindex, dummy) {
 }
 
 processSingleEvent <- function(m, event, row, col) {
-  if (!(event$variable %in% c(row, col))) return(m)
+  if (!(event$variable %in% c(row, col))) {
+    return(m)
+  }
 
   where <- character(0)
 
   if (event$variable == row) where <- "row"
   if (event$variable == col) where <- c(where, "col")
 
-  switch(
-    event$event,
+  switch(event$event,
     insert = processInsertEvent(m, old = event$old, new = event$new, where),
     update = processUpdateEvent(m, old = event$old, new = event$new, where),
     remove = processRemoveEvent(m, old = event$old, new = event$new, where)

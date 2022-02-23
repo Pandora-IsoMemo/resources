@@ -4,15 +4,24 @@ extend <- function(what, with, overwrite = FALSE, strip = FALSE) {
   if (!is.list(what)) what <- list()
   if (strip) what <- stripList(what, with)
 
-  replace <- if (overwrite) namesOrIndices(with)
-  else missingOrList(what, namesOrIndices(with))
+  replace <- if (overwrite) {
+    namesOrIndices(with)
+  } else {
+    missingOrList(what, namesOrIndices(with))
+  }
 
   for (r in replace) {
-    current <- if (r %notin% namesOrIndices(what)) NULL
-    else what[[r]]
+    current <- if (r %notin% namesOrIndices(what)) {
+      NULL
+    } else {
+      what[[r]]
+    }
 
-    if (is.list(with[[r]])) what[[r]] <- extend(current, with[[r]], overwrite, strip)
-    else what[[r]] <- with[[r]]
+    if (is.list(with[[r]])) {
+      what[[r]] <- extend(current, with[[r]], overwrite, strip)
+    } else {
+      what[[r]] <- with[[r]]
+    }
   }
   what
 }
@@ -37,6 +46,9 @@ missingOrList <- function(list, n = namesOrIndices(list)) {
 namesOrIndices <- function(l) {
   stopifnot(is.list(l))
 
-  if (is.null(names(l))) seq_along(l)
-  else names(l)
+  if (is.null(names(l))) {
+    seq_along(l)
+  } else {
+    names(l)
+  }
 }

@@ -12,15 +12,20 @@ createDummyMatrix <- function(names, current = NULL) {
 }
 
 createDummyList <- function(names, default = NA, current = NULL) {
-  if (length(names) == 0) return(default)
+  if (length(names) == 0) {
+    return(default)
+  }
 
   res <- list()
   # use a loop because we need to manipulate res
   for (n in seq_along(names)) {
     indices <- as.matrix(expand.grid(names[1:n]))
 
-    value <- if (n == length(names)) default
-    else list()
+    value <- if (n == length(names)) {
+      default
+    } else {
+      list()
+    }
 
     for (i in seq_len(nrow(indices))) {
       setList(res, indices[i, ], value)
@@ -53,5 +58,7 @@ getIndexTypes <- function(data) {
     inner <- if (length(data) > 0) getIndexTypes(data[[1]]) else NULL
     c(!is.null(names(data)), inner)
   }
-  else NULL
+  else {
+    NULL
+  }
 }

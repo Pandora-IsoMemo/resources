@@ -6,4 +6,6 @@ isoInstalled <- function() {
     compareVersion(as.character(packageVersion("MpiIsoApp")), isoVersion()) > -1
 }
 
-isoVersion <- function() { "1.2.5" }
+isoVersion <- function() {
+  "1.2.5"
+}

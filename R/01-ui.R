@@ -15,26 +15,43 @@ fruitsUI <- function(id, title = "FRUITS") {
       sidebarPanel(
         width = 3,
         tags$h4("Model File"),
-        fileInput(ns("modelFile"), "Upload Model File", multiple = FALSE,
-                  accept = ".rdata"),
+        fileInput(
+          ns("modelFile"),
+          "Upload Model File",
+          multiple = FALSE,
+          accept = ".rdata"
+        ),
         downloadButton(ns("saveModelFile"), "Save Model File"),
         actionButton(ns("showFileNotes"), "File Notes"),
         tags$hr(),
-        selectInput(ns("exampleData"), label = "Select example models",
-                    choices = c("Five Sources Data", "Brown Bear Data",
-                                "Black Bear Data", "Roman Data"),
-                    selected = "Five_Sources_Data"),
+        selectInput(
+          ns("exampleData"),
+          label = "Select example models",
+          choices = c(
+            "Five Sources Data",
+            "Brown Bear Data",
+            "Black Bear Data",
+            "Roman Data"
+          ),
+          selected = "Five_Sources_Data"
+        ),
         actionButton(ns("exampleModel"), "Load selected model"),
         tags$hr(),
         actionButton(ns("run"), "Run"),
         actionButton(ns("reset"), "Reset"),
         actionButton(ns("showAbout"), "About"),
         checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
-        helpText("This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"),
+        helpText(
+          "This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"
+        ),
         tags$hr(),
         tags$h4("View data table"),
-        tags$button(class="btn btn-default", type = "button",
-                    onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')", "IsoMemo"),
+        tags$button(
+          class = "btn btn-default",
+          type = "button",
+          onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
+          "IsoMemo"
+        ),
         dbContentButton(ns("feeding"), table = "feeding"),
         tags$br(),
         dbContentButton(ns("suess"), table = "suess"),
@@ -55,139 +72,283 @@ fruitsUI <- function(id, title = "FRUITS") {
             "Data",
             tabPanel(
               "Target & target-to-source offsets",
-              fruitsMatrixFilter(scope = ns("targetValues"), id = "term", label = "Term"),
+              fruitsMatrixFilter(
+                scope = ns("targetValues"),
+                id = "term",
+                label = "Term"
+              ),
               fruitsMatrixDistribution(scope = ns("targetValues")),
               fruitsMatrixInput(ns("targetValues"), "obsvnNames", "targetNames"),
               checkboxInput(ns("targetOffset"), "Include target offset",
-                            value = TRUE),
+                value = TRUE
+              ),
               conditionalPanel(
                 condition = "input.targetOffset == true",
-                fruitsMatrixInput(ns("weightOffset"), "targetNames", "offsetNames", fixedCols = "Offset"),
+                fruitsMatrixInput(
+                  ns("weightOffset"),
+                  "targetNames",
+                  "offsetNames",
+                  fixedCols = "Offset"
+                ),
                 ns = ns
               ),
               checkboxInput(ns("targetValuesShowCovariates"), "Enter Covariates"),
               conditionalPanel(
                 condition = "input.targetValuesShowCovariates == true",
                 ns = ns,
-                fruitsMatrixInput(ns("targetValuesCovariates"), "obsvnNames", "covariateNames",
-                                  double = FALSE, class = "character")
+                fruitsMatrixInput(
+                  ns("targetValuesCovariates"),
+                  "obsvnNames",
+                  "covariateNames",
+                  double = FALSE,
+                  class = "character"
+                )
               ),
-              fruitsMatrixFilter(scope = ns("targetValues"), id = "obsvn", label = "Observation"),
-              fruitsMatrixInput(scope = ns("targetValues"), row = "targetNames", col = "targetNames", cov = TRUE),
-              checkboxInput(ns("targetValuesShowCoordinates"), "Coordinates & chronology"),
+              fruitsMatrixFilter(
+                scope = ns("targetValues"),
+                id = "obsvn",
+                label = "Observation"
+              ),
+              fruitsMatrixInput(
+                scope = ns("targetValues"),
+                row = "targetNames",
+                col = "targetNames",
+                cov = TRUE
+              ),
+              checkboxInput(
+                ns("targetValuesShowCoordinates"),
+                "Coordinates & chronology"
+              ),
               conditionalPanel(
                 condition = "input.targetValuesShowCoordinates == true",
                 ns = ns,
-                fruitsMatrixInput(ns("exportCoordinates"), "obsvnNames", "coordinateNames",
-                                  double = FALSE, fixedCols = c("longitude", "latitude",
-                                                                "LowerLimit/Mean/Point",
-                                                                "UpperLimit/SD")),
+                fruitsMatrixInput(
+                  ns("exportCoordinates"),
+                  "obsvnNames",
+                  "coordinateNames",
+                  double = FALSE,
+                  fixedCols = c(
+                    "longitude",
+                    "latitude",
+                    "LowerLimit/Mean/Point",
+                    "UpperLimit/SD"
+                  )
+                ),
                 tags$br()
-              )),
+              )
+            ),
             ## Data/Weights ----
             tabPanel(
               "Components",
-              fruitsMatrixDistribution(scope = ns("weights"), choices = c("constant", "normal", "log-normal")),
+              fruitsMatrixDistribution(
+                scope = ns("weights"),
+                choices = c("constant", "normal", "log-normal")
+              ),
               fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
             ),
             ## Data/Sources ----
             tabPanel(
               "Sources",
               div(
-                fruitsMatrixFilter(scope = ns("source"), id = "obsvn", label = "Observation")
+                fruitsMatrixFilter(
+                  scope = ns("source"),
+                  id = "obsvn",
+                  label = "Observation"
+                )
               ),
-              fruitsMatrixFilter(scope = ns("source"), id = "term", label = "Term"),
+              fruitsMatrixFilter(
+                scope = ns("source"),
+                id = "term",
+                label = "Term"
+              ),
               fruitsMatrixDistribution(scope = ns("source")),
-              div(
-                fruitsMatrixFilter(scope = ns("source"), id = "target", label = "Proxy")
+              div(fruitsMatrixFilter(
+                scope = ns("source"),
+                id = "target",
+                label = "Proxy"
+              )),
+              fruitsMatrixInput(
+                scope = ns("source"),
+                row = "sourceNames",
+                col = "targetNames"
               ),
-              fruitsMatrixInput(scope = ns("source"), row = "sourceNames", col = "targetNames"),
-              checkboxInput(ns("includeSourceOffset"), "Include source specific offsets",
-                            value = FALSE),
+              checkboxInput(
+                ns("includeSourceOffset"),
+                "Include source specific offsets",
+                value = FALSE
+              ),
               conditionalPanel(
                 condition = "input.includeSourceOffset == true",
                 ns = ns,
-                fruitsMatrixFilter(scope = ns("sourceOffset"), id = "obsvn", label = "Observation"),
-                fruitsMatrixFilter(scope = ns("sourceOffset"), id = "target", label = "Proxy"),
+                fruitsMatrixFilter(
+                  scope = ns("sourceOffset"),
+                  id = "obsvn",
+                  label = "Observation"
+                ),
+                fruitsMatrixFilter(
+                  scope = ns("sourceOffset"),
+                  id = "target",
+                  label = "Proxy"
+                ),
                 fruitsMatrixInput(ns("sourceOffset"), row = "sourceNames", col = "targetNames")
               ),
-              fruitsMatrixInput(ns("source"), row = "sourceNames", col = "sourceNames", cov = TRUE, toggleCov = TRUE)
+              fruitsMatrixInput(
+                ns("source"),
+                row = "sourceNames",
+                col = "sourceNames",
+                cov = TRUE,
+                toggleCov = TRUE
+              )
             ),
             ## Data/Concentrations ----
             tabPanel(
               "Concentrations",
               div(
-                fruitsMatrixFilter(scope = ns("concentration"), id = "obsvn", label = "Observation")
+                fruitsMatrixFilter(
+                  scope = ns("concentration"),
+                  id = "obsvn",
+                  label = "Observation"
+                )
               ),
               fruitsMatrixDistribution(scope = ns("concentration")),
               fruitsMatrixInput(ns("concentration"), row = "sourceNames", col = "targetNames"),
-              fruitsMatrixInput(ns("concentration"), row = "targetNames", col = "targetNames", cov = TRUE, toggleCov = TRUE)
+              fruitsMatrixInput(
+                ns("concentration"),
+                row = "targetNames",
+                col = "targetNames",
+                cov = TRUE,
+                toggleCov = TRUE
+              )
             )
           ),
           # Model options ----
           tabPanel(
             "Model options",
             fluidRow(
-              column(4,
-                     "Model options",
-                     radioButtons(ns("modelType"), "Model type:",
-                                  choices = list("Update model (all info shared)" = "1",
-                                                 "Individual targets (partially shared info)" = "2",
-                                                 "Baseline model (partially shared info)" = "3",
-                                                 "Individual targets (no shared info)" = "4",
-                                                 "Baseline model (no shared info)" = "5"),
-                                  selected = 1),
-                     numericInput(ns("minUnc"), "Minimum uncertainty",
-                                  value = 0.005, min = 0.0001, max = 1, step = 0.001),
-                     checkboxInput(ns("modelWeights"), "Include components",
-                                   value = FALSE),
-                     conditionalPanel(
-                       condition = "input.modelWeights == true",
-                       ns = ns,
-                     checkboxInput(ns("modelWeightsContrained"), "Constrain weights between 0 and 100",
-                                   value = TRUE)
-                     ),
-                     checkboxInput(ns("modelConcentrations"), "Include concentrations",
-                                   value = TRUE),
-                     conditionalPanel(
-                       condition = "input.modelConcentrations == true",
-                       ns = ns,
-                     checkboxInput(ns("modelConcentrationsContrained"), "Constrain concentration between 0 and 100",
-                                   value = TRUE)),
-                     radioButtons(ns("inflatedBeta"), "Source contribution distribution:",
-                                  choices = list("Dirichlet" = 0,
-                                                 "Zero Inflated Beta" = 1),
-                                  selected = 0),
-                     conditionalPanel(
-                       condition = "input.inflatedBeta == '0'",
-                       ns = ns,
-                       numericInput(ns("alphaHyper"), "Hyperparameters for alpha/sources",
-                                    value = 1, min = 0.0001, max = 100)
-                     ),
-                     checkboxInput(ns("oxcalCheck"), "Show interface for radiocarbon corrections",
-                                   value = FALSE),
-                     radioButtons(ns("covariateType"), "Covariates model:",
-                                  choices = list("none" = 0, "fixed intercept (cat. vars), fixed slope (num. vars)" = 1,
-                                                 "random intercept (cat. vars), fixed slope (num. vars)" = 2,
-                                                 "random intercept (cat. vars), random slope (num. vars)" = 3),
-                                  selected = 0),
-                     conditionalPanel(
-                       condition = "input.covariateType !== '0'",
-                       ns = ns,
-                       pickerInput(ns("categoricalVars"), "Select categorical variables",
-                                   choices = list(),
-                                   selected = NULL, multiple = TRUE),
-                       pickerInput(ns("numericVars"), "Select numeric variables",
-                                   choices = list(),
-                                   selected = NULL, multiple = TRUE)
-                     )
+              column(
+                4,
+                "Model options",
+                radioButtons(
+                  ns("modelType"),
+                  "Model type:",
+                  choices = list(
+                    "Update model (all info shared)" = "1",
+                    "Individual targets (partially shared info)" = "2",
+                    "Baseline model (partially shared info)" = "3",
+                    "Individual targets (no shared info)" = "4",
+                    "Baseline model (no shared info)" = "5"
+                  ),
+                  selected = 1
+                ),
+                numericInput(
+                  ns("minUnc"),
+                  "Minimum uncertainty",
+                  value = 0.005,
+                  min = 0.0001,
+                  max = 1,
+                  step = 0.001
+                ),
+                checkboxInput(ns("modelWeights"), "Include components",
+                  value = FALSE
+                ),
+                conditionalPanel(
+                  condition = "input.modelWeights == true",
+                  ns = ns,
+                  checkboxInput(
+                    ns("modelWeightsContrained"),
+                    "Constrain weights between 0 and 100",
+                    value = TRUE
+                  )
+                ),
+                checkboxInput(ns("modelConcentrations"), "Include concentrations",
+                  value = TRUE
+                ),
+                conditionalPanel(
+                  condition = "input.modelConcentrations == true",
+                  ns = ns,
+                  checkboxInput(
+                    ns("modelConcentrationsContrained"),
+                    "Constrain concentration between 0 and 100",
+                    value = TRUE
+                  )
+                ),
+                radioButtons(
+                  ns("inflatedBeta"),
+                  "Source contribution distribution:",
+                  choices = list(
+                    "Dirichlet" = 0,
+                    "Zero Inflated Beta" = 1
+                  ),
+                  selected = 0
+                ),
+                conditionalPanel(
+                  condition = "input.inflatedBeta == '0'",
+                  ns = ns,
+                  numericInput(
+                    ns("alphaHyper"),
+                    "Hyperparameters for alpha/sources",
+                    value = 1,
+                    min = 0.0001,
+                    max = 100
+                  )
+                ),
+                checkboxInput(
+                  ns("oxcalCheck"),
+                  "Show interface for radiocarbon corrections",
+                  value = FALSE
+                ),
+                radioButtons(
+                  ns("covariateType"),
+                  "Covariates model:",
+                  choices = list(
+                    "none" = 0,
+                    "fixed intercept (cat. vars), fixed slope (num. vars)" = 1,
+                    "random intercept (cat. vars), fixed slope (num. vars)" = 2,
+                    "random intercept (cat. vars), random slope (num. vars)" = 3
+                  ),
+                  selected = 0
+                ),
+                conditionalPanel(
+                  condition = "input.covariateType !== '0'",
+                  ns = ns,
+                  pickerInput(
+                    ns("categoricalVars"),
+                    "Select categorical variables",
+                    choices = list(),
+                    selected = NULL,
+                    multiple = TRUE
+                  ),
+                  pickerInput(
+                    ns("numericVars"),
+                    "Select numeric variables",
+                    choices = list(),
+                    selected = NULL,
+                    multiple = TRUE
+                  )
+                )
               ),
-              column(4,
-                     "MCMC options",
-                     numericInput(ns("burnin"), "Burn-In", value = 1e4, step = 1e3),
-                     numericInput(ns("iterations"), "Iterations", value = 1e4, step = 1e3),
-                     numericInput(ns("thinning"), "Thinning", value = 10, step = 1),
-                     numericInput(ns("nchains"), "Number of chains", value = 1, step = 1)
+              column(
+                4,
+                "MCMC options",
+                numericInput(ns("burnin"), "Burn-In", value = 1e4, step = 1e3),
+                numericInput(
+                  ns("iterations"),
+                  "Iterations",
+                  value = 1e4,
+                  step = 1e3
+                ),
+                numericInput(
+                  ns("thinning"),
+                  "Thinning",
+                  value = 10,
+                  step = 1
+                ),
+                numericInput(
+                  ns("nchains"),
+                  "Number of chains",
+                  value = 1,
+                  step = 1
+                )
               )
             )
           ),
@@ -200,327 +361,550 @@ fruitsUI <- function(id, title = "FRUITS") {
             tags$br(),
             textInput(ns("newPrior"), "New prior", width = "100%"),
             div(class = "text-danger", textOutput(ns("priorWarning"))),
-            fluidRow(column(width = 2, actionButton(ns("addPrior"), "Add prior")),
-                     column(width = 2, checkboxInput(ns("addUnc"), "Add uncertainty", width = "100%")),
-                     column(width = 6, numericInput(ns("Unc"), "Minimum uncertainty", value = 0.001,
-                                                    width = "100%", step = 0.001, min = 0.001))),
+            fluidRow(
+              column(width = 2, actionButton(ns("addPrior"), "Add prior")),
+              column(width = 2, checkboxInput(ns("addUnc"), "Add uncertainty", width = "100%")),
+              column(
+                width = 6,
+                numericInput(
+                  ns("Unc"),
+                  "Minimum uncertainty",
+                  value = 0.001,
+                  width = "100%",
+                  step = 0.001,
+                  min = 0.001
+                )
+              )
+            ),
             tags$br(),
-            div(class = "calculatorInputContainer",
-                fluidRow(
-                  column(
-                    4,
-                    priorCalculator(),
-                    tags$br(),
-                    tags$p("Functions"),
-                    priorCalculator(funs = TRUE)
+            div(
+              class = "calculatorInputContainer",
+              fluidRow(
+                column(
+                  4,
+                  priorCalculator(),
+                  tags$br(),
+                  tags$p("Functions"),
+                  priorCalculator(funs = TRUE)
+                ),
+                column(
+                  4,
+                  selectInput(
+                    ns("priorSource"),
+                    "Source contributions",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
                   ),
-                  column(
-                    4,
-                    selectInput(ns("priorSource"), "Source contributions",
-                                NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                    selectInput(ns("priorProxies"), "Source contributions by proxy",
-                                NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                    conditionalPanel(
-                      condition = "input.targetOffset == true",
-                      selectInput(ns("priorOffset"), "Target-to-source offsets",
-                                  NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                      ns = ns),
-                    conditionalPanel(
-                      condition = "input.modelConcentrations == true",
-                      selectInput(ns("priorConcentration"), "Concentrations",
-                                  NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                      ns = ns),
-                    conditionalPanel(
-                      condition = "input.targetValuesShowCovariates == true & input.covariateType !== '0'",
-                      selectInput(ns("priorHierarchicalValues"), "Source contribution categories",
-                                  NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                      selectInput(ns("priorHierarchicalValuesBeta"), "Component contributions categories",
-                                  NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                      selectInput(ns("priorHierarchicalValuesTheta"), "Source contributions by proxy categories",
-                                  NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                      ns = ns)
+                  selectInput(
+                    ns("priorProxies"),
+                    "Source contributions by proxy",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
                   ),
-                  column(
-                    4,
-                    selectInput(ns("priorSourceFractions"), "Component contributions",
-                                NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                    selectInput(ns("priorProxyValues"), "Component proxies",
-                                NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                    conditionalPanel(
-                      condition = "input.modelWeights == true",
-                      selectInput(ns("priorWeightValues"), "Weights",
-                                  NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                      ns = ns),
-                    selectInput(ns("priorConsumerValues"), "Target proxies",
-                                NULL, selectize = FALSE, multiple = TRUE, size = 3)
+                  conditionalPanel(
+                    condition = "input.targetOffset == true",
+                    selectInput(
+                      ns("priorOffset"),
+                      "Target-to-source offsets",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.modelConcentrations == true",
+                    selectInput(
+                      ns("priorConcentration"),
+                      "Concentrations",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true & input.covariateType !== '0'",
+                    selectInput(
+                      ns("priorHierarchicalValues"),
+                      "Source contribution categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    selectInput(
+                      ns("priorHierarchicalValuesBeta"),
+                      "Component contributions categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    selectInput(
+                      ns("priorHierarchicalValuesTheta"),
+                      "Source contributions by proxy categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  )
+                ),
+                column(
+                  4,
+                  selectInput(
+                    ns("priorSourceFractions"),
+                    "Component contributions",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
+                  ),
+                  selectInput(
+                    ns("priorProxyValues"),
+                    "Component proxies",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
+                  ),
+                  conditionalPanel(
+                    condition = "input.modelWeights == true",
+                    selectInput(
+                      ns("priorWeightValues"),
+                      "Weights",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  selectInput(
+                    ns("priorConsumerValues"),
+                    "Target proxies",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
                   )
                 )
+              )
             )
           ),
           # User Estimates ----
-          tabPanel("User Estimates",
-                   tags$h4("Estimates"),
-                   priorInput(ns("userEstimate")),
-                   userEstimateGroupUI(ns("userEstimateGroup")),
-                   tags$br(),
-                   tags$br(),
-                   textInput(ns("newUserEstimate"), "New user estimate", width = "100%"),
-                   div(class = "text-danger", textOutput(ns("userEstimateWarning"))),
-                   actionButton(ns("addUserEstimate"), "Add user estimate"),
-                   div(
-                     class = "calculatorInputContainerUserEstimate",
-                     fluidRow(
-                       column(4, userEstimatesCalculator(),
-                              tags$br(),
-                              tags$p("Functions"),
-                              userEstimatesCalculator(funs = TRUE)
-                       ),
-                       column(
-                         4,
-                         textInput(ns("userEstimateName"), "Estimate Name", value = "UserEstimate"),
-                         div(
-                           class = "user-estimates-additions",
-                           div(
-                             style = "display:inline-block",
-                             tags$button(id = "addUserEstimateConstant", class="btn btn-default", "Add Constant")
-                           ),
-                           div(
-                             style = "display:inline-block",
-                             tags$input(id = "userEstimateConstant", value = 0)
-                           )
-                         ),
-                         div(
-                           class = "user-estimates-additions",
-                           div(
-                             style = "display:inline-block",
-                             tags$button(id = "addUserEstimateND",
-                                         class="btn btn-default",
-                                         "Add Normal Distribution (Mean, SD)")
-                           ),
-                           div(
-                             style = "display:inline-block",
-                             tags$input(id = "userEstimateNDMean", value = 0)
-                           ),
-                           div(
-                             style = "display:inline-block",
-                             tags$input(id = "userEstimateNDSd", value = 1)
-                           )
-                         )
-                       ),
-                       column(
-                         4,
-                         selectInput(ns("userEstimateSource"),
-                                     "Source contributions",
-                                     NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                         selectInput(ns("userEstimateProxies"),
-                                     "Contributions by proxy",
-                                     NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                         selectInput(ns("userEstimateSourceFractions"),
-                                     "Component contributions",
-                                     NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                         conditionalPanel(
-                           condition = "input.targetOffset == true",
-                           selectInput(ns("userEstimateOffset"), "Target-to-source offsets",
-                                       NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                           ns = ns),
-                         conditionalPanel(
-                           condition = "input.modelConcentrations == true",
-                           selectInput(ns("userEstimateConcentration"), "Concentrations",
-                                       NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                           ns = ns),
-                         
-                         conditionalPanel(
-                           condition = "input.targetValuesShowCovariates == true",
-                           selectInput(ns("userEstimateHierarchicalValues"), "Source contribution categories",
-                                       NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                           selectInput(ns("userEstimateHierarchicalValuesBeta"), "Component contributions categories",
-                                       NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                           selectInput(ns("userEstimateHierarchicalValuesTheta"), "Source contributions by proxy categories",
-                                       NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                           ns = ns),
-                         selectInput(ns("userEstimateProxyValues"), "Component proxies",
-                                     NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                         conditionalPanel(
-                           condition = "input.modelWeights == true",
-                           selectInput(ns("userEstimateWeightValues"), "Weights",
-                                       NULL, selectize = FALSE, multiple = TRUE, size = 3),
-                           ns = ns),
-                         selectInput(ns("userEstimateConsumerValues"), "Target proxies",
-                                     NULL, selectize = FALSE, multiple = TRUE, size = 3)
-                      
-                       )
-                     )
-                   )
+          tabPanel(
+            "User Estimates",
+            tags$h4("Estimates"),
+            priorInput(ns("userEstimate")),
+            userEstimateGroupUI(ns("userEstimateGroup")),
+            tags$br(),
+            tags$br(),
+            textInput(ns("newUserEstimate"), "New user estimate", width = "100%"),
+            div(class = "text-danger", textOutput(ns(
+              "userEstimateWarning"
+            ))),
+            actionButton(ns("addUserEstimate"), "Add user estimate"),
+            div(
+              class = "calculatorInputContainerUserEstimate",
+              fluidRow(
+                column(
+                  4,
+                  userEstimatesCalculator(),
+                  tags$br(),
+                  tags$p("Functions"),
+                  userEstimatesCalculator(funs = TRUE)
+                ),
+                column(
+                  4,
+                  textInput(ns("userEstimateName"), "Estimate Name", value = "UserEstimate"),
+                  div(
+                    class = "user-estimates-additions",
+                    div(
+                      style = "display:inline-block",
+                      tags$button(
+                        id = "addUserEstimateConstant", class =
+                          "btn btn-default", "Add Constant"
+                      )
+                    ),
+                    div(
+                      style = "display:inline-block",
+                      tags$input(id = "userEstimateConstant", value = 0)
+                    )
+                  ),
+                  div(
+                    class = "user-estimates-additions",
+                    div(
+                      style = "display:inline-block",
+                      tags$button(
+                        id = "addUserEstimateND",
+                        class = "btn btn-default",
+                        "Add Normal Distribution (Mean, SD)"
+                      )
+                    ),
+                    div(
+                      style = "display:inline-block",
+                      tags$input(id = "userEstimateNDMean", value = 0)
+                    ),
+                    div(
+                      style = "display:inline-block",
+                      tags$input(id = "userEstimateNDSd", value = 1)
+                    )
+                  )
+                ),
+                column(
+                  4,
+                  selectInput(
+                    ns("userEstimateSource"),
+                    "Source contributions",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
+                  ),
+                  selectInput(
+                    ns("userEstimateProxies"),
+                    "Contributions by proxy",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
+                  ),
+                  selectInput(
+                    ns("userEstimateSourceFractions"),
+                    "Component contributions",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetOffset == true",
+                    selectInput(
+                      ns("userEstimateOffset"),
+                      "Target-to-source offsets",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.modelConcentrations == true",
+                    selectInput(
+                      ns("userEstimateConcentration"),
+                      "Concentrations",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true",
+                    selectInput(
+                      ns("userEstimateHierarchicalValues"),
+                      "Source contribution categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    selectInput(
+                      ns("userEstimateHierarchicalValuesBeta"),
+                      "Component contributions categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    selectInput(
+                      ns("userEstimateHierarchicalValuesTheta"),
+                      "Source contributions by proxy categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  selectInput(
+                    ns("userEstimateProxyValues"),
+                    "Component proxies",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
+                  ),
+                  conditionalPanel(
+                    condition = "input.modelWeights == true",
+                    selectInput(
+                      ns("userEstimateWeightValues"),
+                      "Weights",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  selectInput(
+                    ns("userEstimateConsumerValues"),
+                    "Target proxies",
+                    NULL,
+                    selectize = FALSE,
+                    multiple = TRUE,
+                    size = 3
+                  )
+                )
+              )
+            )
           ),
           # Model Characteristics ----
-          tabPanel("Model Characteristics",
-                   tags$h4("Model Characteristics"),
-                   value = "Characteristics",
-                   sidebarPanel(
-                     checkboxInput(ns("showConfidence"), label = "Show credible bars/ellipses",
-                                   value = TRUE),
-                     checkboxInput(ns("showLegend"), label = "Show legend if available",
-                                   value = FALSE),
-                     conditionalPanel(
-                       condition = "input.showLegend == true",
-                       ns = ns,
-                     checkboxInput(ns("legendInside"), label = "Show legend within plot",
-                                   value = FALSE)
-                     ),
-                     sliderInput(ns("confidenceLevel"), label = "Credible level",
-                                 min = 0.5, max = 0.9999, value = 0.9),
-                     radioButtons(ns("horizontalPlot"), label = "Horizontal or vertical 1D plots?",
-                                  choices = c("horizontal", "vertical"), selected = "vertical"),
-                     tags$p("Click on simulate for additional characteristics"),
-                     div(
-                       foodIntakesButton(ns("foodIntakes"), "Specify food intakes")
-                     ),
-                     div(
-                     sliderInput(ns("seqSim"), label = "Mixture plot: source shares simulation split", min = 2, max = 20, value = 10)
-                     ),
-                     pickerInput(inputId = ns("simSpecSources"),
-                                 label = "Select sources for simulation",
-                                 choices = NULL,
-                                 selected = NULL,
-                                 multiple = TRUE),
-                     div(
-                       actionButton(ns("runModelChar"), "Simulate")
-                     ),
-                     conditionalPanel(
-                       condition = "output.statusSim == 'COMPLETED'",
-                       ns = ns,
-                       exportDataUI(ns("exportSimSources"), "Export simulated data")
-                     ),
-                     width = 3),
-                     fluidRow(
-                       mainPanel(
-                         width = 8,
-                         tabsetPanel(
-                           id = ns("MCharResults"),
-                           tabPanel(
-                             "Target values plot",
-                             pickerInput(inputId = ns("targetSelect"),
-                                         label = "Select up to three proxies",
-                                         choices = NULL,
-                                         selected = NULL,
-                                         multiple = TRUE),
-                             conditionalPanel(
-                               condition = "input.targetValuesShowCovariates == true",
-                               ns = ns,
-                               pickerInput(ns("characteristicsCovariatesTarget"),
-                                           "Compare and show covariates",
-                                           choices = NULL,
-                                           selected = NULL,
-                                           multiple = TRUE)
-                             ),
-                             plotlyOutput(outputId = ns("targetPlot")),
-                             plotExportButton(ns("exportTargetPlot")),
-                             helpText("Please export plot using the camera symbol at the top-right of the plot.")
-                           ),
-                             tabPanel(
-                               "Concentrations plot",
-                               value = "concentrationsPlot",
-                               pickerInput(inputId = ns("concentrationsSelect"),
-                                           label = "Select up to three fractions",
-                                           choices = NULL,
-                                           selected = NULL,
-                                           multiple = TRUE),
-                               plotlyOutput(outputId = ns("concentrationsPlot")),
-                               plotExportButton(ns("exportConcentrationsPlot")),
-                               helpText("Please export plot using the camera symbol at the top-right of the plot.")
-                           ),
-                           tabPanel(
-                             "Source Plot",
-                             value = "sourcePlot",
-                             pickerInput(inputId = ns("sourceSelect"),
-                                         label = "Select up to three proxies",
-                                         choices = NULL,
-                                         selected = NULL,
-                                         multiple = TRUE),
-                             checkboxInput(ns("showIndividuals"), label = "Show targets", value = TRUE),
-                             conditionalPanel(
-                               condition = "input.showIndividuals == true",
-                               ns = ns,
-                               checkboxInput(ns("showTargetNames"), label = "Show target names", value = TRUE)
-                             ),
-                             conditionalPanel(
-                               condition = "input.targetValuesShowCovariates == true",
-                               ns = ns,
-                               pickerInput(ns("characteristicsCovariates"),
-                                           "Compare and show covariates",
-                                           choices = NULL,
-                                           selected = NULL,
-                                           multiple = TRUE)
-                             ),
-                             plotlyOutput(outputId = ns("SourceCharacteristicsPlot")),
-                             plotExportButton(ns("exportSourceCharacteristicsPlot")),
-                             helpText("Please export plot using the camera symbol at the top-right of the plot.")
-                           ),
-                           tabPanel(
-                             "Source Mixture Plot",
-                             value = "sourceMixPlot",
-                             pickerInput(inputId = ns("sourceSelectMix"),
-                                         label = "Select two or three proxies",
-                                         choices = NULL,
-                                         selected = NULL,
-                                         multiple = TRUE),
-                             pickerInput(inputId = ns("sourceSelectMix2"),
-                                         label = "Select sources",
-                                         choices = NULL,
-                                         selected = NULL,
-                                         multiple = TRUE),
-                             checkboxInput(ns("showIndividualsMix"), label = "Show targets", value = TRUE),
-                             conditionalPanel(
-                               condition = "input.showIndividualsMix == true",
-                               ns = ns,
-                               checkboxInput(ns("showTargetNamesMix"), label = "Show target names", value = TRUE)
-                             ),
-                             conditionalPanel(
-                               condition = "input.targetValuesShowCovariates == true",
-                               ns = ns,
-                               pickerInput(ns("characteristicsCovariatesMix"),
-                                           "Compare and show covariates",
-                                           choices = NULL,
-                                           selected = NULL,
-                                           multiple = TRUE)
-                             ),
-                             checkboxInput(ns("showGrid"), label = "Show grid", value = TRUE),
-                             checkboxInput(ns("showPoints"), label = "Show grid points", value = FALSE),
-                             radioButtons(ns("hull"), label = "Outer hull", choices = c("convex hull", "alpha convex hull")),
-                             conditionalPanel(
-                               condition = "input.hull == 'alpha convex hull'",
-                               ns = ns,
-                               numericInput(ns("alpha"), label = "Alpha value convex hull (higher = more conservative)", value = 10, min = 0, max = 100, step = 0.01)
-                             ),
-                             # actionButton(ns("updateMix"), label = "Update Plot"),
-                             plotlyOutput(outputId = ns("SourceCharacteristicsPlot2")),
-                             plotExportButton(ns("exportSourceCharacteristicsPlot2")),
-                             helpText("Please export plot using the camera symbol at the top-right of the plot.")
-                           ),
-                           tabPanel(
-                             "Z-Scores sources",
-                             value = "zScorePlot",
-                             DT::dataTableOutput(ns("zScores")),
-                             exportDataUI(ns("exportZScores"), "Export Data")
-                           ),
-                           tabPanel(
-                             "Source separation test (MANOVA)",
-                             value = "scoreSepTest",
-                             verbatimTextOutput(ns("scoreSep"), download = TRUE)
-                           ),
-                           tabPanel(
-                             "Mahalanobis-Distance sources",
-                             value = "mahaPlot",
-                             DT::dataTableOutput(ns("mahaDist")),
-                             exportDataUI(ns("exportMahaDist"), "Export Data")
-                           ),
-                           tabPanel(
-                             "Target & Source summary",
-                             value = "corrPlot",
-                             verbatimTextOutput(ns("corrMat"), download = TRUE)
-                           )
-                         )
-                     ))),
+          tabPanel(
+            "Model Characteristics",
+            tags$h4("Model Characteristics"),
+            value = "Characteristics",
+            sidebarPanel(
+              checkboxInput(ns("showConfidence"),
+                label = "Show credible bars/ellipses",
+                value = TRUE
+              ),
+              checkboxInput(ns("showLegend"),
+                label = "Show legend if available",
+                value = FALSE
+              ),
+              conditionalPanel(
+                condition = "input.showLegend == true",
+                ns = ns,
+                checkboxInput(ns("legendInside"),
+                  label = "Show legend within plot",
+                  value = FALSE
+                )
+              ),
+              sliderInput(
+                ns("confidenceLevel"),
+                label = "Credible level",
+                min = 0.5,
+                max = 0.9999,
+                value = 0.9
+              ),
+              radioButtons(
+                ns("horizontalPlot"),
+                label = "Horizontal or vertical 1D plots?",
+                choices = c("horizontal", "vertical"),
+                selected = "vertical"
+              ),
+              tags$p("Click on simulate for additional characteristics"),
+              div(foodIntakesButton(
+                ns("foodIntakes"), "Specify food intakes"
+              )),
+              div(
+                sliderInput(
+                  ns("seqSim"),
+                  label = "Mixture plot: source shares simulation split",
+                  min = 2,
+                  max = 20,
+                  value = 10
+                )
+              ),
+              pickerInput(
+                inputId = ns("simSpecSources"),
+                label = "Select sources for simulation",
+                choices = NULL,
+                selected = NULL,
+                multiple = TRUE
+              ),
+              div(actionButton(ns("runModelChar"), "Simulate")),
+              conditionalPanel(
+                condition = "output.statusSim == 'COMPLETED'",
+                ns = ns,
+                exportDataUI(ns("exportSimSources"), "Export simulated data")
+              ),
+              width = 3
+            ),
+            fluidRow(mainPanel(
+              width = 8,
+              tabsetPanel(
+                id = ns("MCharResults"),
+                tabPanel(
+                  "Target values plot",
+                  pickerInput(
+                    inputId = ns("targetSelect"),
+                    label = "Select up to three proxies",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true",
+                    ns = ns,
+                    pickerInput(
+                      ns("characteristicsCovariatesTarget"),
+                      "Compare and show covariates",
+                      choices = NULL,
+                      selected = NULL,
+                      multiple = TRUE
+                    )
+                  ),
+                  plotlyOutput(outputId = ns("targetPlot")),
+                  plotExportButton(ns("exportTargetPlot")),
+                  helpText(
+                    "Please export plot using the camera symbol at the top-right of the plot."
+                  )
+                ),
+                tabPanel(
+                  "Concentrations plot",
+                  value = "concentrationsPlot",
+                  pickerInput(
+                    inputId = ns("concentrationsSelect"),
+                    label = "Select up to three fractions",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE
+                  ),
+                  plotlyOutput(outputId = ns("concentrationsPlot")),
+                  plotExportButton(ns("exportConcentrationsPlot")),
+                  helpText(
+                    "Please export plot using the camera symbol at the top-right of the plot."
+                  )
+                ),
+                tabPanel(
+                  "Source Plot",
+                  value = "sourcePlot",
+                  pickerInput(
+                    inputId = ns("sourceSelect"),
+                    label = "Select up to three proxies",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE
+                  ),
+                  checkboxInput(ns("showIndividuals"), label = "Show targets", value = TRUE),
+                  conditionalPanel(
+                    condition = "input.showIndividuals == true",
+                    ns = ns,
+                    checkboxInput(ns("showTargetNames"), label = "Show target names", value = TRUE)
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true",
+                    ns = ns,
+                    pickerInput(
+                      ns("characteristicsCovariates"),
+                      "Compare and show covariates",
+                      choices = NULL,
+                      selected = NULL,
+                      multiple = TRUE
+                    )
+                  ),
+                  plotlyOutput(outputId = ns("SourceCharacteristicsPlot")),
+                  plotExportButton(ns("exportSourceCharacteristicsPlot")),
+                  helpText(
+                    "Please export plot using the camera symbol at the top-right of the plot."
+                  )
+                ),
+                tabPanel(
+                  "Source Mixture Plot",
+                  value = "sourceMixPlot",
+                  pickerInput(
+                    inputId = ns("sourceSelectMix"),
+                    label = "Select two or three proxies",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE
+                  ),
+                  pickerInput(
+                    inputId = ns("sourceSelectMix2"),
+                    label = "Select sources",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE
+                  ),
+                  checkboxInput(
+                    ns("showIndividualsMix"),
+                    label = "Show targets",
+                    value = TRUE
+                  ),
+                  conditionalPanel(
+                    condition = "input.showIndividualsMix == true",
+                    ns = ns,
+                    checkboxInput(
+                      ns("showTargetNamesMix"),
+                      label = "Show target names",
+                      value = TRUE
+                    )
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true",
+                    ns = ns,
+                    pickerInput(
+                      ns("characteristicsCovariatesMix"),
+                      "Compare and show covariates",
+                      choices = NULL,
+                      selected = NULL,
+                      multiple = TRUE
+                    )
+                  ),
+                  checkboxInput(ns("showGrid"), label = "Show grid", value = TRUE),
+                  checkboxInput(ns("showPoints"), label = "Show grid points", value = FALSE),
+                  radioButtons(
+                    ns("hull"),
+                    label = "Outer hull",
+                    choices = c("convex hull", "alpha convex hull")
+                  ),
+                  conditionalPanel(
+                    condition = "input.hull == 'alpha convex hull'",
+                    ns = ns,
+                    numericInput(
+                      ns("alpha"),
+                      label = "Alpha value convex hull (higher = more conservative)",
+                      value = 10,
+                      min = 0,
+                      max = 100,
+                      step = 0.01
+                    )
+                  ),
+                  # actionButton(ns("updateMix"), label = "Update Plot"),
+                  plotlyOutput(outputId = ns("SourceCharacteristicsPlot2")),
+                  plotExportButton(ns("exportSourceCharacteristicsPlot2")),
+                  helpText(
+                    "Please export plot using the camera symbol at the top-right of the plot."
+                  )
+                ),
+                tabPanel(
+                  "Z-Scores sources",
+                  value = "zScorePlot",
+                  DT::dataTableOutput(ns("zScores")),
+                  exportDataUI(ns("exportZScores"), "Export Data")
+                ),
+                tabPanel(
+                  "Source separation test (MANOVA)",
+                  value = "scoreSepTest",
+                  verbatimTextOutput(ns("scoreSep"), download = TRUE)
+                ),
+                tabPanel(
+                  "Mahalanobis-Distance sources",
+                  value = "mahaPlot",
+                  DT::dataTableOutput(ns("mahaDist")),
+                  exportDataUI(ns("exportMahaDist"), "Export Data")
+                ),
+                tabPanel(
+                  "Target & Source summary",
+                  value = "corrPlot",
+                  verbatimTextOutput(ns("corrMat"), download = TRUE)
+                )
+              )
+            ))
+          ),
           # Results Report ----
           navbarMenu(
             "Results Report",
@@ -537,26 +921,40 @@ fruitsUI <- function(id, title = "FRUITS") {
                   conditionalPanel(
                     condition = "input.SummaryQuantileCheck == true",
                     ns = ns,
-                    sliderInput(inputId = ns("SummaryQuantile"),
-                                label = "Select quantile",
-                                min = 0, max = 1, value = 0.95, width = "100%",
-                                step = 0.001),
-                    sliderInput(inputId = ns("SummaryQuantile2"),
-                                label = "Select quantile",
-                                min = 0, max = 1, value = 0.99, width = "100%",
-                                step = 0.001)
+                    sliderInput(
+                      inputId = ns("SummaryQuantile"),
+                      label = "Select quantile",
+                      min = 0,
+                      max = 1,
+                      value = 0.95,
+                      width = "100%",
+                      step = 0.001
+                    ),
+                    sliderInput(
+                      inputId = ns("SummaryQuantile2"),
+                      label = "Select quantile",
+                      min = 0,
+                      max = 1,
+                      value = 0.99,
+                      width = "100%",
+                      step = 0.001
+                    )
                   ),
                   checkboxInput(ns("BayesianPValuesCheck"), "P-values"),
                   conditionalPanel(
                     condition = "input.BayesianPValuesCheck == true",
                     ns = ns,
-                    numericInput(ns("pVal"), "Test against value of:",
-                                 value = 0, step = 0.1)
+                    numericInput(
+                      ns("pVal"),
+                      "Test against value of:",
+                      value = 0,
+                      step = 0.1
+                    )
                   ),
-                  exportDataUI(ns("exportSummaryData"), "Export Data"), width = 3
+                  exportDataUI(ns("exportSummaryData"), "Export Data"),
+                  width = 3
                 ),
-                mainPanel(
-                  DT::dataTableOutput(ns("SummaryResults")), width = 8)
+                mainPanel(DT::dataTableOutput(ns("SummaryResults")), width = 8)
               )
             ),
             tabPanel(
@@ -575,21 +973,31 @@ fruitsUI <- function(id, title = "FRUITS") {
                 ),
                 tabPanel(
                   "Names",
-                  verbatimTextOutput(ns("modelInputValueNames"), download = TRUE)
+                  verbatimTextOutput(ns(
+                    "modelInputValueNames"
+                  ), download = TRUE)
                 ),
                 tabPanel(
                   "Model options",
-                  verbatimTextOutput(ns("modelInputModelOptions"), download = TRUE)
+                  verbatimTextOutput(
+                    ns("modelInputModelOptions"),
+                    download = TRUE
+                  )
                 ),
                 tabPanel(
                   "Priors",
-                  verbatimTextOutput(ns("modelInputPriors"), download = TRUE)
+                  verbatimTextOutput(ns(
+                    "modelInputPriors"
+                  ), download = TRUE)
                 ),
                 tabPanel(
                   "User estimates",
-                  verbatimTextOutput(ns("modelUserEstimates"), download = TRUE)
+                  verbatimTextOutput(ns(
+                    "modelUserEstimates"
+                  ), download = TRUE)
                 )
-              ))
+              )
+            )
           ),
           # Diagnostics ----
           navbarMenu(
@@ -619,7 +1027,8 @@ fruitsUI <- function(id, title = "FRUITS") {
                 ),
                 tabPanel(
                   "Bayesian p-value (posterior predictive p-value)",
-                  DT::dataTableOutput(ns("pValue")), width = 4
+                  DT::dataTableOutput(ns("pValue")),
+                  width = 4
                 ),
                 tabPanel(
                   "Geweke",
@@ -632,7 +1041,6 @@ fruitsUI <- function(id, title = "FRUITS") {
                 tabPanel(
                   "Heidelberg-Welch",
                   verbatimTextOutput(ns("heidel"))
-                  
                 ),
                 tabPanel(
                   "Gelman-Rubin",
@@ -661,17 +1069,24 @@ fruitsUI <- function(id, title = "FRUITS") {
               conditionalPanel(
                 condition = "input.targetValuesShowCoordinates == false",
                 ns = ns,
-                tags$h5("Please add coordinates in the data - Target Values tab to export results to the IsoMemo App")
+                tags$h5(
+                  "Please add coordinates in the data - Target Values tab to export results to the IsoMemo App"
+                )
               ),
               conditionalPanel(
                 condition = "input.targetValuesShowCoordinates == true",
                 ns = ns,
-                radioButtons(ns("exportType"), "Type of Export",
-                             c("Proxy" = "proxy",
-                               "Source contributions" = "Source contributions",
-                               "Component contributions" = "Component contributions",
-                               "Source contributions by proxy" = "Source contributions by proxy"),
-                             selected = "Source contributions"),
+                radioButtons(
+                  ns("exportType"),
+                  "Type of Export",
+                  c(
+                    "Proxy" = "proxy",
+                    "Source contributions" = "Source contributions",
+                    "Component contributions" = "Component contributions",
+                    "Source contributions by proxy" = "Source contributions by proxy"
+                  ),
+                  selected = "Source contributions"
+                ),
                 conditionalPanel(
                   condition = "input.exportType == 'proxy'",
                   ns = ns,
@@ -700,19 +1115,32 @@ fruitsUI <- function(id, title = "FRUITS") {
                 conditionalPanel(
                   condition = "input.targetValuesShowCovariates == true",
                   ns = ns,
-                  checkboxInput(inputId = ns("useSite"),
-                                label = "Include \"Site\" variable from covariates table (optional)",
-                                value = FALSE)
+                  checkboxInput(
+                    inputId = ns("useSite"),
+                    label = "Include \"Site\" variable from covariates table (optional)",
+                    value = FALSE
+                  )
                 ),
                 conditionalPanel(
                   condition = "input.useSite == true",
                   ns = ns,
-                  selectInput(ns("siteExport"), "Site variable from \"Covariates\" table", choices = NULL)
+                  selectInput(
+                    ns("siteExport"),
+                    "Site variable from \"Covariates\" table",
+                    choices = NULL
+                  )
                 ),
-                
                 tableOutput(ns("exportPreview")),
-                if (!isoInstalled()) helpText(paste("To export data to fruits you need the package MpiIsoApp installed in version >=", isoVersion()))
-                else NULL,
+                if (!isoInstalled()) {
+                  helpText(
+                    paste(
+                      "To export data to fruits you need the package MpiIsoApp installed in version >=",
+                      isoVersion()
+                    )
+                  )
+                } else {
+                  NULL
+                },
                 actionButton(ns("exportToIsoMemo"), "Export to IsoMemo App")
               )
             ),
@@ -728,18 +1156,25 @@ fruitsUI <- function(id, title = "FRUITS") {
   )
 }
 
-emptyMatrix <- function(rownames = NULL, colnames = NULL, nrow = length(rownames),
-                        ncol = length(colnames)){
-  m <- matrix(NA, nrow, ncol)
-  rownames(m) <- rownames
-  colnames(m) <- colnames
-  m
-}
+emptyMatrix <-
+  function(rownames = NULL,
+           colnames = NULL,
+           nrow = length(rownames),
+           ncol = length(colnames)) {
+    m <- matrix(NA, nrow, ncol)
+    rownames(m) <- rownames
+    colnames(m) <- colnames
+    m
+  }
 
-emptyMatrix2 <- function(rownames = NULL, colnames = NULL, nrow = length(rownames),
-                         ncol = 2 * length(colnames)){
-  m <- matrix(NA, nrow, ncol)
-  rownames(m) <- rownames
-  colnames(m) <- paste(rep(colnames, each = 2), "||", c("mean", "uncert"), sep = "")
-  m
-}
+emptyMatrix2 <-
+  function(rownames = NULL,
+           colnames = NULL,
+           nrow = length(rownames),
+           ncol = 2 * length(colnames)) {
+    m <- matrix(NA, nrow, ncol)
+    rownames(m) <- rownames
+    colnames(m) <-
+      paste(rep(colnames, each = 2), "||", c("mean", "uncert"), sep = "")
+    m
+  }

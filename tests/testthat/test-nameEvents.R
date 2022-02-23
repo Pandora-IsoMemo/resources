@@ -78,7 +78,7 @@ test_that("Create (no) events for repeated Measures", {
   old <- matrix(NA, 3, 2)
   new <- matrix(NA, 3, 2)
 
-  colnames(old) <- colnames(new)<- paste("name", c(1, 2))
+  colnames(old) <- colnames(new) <- paste("name", c(1, 2))
 
   rownames(old) <- paste("rowname", c(1, 1, 2))
   rownames(new) <- paste("rowname", c(1, 2, 2))
@@ -90,7 +90,8 @@ test_that("Create (no) events for repeated Measures", {
     createNameEvents(old, new, row = "a", col = "b"),
     list(
       list(event = "insert", variable = "a", old = NULL, new = "rowname 3")
-    ))
+    )
+  )
 
   # remove
   old <- matrix(NA, 3, 3)
@@ -247,5 +248,4 @@ test_that("Process update events first", {
     colnames(res) <- "col"
     res
   })
-
 })
