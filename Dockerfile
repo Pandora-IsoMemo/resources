@@ -1,6 +1,6 @@
 FROM ghcr.io/pandora-isomemo/base-image:latest
 
-RUN installPaclage MpiIsoApp
+RUN installPackage MpiIsoApp
 
 ADD . .
 
