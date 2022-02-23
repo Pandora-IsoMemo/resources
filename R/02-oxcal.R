@@ -4,15 +4,17 @@ OxCalOutputUI <- function(id) {
     tagList(
         tags$br(),
         fluidRow(
-            column(width = 3, selectInput(ns("terrestrialCurve"), label = "Terrestrial Curve", choices = NULL)),
+            column(width = 3, selectInput(ns("terrestrialCurve"),
+                                          label = "Terrestrial Curve", 
+                                          choices = NULL)),
             column(width = 2, conditionalPanel(
               condition = "input.terrestrialCurve == '3'",
               ns = ns,
-              radioButtons(ns("mixType"), "Type of mixture", 
+              radioButtons(ns("mixType"), 
+                           "Type of mixture", 
                            choices = c("Point" = "Option point",
                                        "Mean + SD" = "Option Mean SD",
-                                       "Uniform" = "Option uniform")
-                           ))
+                                       "Uniform" = "Option uniform")))
               ),
             column(width = 2,
                    conditionalPanel(
@@ -41,23 +43,42 @@ OxCalOutputUI <- function(id) {
             column(width = 1, offset = 2, actionButton(ns("help"), "Help"))
         ),
         fluidRow(
-            column(width = 3, selectInput(ns("aquaticCurve1"), label = "Aquatic Curve 1", choices = NULL)),
-            column(width = 2, selectInput(ns("OxCalA"), "Estimate 1",  choices = c("none"))),
-            column(width = 2, numericInput(ns("meanDeltaR1"), "Mean Delta R 1", 0)),
-            column(width = 2, numericInput(ns("sdDeltaR1"), "SD Delta R 1", 1)),
-            column(width = 2, radioButtons(ns("bins"), "Type of estimate", choices = c("mean + sd" = "meansd",
-                                                                                       "bins" = "bins")))
+          column(width = 3, selectInput(ns("aquaticCurve1"),
+                                        label = "Aquatic Curve 1",
+                                        choices = NULL)),
+          column(width = 2, selectInput(ns("OxCalA"), 
+                                        "Estimate 1", 
+                                        choices = c("none"))),
+          column(width = 2, numericInput(ns("meanDeltaR1"), 
+                                         "Mean Delta R 1", 
+                                         value = 0)),
+          column(width = 2, numericInput(ns("sdDeltaR1"), 
+                                         "SD Delta R 1",
+                                         value = 1)),
+          column(width = 2,
+                   radioButtons(ns("bins"), "Type of estimate",
+                                choices = c("Mean + SD" = "Option Mean SD",
+                                            "PDF" = "Option PDF")))
         ),
         fluidRow(
-            column(width = 3, selectInput(ns("aquaticCurve2"), label = "Aquatic Curve 2", choices = NULL)),
-            column(width = 2, selectInput(ns("OxCalB"), "Estimate 2",  choices = c("none"))),
-            column(width = 2, numericInput(ns("meanDeltaR2"), "Mean Delta R 2", 0)),
-            column(width = 2, numericInput(ns("sdDeltaR2"), "SD Delta R 2", 1))
+          column(width = 3, selectInput(ns("aquaticCurve2"), 
+                                        label = "Aquatic Curve 2", 
+                                        choices = NULL)),
+          column(width = 2, selectInput(ns("OxCalB"),
+                                        "Estimate 2",  
+                                        choices = c("none"))),
+          column(width = 2, numericInput(ns("meanDeltaR2"), 
+                                         "Mean Delta R 2", 
+                                         value = 0)),
+          column(width = 2, numericInput(ns("sdDeltaR2"),
+                                         "SD Delta R 2",
+                                         value = 1))
         ),
         actionButton(ns("GenerateOxCal"), "Generate oxcal code"),
         tags$hr(),
-        textAreaInput(ns("OxCalText"), "OxCal Output", width = "100%", height = "400px") %>%
-            shiny::tagAppendAttributes(style = 'width: 100%;'),
+        textAreaInput(ns("OxCalText"), "OxCal Output", 
+                      width = "100%", height = "400px") %>%
+          shiny::tagAppendAttributes(style = 'width: 100%;'),
         actionButton(ns("OxcalExecute"), "Execute in Oxcal"),
         downloadButton(ns("downloadOxCal"), "Download oxcal code")
     )
@@ -75,10 +96,10 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
     read.xlsx(file)
   })
   
-  aquaticCurves1 <- reactive({
-      file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/9626d93b-013d-4b02-b3d4-e4091f6ed600/download/oxcal_aquatic_curve_1.txt"
-      parseCurveFile(readLines(file, warn = FALSE))
-  })
+  # aquaticCurves1 <- reactive({
+  #     file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/9626d93b-013d-4b02-b3d4-e4091f6ed600/download/oxcal_aquatic_curve_1.txt"
+  #     parseCurveFile(readLines(file, warn = FALSE))
+  # })
   
   aquaticCurves1Xlsx <- reactive({
     file <- 
@@ -86,10 +107,10 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
     read.xlsx(file)
   })
 
-  aquaticCurves2 <- reactive({
-      file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/e5a197c8-15c7-4752-a2d4-15ad1c39ca19/download/oxcal_aquatic_curve_2.txt"
-      parseCurveFile(readLines(file, warn = FALSE))
-  })
+  # aquaticCurves2 <- reactive({
+  #     file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/e5a197c8-15c7-4752-a2d4-15ad1c39ca19/download/oxcal_aquatic_curve_2.txt"
+  #     parseCurveFile(readLines(file, warn = FALSE))
+  # })
   
   aquaticCurves2Xlsx <- reactive({
     file <- 
@@ -157,25 +178,31 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
     validate(validInput(model()))
 
     withProgress({
-      terrestrialCurveCode <- getCodeHeader(
-        curve = terrestrialCurvesXlsx()[as.numeric(input$terrestrialCurve),],
+      terrestrialCurveCode <- getCodeTerrestrial(
+        curve = terrestrialCurvesXlsx()[as.numeric(input$terrestrialCurve), ],
         mixOption = input$mixType,
         mixParams = terrestrialParams()
       )
+      
+      aquaticCurve1Code <- getCodeAquatic(
+        curve = aquaticCurves1Xlsx()[as.numeric(input$aquaticCurve1), ],
+        binOption = input$bins,
+        deltaRParams = c(input$meanDeltaR1, input$sdDeltaR1))
+    
+      aquaticCurve2Code <- getCodeAquatic(
+        curve = aquaticCurves2Xlsx()[as.numeric(input$aquaticCurve2), ],
+        binOption = input$bins,
+        deltaRParams = c(input$meanDeltaR2, input$sdDeltaR2))
       
       TextOxCal <- createOxCalText(
         model = model(),
         basicCode = oxCalBasicCode(),
         terrestrialCurve = terrestrialCurveCode,
-        aquaticCurve1 = aquaticCurves1()[as.numeric(input$aquaticCurve1)],
-        aquaticCurve2 = aquaticCurves2()[as.numeric(input$aquaticCurve2)],
+        aquaticCurve1 = aquaticCurve1Code,
         OxCalA = input$OxCalA, 
-        meanDeltaR1 = input$meanDeltaR1,
-        sdDeltaR1 = input$sdDeltaR1,
+        bins = (input$bins == "Option PDF"), 
+        aquaticCurve2 = aquaticCurve2Code,
         OxCalB = input$OxCalB,
-        meanDeltaR2 = input$meanDeltaR2,
-        sdDeltaR2 = input$sdDeltaR2,
-        bins = input$bins, 
         coordinates = exportCoordinates
       ) %>%
         paste(collapse = "\n")
@@ -233,7 +260,8 @@ getCurveTitlesXlsx <- function(curves){
   res
 }
 
-getCodeHeader <- function(curve, mixOption, mixParams){
+getCodeTerrestrial <- function(curve, mixOption, mixParams){
+  
   if (is.null(mixOption)) {
     codeHeader <- curve$`Code.header` 
   } else {
@@ -256,6 +284,24 @@ getCodeHeader <- function(curve, mixOption, mixParams){
   codeHeader
 }
 
+getCodeAquatic <- function(curve, binOption, deltaRParams){
+  codeHeader <- curve$`Code.header`
+  codeOption <- switch(binOption,
+                       "Option Mean SD" = curve$`Option.Mean.SD`,
+                       "Option PDF" = curve$`Option.PDF`,
+                       character(0))
+  
+  if (!is.null(deltaRParams)) {
+    codeHeader <- codeHeader %>%
+      gsub(pattern = "%%Delta_R_1%%", replacement = deltaRParams[[1]]) %>%
+      gsub(pattern = "%%Delta_R_SD_1%%", replacement = deltaRParams[[2]]) %>%
+      gsub(pattern = "%%Delta_R_2%%", replacement = deltaRParams[[1]]) %>%
+      gsub(pattern = "%%Delta_R_SD_2%%", replacement = deltaRParams[[2]])
+  }
+  
+  paste0(codeHeader, "\n", codeOption)
+}
+
 #' Create Oxcal Text
 #' 
 #' @param model output of the model
@@ -275,22 +321,19 @@ getCodeHeader <- function(curve, mixOption, mixParams){
 createOxCalText <- function(model,
                             basicCode,
                             terrestrialCurve, aquaticCurve1, aquaticCurve2,
-                            OxCalA, meanDeltaR1, sdDeltaR1, 
-                            OxCalB, meanDeltaR2, sdDeltaR2, 
-                            bins, coordinates){
+                            OxCalA, 
+                            OxCalB,
+                            bins, 
+                            coordinates){
 
   if(OxCalA == "none"){
     return("Please select an estimate")
   }
-  browser()
+  
   oxcalText <- lapply(basicCode, function(part){
     if (part == "%%Terrestrial_curve_VAR1%%") return(terrestrialCurve)
-    if (part == "%%Aquatic_curve_1_VAR1%%") return(getCurveFormula(aquaticCurve1,
-                                                                   mean = meanDeltaR1,
-                                                                   sd = sdDeltaR1))
-    if (part == "%%Aquatic_curve_2_VAR1%%") return(getCurveFormula(aquaticCurve2,
-                                                                   mean = meanDeltaR2,
-                                                                   sd = sdDeltaR2))
+    if (part == "%%Aquatic_curve_1_VAR1%%") return(aquaticCurve1)
+    if (part == "%%Aquatic_curve_2_VAR1%%") return(aquaticCurve2)
     if (part == "%%String_from_loop%%") return(getLoop(aquaticCurve1, aquaticCurve2, 
                                                        model, bins, 
                                                        OxCalA, OxCalB,
@@ -331,7 +374,7 @@ getCurveFormula <- function(curve, mean = NULL, sd = NULL){
 #' @inheritParams createOxCalText
 getLoop <- function(aquaticCurve1, aquaticCurve2, model, bins, OxCalA, OxCalB, coordinates){
   if (is.null(aquaticCurve1)) return(NULL)
-
+browser()
   parEstimates <- 
     getResultStatistics(model$modelResults$parameters,
                         model$modelResults$userEstimateSamples,
@@ -392,7 +435,9 @@ getTargetString <- function(curve, parEstimate, type, coordinates){
                   gsub(pattern = "%%BINS_B%%", replacement =
                          paste(parEstimate[grep("bin", colnames(parEstimate))], collapse = ", ")) 
   ) %>% 
-    gsub(pattern = "%%TARGET_ID%%", replacement = parEstimate$Target) %>%
+    gsub(pattern = "%%TARGET_ID%%", replacement = parEstimate$Target) 
+  browser()
+  res <- res %>%
     gsub(pattern = "%%RADIOCARBON_MEAN%%", replacement = cleanNA(coordinates["LowerLimit/Mean/Point"])) %>%
     gsub(pattern = "%%RADIOCARBON_SD%%", replacement = cleanNA(coordinates["UpperLimit/SD"]))
 

@@ -45,44 +45,78 @@ test_that("getCurveTitlesXlsx", {
   expect_equal(getCurveTitlesXlsx(file3), structure(1:2, .Names = c("Marine20", "Same as terrestrial")))
   })
 
-test_that("getCodeHeader(terrestrial)", {
-  file1 <- read.xlsx(
+test_that("getCodeTerrestrial", {
+  file <- read.xlsx(
     "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/b7732618-7764-460a-b1fa-c614f4cdbe95/download/terrestrial.xlsx"
     )
   
   expect_equal(
-    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[1]),],
+    getCodeTerrestrial(curve = file[as.numeric(getCurveTitlesXlsx(file)[1]),],
                 mixOption = NULL,
                 mixParams = NULL),
     "Curve(\"terrestrial\",\"IntCal20.14c\");"
   )
   
   expect_equal(
-    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[2]),],
+    getCodeTerrestrial(curve = file[as.numeric(getCurveTitlesXlsx(file)[2]),],
                   mixOption = NULL,
                   mixParams = NULL),
     "Curve(\"terrestrial\",\"SHCal20.14c\");"
   )
   
   expect_equal(
-    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[3]),],
+    getCodeTerrestrial(curve = file[as.numeric(getCurveTitlesXlsx(file)[3]),],
                   mixOption = "Option point",
                   mixParams = c(3, 0)),
     "Curve(\"IntCal20\",\"IntCal20.14c\");\r\nCurve(\"SHCal20\",\"SHCal20.14c\");\r\nMix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", 3);"
   )
   
   expect_equal(
-    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[3]),],
+    getCodeTerrestrial(curve = file[as.numeric(getCurveTitlesXlsx(file)[3]),],
                   mixOption = "Option Mean SD",
                   mixParams = c(2, 1)),
     "Curve(\"IntCal20\",\"IntCal20.14c\");\r\nCurve(\"SHCal20\",\"SHCal20.14c\");\r\nMix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", 2,1);"
   )
   
   expect_equal(
-    getCodeHeader(curve = file1[as.numeric(getCurveTitlesXlsx(file1)[3]),],
+    getCodeTerrestrial(curve = file[as.numeric(getCurveTitlesXlsx(file)[3]),],
                   mixOption = "Option uniform",
                   mixParams = c(0, 2)),
     "Curve(\"IntCal20\",\"IntCal20.14c\");\r\nCurve(\"SHCal20\",\"SHCal20.14c\");\r\nMix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", U(0,2));"
+  )
+})
+
+test_that("getCodeAquatic", {
+  file <- read.xlsx(
+    "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/2037632f-f984-4834-8e25-4af5498df163/download/aquatic1.xlsx"
+  )
+  
+  expect_equal(
+    getCodeAquatic(curve = file[as.numeric(getCurveTitlesXlsx(file)[1]),],
+                   binOption = "Option Mean SD",
+                   deltaRParams = c(2, 1)),
+    "Curve(\"Marine20\",\"Marine20.14c\");\r\nDelta_R(\"Aquatic1\",2,1);\nMix_Curve(%%TARGET_ID%%,\"terrestrial\",\"Aquatic1\", %%MEAN%%,%%SD%%);\r\nR_Date(“%%TARGET_ID%%“, %%RADIOCARBON_MEAN%%,%%RADIOCARBON_SD%%);"
+  )
+  
+  expect_equal(
+    getCodeAquatic(curve = file[as.numeric(getCurveTitlesXlsx(file)[1]),],
+                   binOption = "Option PDF",
+                   deltaRParams = c(2, 1)),
+    "Curve(\"Marine20\",\"Marine20.14c\");\r\nDelta_R(\"Aquatic1\",2,1);\nMix_Curve(%%TARGET_ID%%,\"terrestrial\",\"Aquatic1\", P(0,100,[0,%%BINS%%,0]));\r\nR_Date(“%%TARGET_ID%%“, %%RADIOCARBON_MEAN%%,%%RADIOCARBON_SD%%);"
+  )
+  
+  expect_equal(
+    getCodeAquatic(curve = file[as.numeric(getCurveTitlesXlsx(file)[2]),],
+                   binOption = "Option Mean SD",
+                   deltaRParams = c(2, 1)),
+    "Curve(\"terrestrial\");\r\nDelta_R(\"Aquatic1\",2,1);\nMix_Curve(%%TARGET_ID%%,\"terrestrial\",\"Aquatic1\", %%MEAN%%,%%SD%%);\r\nR_Date(“%%TARGET_ID%%“, %%RADIOCARBON_MEAN%%,%%RADIOCARBON_SD%%);"
+  )
+  
+  expect_equal(
+    getCodeAquatic(curve = file[as.numeric(getCurveTitlesXlsx(file)[2]),],
+                   binOption = "Option PDF",
+                   deltaRParams = c(2, 1)),
+    "Curve(\"terrestrial\");\r\nDelta_R(\"Aquatic1\",2,1);\nMix_Curve(%%TARGET_ID%%,\"terrestrial\",\"Aquatic1\", P(0,100,[0,%%BINS%%,0]));\r\nR_Date(“%%TARGET_ID%%“, %%RADIOCARBON_MEAN%%,%%RADIOCARBON_SD%%);"
   )
 })
 
