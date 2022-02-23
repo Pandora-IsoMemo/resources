@@ -1,4 +1,4 @@
-userEstimateGroupUI <- function(id){
+userEstimateGroupUI <- function(id) {
   ns <- NS(id)
 
   tagList(
@@ -14,7 +14,6 @@ userEstimateGroupUI <- function(id){
         tableOutput(ns("savedGroups"))
       )
     )
-    
   )
 }
 
@@ -22,7 +21,7 @@ userEstimateGroup <- function(input, output, session, userEstimates, groupsIniti
   groups <- reactiveVal(list())
   updateUI <- reactiveVal(1)
   observers <- reactiveVal(list())
-  
+
   observe({
     groups(groupsInitial())
   })
@@ -32,15 +31,17 @@ userEstimateGroup <- function(input, output, session, userEstimates, groupsIniti
   })
 
   groupIds <- reactiveVal(NULL)
-  
+
   observeEvent(input$addGroup, {
     groups(addEmptyGroup(groups()))
     groupIds(sapply(groups(), function(group) group$id))
   })
-  
+
   observeEvent(groupIds(), {
     lapply(groups(), function(group) {
-      if (group$id %in% names(observers())) return()
+      if (group$id %in% names(observers())) {
+        return()
+      }
       # if (!is.null(group$observer) && group$observer) return()
       tagId <- function(x) paste("group", x, group$id, sep = "_")
 
@@ -52,12 +53,15 @@ userEstimateGroup <- function(input, output, session, userEstimates, groupsIniti
       })
 
       observeEvent(input[[tagId("apply")]], {
-        if (tagId("name") %in% names(input))
+        if (tagId("name") %in% names(input)) {
           groups(setGroupProperty(isolate(groups()), group$id, "name", input[[tagId("name")]]))
-        if (tagId("estimates") %in% names(input))
+        }
+        if (tagId("estimates") %in% names(input)) {
           groups(setGroupProperty(isolate(groups()), group$id, "estimates", input[[tagId("estimates")]]))
-        if (tagId("normalize") %in% names(input))
+        }
+        if (tagId("normalize") %in% names(input)) {
           groups(setGroupProperty(isolate(groups()), group$id, "normalize", input[[tagId("normalize")]]))
+        }
       })
 
       # groups(setGroupProperty(groups(), group$id, "observer", TRUE))
@@ -65,13 +69,17 @@ userEstimateGroup <- function(input, output, session, userEstimates, groupsIniti
     })
   })
 
-  output$savedGroups <- renderTable({
-    req(length(groups()) > 0)
-    groups() %>% bind_rows() %>% select(-"id")
+  output$savedGroups <- renderTable(
+    {
+      req(length(groups()) > 0)
+      groups() %>%
+        bind_rows() %>%
+        select(-"id")
     },
     striped = TRUE,
-    caption = "saved groups")
-  
+    caption = "saved groups"
+  )
+
   groups
 }
 
@@ -85,8 +93,10 @@ userEstimateGroupInputRow <- function(group, estimates, ns = ns) {
   div(
     class = "user-estimate-group",
     textInput(tagId("name"), "Group", value = group$name),
-    pickerInput(tagId("estimates"), "Estimates", choices = estimates,
-                selected = group$estimates, multiple = TRUE),
+    pickerInput(tagId("estimates"), "Estimates",
+      choices = estimates,
+      selected = group$estimates, multiple = TRUE
+    ),
     checkboxInput(tagId("normalize"), "Normalize", value = group$normalize),
     actionButton(tagId("apply"), "Apply"),
     actionButton(tagId("delete"), "Remove")
@@ -129,7 +139,9 @@ deleteGroup <- function(groups, id) {
 setGroupProperty <- function(groups, id, key, value) {
   i <- getGroupIndex(groups, id)
 
-  if (length(i) == 0) return(groups)
+  if (length(i) == 0) {
+    return(groups)
+  }
 
   groups[[i]][[key]] <- value
 

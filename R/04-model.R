@@ -8,7 +8,6 @@
 #' @export
 createModel <- function(mode = "Run_update", notes = character(0),
                         file = NULL) {
-
   list()
 }
 

@@ -1,4 +1,4 @@
-exampleValues = function() {
+exampleValues <- function() {
   targetNames <- c("Carbon", "Nitrogen")
   fractionNames <- c("Protein", "Energy")
   sourceNames <- c("Herbivores", "Carnivores", "Plants", "Fish1", "Fish2")
@@ -10,7 +10,7 @@ exampleValues = function() {
     modelWeightsContrained = TRUE,
     modelConcentrations = TRUE,
     modelConcentrationsContrained = TRUE,
-    alphaHyper = 1, 
+    alphaHyper = 1,
     covariateType = 2,
     targetOffset = TRUE,
     minUnc = 1E-4,
@@ -22,8 +22,10 @@ exampleValues = function() {
       )
     ),
     targetValuesCovariates = matrix(
-      c("male", "male", "female", "female", "female",
-        "germany", "england", "germany", "england", "germany"),
+      c(
+        "male", "male", "female", "female", "female",
+        "germany", "england", "germany", "england", "germany"
+      ),
       dimnames = list(obsvnNames, c("sex", "country")),
       ncol = 2
     ),
@@ -156,7 +158,7 @@ exampleValues = function() {
     inflatedBeta = "0",
     targetValuesShowCoordinates = TRUE,
     exportCoordinates = matrix(
-      c(45,50,55,56,43, 0, 5, 10, 6, 16, NA,NA,NA,NA,NA, NA, NA, NA, NA, NA), 5, 4,
+      c(45, 50, 55, 56, 43, 0, 5, 10, 6, 16, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA), 5, 4,
       dimnames = list(
         paste("Individual", 1:5, sep = "_"),
         c("Longitude", "Latitude", "LowerLimit/Mean/Point", "UpperLimit/SD")

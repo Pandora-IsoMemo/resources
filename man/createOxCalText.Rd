@@ -11,11 +11,7 @@ createOxCalText(
   aquaticCurve1,
   aquaticCurve2,
   OxCalA,
-  meanDeltaR1,
-  sdDeltaR1,
   OxCalB,
-  meanDeltaR2,
-  sdDeltaR2,
   bins,
   coordinates
 )
@@ -33,20 +29,20 @@ createOxCalText(
 
 \item{OxCalA}{(character) parameter estimate for aquatic curve 1}
 
-\item{meanDeltaR1}{(numeric) input of the mean for aquatic curve 1}
-
-\item{sdDeltaR1}{(numeric) input of the sd for aquatic curve 1}
-
 \item{OxCalB}{(character) parameter estimate for aquatic curve 2}
-
-\item{meanDeltaR2}{(numeric) input of the mean for aquatic curve 2}
-
-\item{sdDeltaR2}{(numeric) input of the sd for aquatic curve 2}
 
 \item{bins}{(character) either "meansd" for the usage of mean and sd, or "bins" for the usage
 of pdf for the selected parameter estimate(s)}
 
 \item{coordinates}{(data.frame) containing the radiocarbon values (mean+SD) for each target}
+
+\item{meanDeltaR1}{(numeric) input of the mean for aquatic curve 1}
+
+\item{sdDeltaR1}{(numeric) input of the sd for aquatic curve 1}
+
+\item{meanDeltaR2}{(numeric) input of the mean for aquatic curve 2}
+
+\item{sdDeltaR2}{(numeric) input of the sd for aquatic curve 2}
 }
 \description{
 Create Oxcal Text

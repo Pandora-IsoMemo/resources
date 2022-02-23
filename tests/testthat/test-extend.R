@@ -11,7 +11,7 @@ test_that("Simple list", {
     d = 4
   )
 
-  with2  <- list(
+  with2 <- list(
     a = 3
   )
 
@@ -35,7 +35,6 @@ test_that("Simple list", {
     extend(what, with2, strip = TRUE, overwrite = TRUE),
     list(a = 3)
   )
-
 })
 
 test_that("Nested list", {
@@ -44,7 +43,7 @@ test_that("Nested list", {
     b = list(C = 7, D = list())
   )
 
-  with1 = list(
+  with1 <- list(
     a = list(
       A = 1,
       B = 2

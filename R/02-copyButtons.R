@@ -1,14 +1,14 @@
 copyButton <- function(inputId, tableId) {
-    tagList(
-      singleton(tags$head(tags$script(src = "https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"))),
-      actionButton(inputId, class = "btn btn-default", "Copy")
-    )
+  tagList(
+    singleton(tags$head(tags$script(src = "https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"))),
+    actionButton(inputId, class = "btn btn-default", "Copy")
+  )
 }
 
 pasteButton <- function(inputId, outputId, containerId) {
-    tagList(
-      tags$button(id = inputId, class = "btn btn-default", "Paste"),
-      tags$script(HTML(paste0("$('#", inputId, "').click(function (e) {
+  tagList(
+    tags$button(id = inputId, class = "btn btn-default", "Paste"),
+    tags$script(HTML(paste0("$('#", inputId, "').click(function (e) {
           navigator.permissions.query({name: 'clipboard-read'}).then(result => {
             if (result.state == 'granted' || result.state == 'prompt') {
               navigator.clipboard.readText().then(clipText => {
@@ -29,5 +29,5 @@ pasteButton <- function(inputId, outputId, containerId) {
           return false;
         });
         ")))
-    )
+  )
 }

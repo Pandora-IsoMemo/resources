@@ -1,6 +1,9 @@
 defaultNames <- function(x, prefix = "proxy", sep = "_", l = length(x)) {
-  if (is.null(x)) x <- rep("", l)
-  else length(x) <- l
+  if (is.null(x)) {
+    x <- rep("", l)
+  } else {
+    length(x) <- l
+  }
 
   l[is.na(l)] <- ""
 
@@ -9,8 +12,8 @@ defaultNames <- function(x, prefix = "proxy", sep = "_", l = length(x)) {
   lapply(empty, function(i) {
     opts <- paste0(prefix, sep, i, c("", letters[1:26]))
     j <- (opts %in% x == FALSE) %>%
-      which %>%
-      min
+      which() %>%
+      min()
 
     x[i] <<- opts[j]
   })
@@ -119,7 +122,7 @@ defaultValues <- function() {
   )
 }
 
-allVariables <- function(){
+allVariables <- function() {
   names(defaultValues())
 }
 
@@ -128,8 +131,7 @@ getDefault <- function(variable) {
 }
 
 sampleName <- function(variable, suffix = FALSE) {
-  n <- try(switch(
-    variable,
+  n <- try(switch(variable,
     obsvnNames = "Individual",
     targetNames = "proxy",
     offsetNames = "Offset",
@@ -139,6 +141,9 @@ sampleName <- function(variable, suffix = FALSE) {
     targetPlusFractionNames = "proxy-fraction"
   ))
   if (inherits(n, "try-error")) browser()
-  if (suffix) paste0(n, "_1")
-  else n
+  if (suffix) {
+    paste0(n, "_1")
+  } else {
+    n
+  }
 }
