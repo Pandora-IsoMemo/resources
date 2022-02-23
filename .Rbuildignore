@@ -20,3 +20,4 @@ dia$
 ^bin$
 ^LICENSE\.md$
 ^\.github$
+^deploy\.sh$
