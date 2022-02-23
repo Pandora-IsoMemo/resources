@@ -30,16 +30,17 @@ Constants and model code are added automatically.
 }
 \examples{
 \dontrun{
-#load fruits data:
+# load fruits data:
 load(system.file("app/exampleModels/", "fruitsExample.Rdata", package = "ReSources"))
 # get Fruits-Object
 fruitsObj <- fruits(data, modelOptions, valueNames, priors, userEstimates)
 # run model
 model <- compileRunModel(fruitsObj)
 modelResults <- getResultStatistics(model$parameters, model$userEstimateSamples, fruitsObj,
- DT = FALSE, agg = FALSE)
- 
- #better: use shiny app:
- shiny::runApp(paste0(system.file(package = "ReSources"),"/app"))
- }
+  DT = FALSE, agg = FALSE
+)
+
+# better: use shiny app:
+shiny::runApp(paste0(system.file(package = "ReSources"), "/app"))
+}
 }

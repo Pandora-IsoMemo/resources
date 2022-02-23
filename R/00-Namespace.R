@@ -8,7 +8,7 @@
 #' @importFrom colourpicker colourInput
 #' @importFrom DT dataTableOutput renderDataTable datatable coerceValue renderDT DTOutput
 #' @importFrom futile.logger flog.warn
-#' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density 
+#' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density
 #' geom_histogram geom_line theme element_text scale_fill_brewer labs ylim scale_fill_manual scale_color_manual
 #' geom_point scale_color_brewer xlim aes geom_errorbar
 #' @importFrom grDevices dev.off pdf png svg tiff chull pdfFonts postscriptFonts colorRampPalette
@@ -17,7 +17,7 @@
 #' @importFrom nimble calculateWAIC nimbleOptions nimbleModel configureMCMC buildMCMC compileNimble runMCMC
 #' nimbleFunction registerDistributions rmulti
 #' @importFrom openxlsx read.xlsx write.xlsx
-#' @importFrom plotly plot_ly layout add_trace renderPlotly plotlyOutput 
+#' @importFrom plotly plot_ly layout add_trace renderPlotly plotlyOutput
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom readr guess_encoding
 #' @importFrom readxl read_excel
@@ -33,9 +33,9 @@
 #' updateRadioButtons updateCheckboxInput showTab hideTab downloadButton downloadHandler
 #' req sliderInput reactiveVal renderPrint HTML debounce updateTextAreaInput
 #' updateSelectizeInput invalidateLater renderCachedPlot
-#' @importFrom shinyjs reset useShinyjs alert show hide 
+#' @importFrom shinyjs reset useShinyjs alert show hide
 #' @importFrom shinyMatrix matrixInput updateMatrixInput
-#' @importFrom shinyWidgets pickerInput updatePickerInput 
+#' @importFrom shinyWidgets pickerInput updatePickerInput
 #' @importFrom stats setNames runif acf na.omit qnorm cov pnorm rbeta dbeta pchisq dnorm
 #' var sd cov2cor p.adjust var.test t.test shapiro.test median quantile manova rnorm pbeta qbeta qchisq dist
 #' @importFrom templates tmpl tmplEval

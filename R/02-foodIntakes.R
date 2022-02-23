@@ -8,25 +8,34 @@ foodIntakes <- function(input, output, session, values) {
   foodIntakeData <- reactiveVal()
 
   defaultData <- reactive({
-    matrix(as.numeric(NA), nrow = length(values$sourceNames), ncol = 2,
-           dimnames = list(values$sourceNames, c("mean", "sd"))
+    matrix(as.numeric(NA),
+      nrow = length(values$sourceNames), ncol = 2,
+      dimnames = list(values$sourceNames, c("mean", "sd"))
     )
   })
 
   observeEvent(input$openPopup, {
     foodIntakeData(values$userDefinedAlphas)
 
-    default <- if (length(values$userDefinedAlphas) > 0) values$userDefinedAlphas[[1]]
-    else defaultData()
+    default <- if (length(values$userDefinedAlphas) > 0) {
+      values$userDefinedAlphas[[1]]
+    } else {
+      defaultData()
+    }
 
-    default[is.na(default)] <- "";
+    default[is.na(default)] <- ""
 
     choices <- names(values$userDefinedAlphas)
-    selected <- if (length(choices) > 0) choices[1]
-    else NULL
+    selected <- if (length(choices) > 0) {
+      choices[1]
+    } else {
+      NULL
+    }
 
-    showModal(foodIntakesPopup(ns = session$ns, default = default, choices = choices,
-                               selected = selected))
+    showModal(foodIntakesPopup(
+      ns = session$ns, default = default, choices = choices,
+      selected = selected
+    ))
   })
 
   observeEvent(input$save, {
@@ -54,9 +63,13 @@ foodIntakes <- function(input, output, session, values) {
   })
 
   observeEvent(foodIntakeNames(), ignoreNULL = TRUE, {
-    selected <- if (input$intake %in% foodIntakeNames()) input$intake
-    else if (length(foodIntakeNames() > 0)) foodIntakeNames()[1]
-    else NULL
+    selected <- if (input$intake %in% foodIntakeNames()) {
+      input$intake
+    } else if (length(foodIntakeNames() > 0)) {
+      foodIntakeNames()[1]
+    } else {
+      NULL
+    }
 
     updateSelectInput(session, "intake", choices = foodIntakeNames(), selected = selected)
 
@@ -87,10 +100,10 @@ foodIntakes <- function(input, output, session, values) {
     dat[[input$intake]] <- NULL
     foodIntakeData(dat)
   })
-  
+
   observe({
     req(values$sourceNames)
-    if(is.null(input$intake) || !(input$intake %in% foodIntakeNames())){
+    if (is.null(input$intake) || !(input$intake %in% foodIntakeNames())) {
       shinyjs::hide(id = "data")
     } else {
       shinyjs::show(id = "data")
@@ -115,8 +128,10 @@ foodIntakesPopup <- function(ns, default, choices, selected) {
         selectInput(ns("intake"), "Food Intake", choices = choices, selected = selected)
       )
     ),
-    matrixInput(ns("data"), label = "Data", value = default,
-                rows = list(names = TRUE), cols = list(names = TRUE), class = "numeric", copy = TRUE),
+    matrixInput(ns("data"),
+      label = "Data", value = default,
+      rows = list(names = TRUE), cols = list(names = TRUE), class = "numeric", copy = TRUE
+    ),
     div(
       style = "inline-block;",
       actionButton(ns("removeIntake"), "Remove Food Intake")

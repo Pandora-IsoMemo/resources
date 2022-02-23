@@ -5,8 +5,7 @@
 #'
 #' @export
 startApplication <- function(port = 4242, host = "127.0.0.1") {
-  runApp(
-    system.file("app", package = "ReSources"),
+  runApp(system.file("app", package = "ReSources"),
     port = port,
     host = host
   )

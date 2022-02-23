@@ -1,4 +1,4 @@
-splitDoubleMatrix <- function(x, rownames = FALSE){
+splitDoubleMatrix <- function(x, rownames = FALSE) {
   stopifnot(is.matrix(x))
   stopifnot(ncol(x) == 0 || !is.null(colnames(x)))
   stopifnot(!rownames | !is.null(rownames(x)))
@@ -26,13 +26,15 @@ splitDoubleMatrix <- function(x, rownames = FALSE){
   )
 }
 
-combineDoubleMatrix <- function(x, y, v1 = "mean", v2 = "uncert"){
+combineDoubleMatrix <- function(x, y, v1 = "mean", v2 = "uncert") {
   stopifnot(is.matrix(x))
   stopifnot(is.matrix(y))
   stopifnot(all.equal(dim(x), dim(y)))
   stopifnot(ncol(x) == 0 || !is.null(colnames(x)))
 
-  if (ncol(x) == 0) return(x)
+  if (ncol(x) == 0) {
+    return(x)
+  }
 
   m <- cbind(x, y)
   i <- c(matrix(1:ncol(m), 2, byrow = TRUE))
@@ -44,52 +46,58 @@ combineDoubleMatrix <- function(x, y, v1 = "mean", v2 = "uncert"){
   m
 }
 
-dropEmptyCols <- function(x, delta = 1){
-  while (ncol(x) > 0 && lastColEmpty(x, delta = delta)){
+dropEmptyCols <- function(x, delta = 1) {
+  while (ncol(x) > 0 && lastColEmpty(x, delta = delta)) {
     x <- x[, -seq(ncol(x), by = -1, length.out = delta), drop = FALSE]
   }
   x
 }
 
-dropEmptyRows <- function(x, delta = 1){
-  while (nrow(x) > 0 && lastRowEmpty(x, delta = delta)){
+dropEmptyRows <- function(x, delta = 1) {
+  while (nrow(x) > 0 && lastRowEmpty(x, delta = delta)) {
     x <- x[-seq(nrow(x), by = -1, length.out = delta), , drop = FALSE] ## nolint
   }
   x
 }
 
 
-lastColEmpty <- function(x, delta = 1){
+lastColEmpty <- function(x, delta = 1) {
   j <- seq(ncol(x), by = -1, length.out = delta)
 
   all(is.na(x[, j]) | x[, j] == "") &
     all(colnames(x)[j] == "")
 }
 
-lastRowEmpty <- function(x, delta = 1){
+lastRowEmpty <- function(x, delta = 1) {
   i <- seq(nrow(x), by = -1, length.out = delta)
   ret <- all(is.na(x[i, ]) | x[i, ] == "") &
     all(rownames(x)[i] == "")
-  if(is.na(ret)) ret <- FALSE
+  if (is.na(ret)) ret <- FALSE
   ret
 }
 
-extractMatrixCols <- function(x, remainder = 0){
-  if (ncol(x) == 0) return(x)
+extractMatrixCols <- function(x, remainder = 0) {
+  if (ncol(x) == 0) {
+    return(x)
+  }
   i <- seq(remainder + 1, ncol(x), by = 2)
   x[, i, drop = FALSE]
 }
 
-extractColNames <- function(x){
-  if (ncol(x) == 0) return(character(0))
+extractColNames <- function(x) {
+  if (ncol(x) == 0) {
+    return(character(0))
+  }
 
   split <- strsplit(colnames(x), "||", fixed = TRUE)
   i <- seq(1, ncol(x), by = 2)
   unlist(lapply(split[i], function(x) ifelse(length(x) > 0, x[[1]], "")))
 }
 
-combineColnames <- function(a, b){
-  if (is.null(a) || length(a) == 0) return(character(0))
+combineColnames <- function(a, b) {
+  if (is.null(a) || length(a) == 0) {
+    return(character(0))
+  }
   grid <- expand.grid(b, a, stringsAsFactors = FALSE)
   paste(grid[, 2], grid[, 1], sep = "||")
 }
@@ -104,7 +112,7 @@ fixMatrixCols <- function(m, oldNames, fixedCols = FALSE, row, col) {
     m <- defaultMatrixNames(m, sampleName(row), sampleName(col))
 
     m <- m[, seq_len(min(length(fixedCols), ncol(m))), drop = FALSE]
-    m <- cbind (m, matrix(NA, nrow(m), length(fixedCols) - ncol(m)))
+    m <- cbind(m, matrix(NA, nrow(m), length(fixedCols) - ncol(m)))
     colnames(m) <- fixedCols
   } else {
     length(oldNames) <- ncol(m)
@@ -114,7 +122,6 @@ fixMatrixCols <- function(m, oldNames, fixedCols = FALSE, row, col) {
   }
 
   m
-
 }
 
 fixDoubleMatrixCols <- function(m, oldNames, fixedCols = FALSE, row, col) {

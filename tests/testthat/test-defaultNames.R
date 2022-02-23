@@ -12,9 +12,12 @@ test_that("Repeated Values", {
 
 test_that("Values exist", {
   expect_equal(defaultNames(c("", "test_1"), prefix = "test"), c("test_1a", "test_1"))
-  expect_equal(defaultNames(c("", "test_1", "test_2"), prefix = "test"),
-               c("test_1a", "test_1", "test_2"))
-  expect_equal(defaultNames(c("", "test_1", "test_1a"), prefix = "test"),
-               c("test_1b", "test_1", "test_1a"))
-
+  expect_equal(
+    defaultNames(c("", "test_1", "test_2"), prefix = "test"),
+    c("test_1a", "test_1", "test_2")
+  )
+  expect_equal(
+    defaultNames(c("", "test_1", "test_1a"), prefix = "test"),
+    c("test_1b", "test_1", "test_1a")
+  )
 })
