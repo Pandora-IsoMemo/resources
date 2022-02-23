@@ -1,6 +1,8 @@
 copyButton <- function(inputId, tableId) {
   tagList(
-    singleton(tags$head(tags$script(src = "https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"))),
+    singleton(tags$head(
+      tags$script(src = "https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js")
+    )),
     actionButton(inputId, class = "btn btn-default", "Copy")
   )
 }
@@ -8,11 +10,17 @@ copyButton <- function(inputId, tableId) {
 pasteButton <- function(inputId, outputId, containerId) {
   tagList(
     tags$button(id = inputId, class = "btn btn-default", "Paste"),
-    tags$script(HTML(paste0("$('#", inputId, "').click(function (e) {
+    tags$script(HTML(
+      paste0(
+        "$('#",
+        inputId,
+        "').click(function (e) {
           navigator.permissions.query({name: 'clipboard-read'}).then(result => {
             if (result.state == 'granted' || result.state == 'prompt') {
               navigator.clipboard.readText().then(clipText => {
-                Shiny.setInputValue('", outputId, "', {content: clipText, random: Math.random()})
+                Shiny.setInputValue('",
+        outputId,
+        "', {content: clipText, random: Math.random()})
               })
             }
           }).catch(() => {
@@ -20,14 +28,20 @@ pasteButton <- function(inputId, outputId, containerId) {
           });
         });
 
-        $('#", containerId, "').on('paste', function (e) {
+        $('#",
+        containerId,
+        "').on('paste', function (e) {
           if(e.target.nodeName == 'INPUT') return;
 
           let clipText = (event.clipboardData || window.clipboardData).getData('text');
-          Shiny.setInputValue('", outputId, "', {content: clipText, random: Math.random()});
+          Shiny.setInputValue('",
+        outputId,
+        "', {content: clipText, random: Math.random()});
           e.preventDefault();
           return false;
         });
-        ")))
+        "
+      )
+    ))
   )
 }

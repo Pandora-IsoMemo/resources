@@ -387,7 +387,7 @@ checkModelOptions <- function(modelOptions) {
 #' @param argName character: name of argument displayed in error message
 #' @examples
 #' ReSources:::checkClass(c(1, 2, 3), c("numeric", "integer"))
-#' \donttest{
+#' \dontrun{
 #' ReSources:::checkClass("This is not a list", argName = "x")
 #' }
 checkClass <- function(x,

@@ -1,6 +1,6 @@
 outputPlotUI <- function(id) {
   ns <- NS(id)
-
+  
   fluidRow(
     mainPanel(
       width = 8,
@@ -40,9 +40,13 @@ outputPlotUI <- function(id) {
         label = "Select filter categories:",
         choices = c("")
       ),
-      pickerInput(ns("groupVars"), "Select target",
+      pickerInput(
+        ns("groupVars"),
+        "Select target",
         choices = list(),
-        selected = NULL, multiple = TRUE, options = list(
+        selected = NULL,
+        multiple = TRUE,
+        options = list(
           `actions-box` = TRUE,
           size = 12
         )
@@ -65,36 +69,104 @@ outputPlotUI <- function(id) {
         ns = ns,
         sliderInput(
           inputId = ns("histBins"),
-          label = "Nmber of histogram bins", min = 5, max = 200, value = 50
+          label = "Nmber of histogram bins",
+          min = 5,
+          max = 200,
+          value = 50
         )
       ),
-      checkboxInput(inputId = ns("Teaser"), label = "Show header", value = FALSE),
+      checkboxInput(
+        inputId = ns("Teaser"),
+        label = "Show header",
+        value = FALSE
+      ),
       conditionalPanel(
         condition = "input.Teaser == true",
         ns = ns,
-        textAreaInput(inputId = ns("headerLabel"), label = "Header", value = "")
+        textAreaInput(
+          inputId = ns("headerLabel"),
+          label = "Header",
+          value = ""
+        )
       ),
-      textAreaInput(inputId = ns("xlabel"), label = "Title x-axis", value = ""),
-      textAreaInput(inputId = ns("ylabel"), label = "Title y-axis", value = ""),
-      numericInput(inputId = ns("sizeTextX"), label = "Font size x-axis title", value = 24),
-      numericInput(inputId = ns("sizeTextY"), label = "Font size y-axis title", value = 24),
-      numericInput(inputId = ns("sizeAxisX"), label = "Font size x-axis", value = 18),
-      numericInput(inputId = ns("sizeAxisY"), label = "Font size y-axis", value = 18),
-      selectInput(inputId = ns("colorPalette"), label = "Color Palette", choices = c("default", "white", RColorBrewer::brewer.pal.info %>% row.names())),
+      textAreaInput(
+        inputId = ns("xlabel"),
+        label = "Title x-axis",
+        value = ""
+      ),
+      textAreaInput(
+        inputId = ns("ylabel"),
+        label = "Title y-axis",
+        value = ""
+      ),
+      numericInput(
+        inputId = ns("sizeTextX"),
+        label = "Font size x-axis title",
+        value = 24
+      ),
+      numericInput(
+        inputId = ns("sizeTextY"),
+        label = "Font size y-axis title",
+        value = 24
+      ),
+      numericInput(
+        inputId = ns("sizeAxisX"),
+        label = "Font size x-axis",
+        value = 18
+      ),
+      numericInput(
+        inputId = ns("sizeAxisY"),
+        label = "Font size y-axis",
+        value = 18
+      ),
       selectInput(
-        inputId = ns("contributionLimit"), label = "Limit contribution axis",
-        choices = c("None", "0-1", "0-100%"), selected = "0-1"
+        inputId = ns("colorPalette"),
+        label = "Color Palette",
+        choices = c(
+          "default",
+          "white",
+          RColorBrewer::brewer.pal.info %>% row.names()
+        )
       ),
-      selectInput(inputId = ns("fontFamily"), label = "Font", selected = NULL, choices = availableFonts()),
+      selectInput(
+        inputId = ns("contributionLimit"),
+        label = "Limit contribution axis",
+        choices = c("None", "0-1", "0-100%"),
+        selected = "0-1"
+      ),
+      selectInput(
+        inputId = ns("fontFamily"),
+        label = "Font",
+        selected = NULL,
+        choices = availableFonts()
+      ),
       helpText("This will only have an effect on the pdf output"),
-      sliderInput(inputId = ns("boxQuantile"), label = "Box upper quantile", value = 0.68, min = 0.5, max = 0.99, step = 0.01),
-      sliderInput(inputId = ns("whiskerMultiplier"), label = "Whiskers coverage interval", value = 0.95, min = 0.5, max = 1, step = 0.001)
+      sliderInput(
+        inputId = ns("boxQuantile"),
+        label = "Box upper quantile",
+        value = 0.68,
+        min = 0.5,
+        max = 0.99,
+        step = 0.01
+      ),
+      sliderInput(
+        inputId = ns("whiskerMultiplier"),
+        label = "Whiskers coverage interval",
+        value = 0.95,
+        min = 0.5,
+        max = 1,
+        step = 0.001
+      )
     )
   )
 }
 
 outputPlot <- function(input, output, session, model, values) {
-  callModule(plotExport, "exportSourcePlot", plotFun = plotFunTarget, type = "output")
+  callModule(plotExport,
+             "exportSourcePlot",
+             plotFun = plotFunTarget,
+             type = "output"
+  )
   options(deparse.max.lines = 1)
   pointDat <- reactiveVal({
     data.frame(
@@ -106,20 +178,23 @@ outputPlot <- function(input, output, session, model, values) {
       pointColor = character(0)
     )
   })
-
+  
   observeEvent(model(), ignoreNULL = FALSE, {
-    pointDat(data.frame(
-      index = numeric(0),
-      y = numeric(0),
-      group = character(0),
-      pointSize = numeric(0),
-      pointAlpha = numeric(0),
-      pointColor = character(0)
-    ))
+    pointDat(
+      data.frame(
+        index = numeric(0),
+        y = numeric(0),
+        group = character(0),
+        pointSize = numeric(0),
+        pointAlpha = numeric(0),
+        pointColor = character(0)
+      )
+    )
   })
   plotParams <- reactive({
     binSize <- NULL
-    if (!is.null(input$`exportData-bins`) && input$`exportData-bins` == TRUE) {
+    if (!is.null(input$`exportData-bins`) &&
+        input$`exportData-bins` == TRUE) {
       binSize <- input$`exportData-binSize`
     }
     list(
@@ -151,26 +226,23 @@ outputPlot <- function(input, output, session, model, values) {
       whiskerMultiplier = input$whiskerMultiplier
     )
   }) %>% debounce(100)
-
+  
   plotFunTarget <- reactive({
     validate(validInput(model()))
     function() {
-      params <- c(
-        plotParams()
-      )
+      params <- c(plotParams())
       do.call(
         plotTargets,
         params
       )
     }
   })
-
+  
   dataFunTarget <- reactive({
     validate(validInput(model()))
     function() {
-      params <- c(
-        plotParams(),
-        returnType = "data"
+      params <- c(plotParams(),
+                  returnType = "data"
       )
       do.call(
         plotTargets,
@@ -178,7 +250,7 @@ outputPlot <- function(input, output, session, model, values) {
       )
     }
   })
-
+  
   output$SourcePlot <- renderCachedPlot(
     {
       validate(validInput(model()))
@@ -188,39 +260,47 @@ outputPlot <- function(input, output, session, model, values) {
       plotParams()
     }
   )
-
-
+  
+  
   callModule(exportData, "exportData", dataFunTarget)
-
+  
   observe({
     groupTypChoices <- c("Estimate")
-
-    if (!is.null(model()) && model()$fruitsObj$modelOptions$modelType != "1") {
+    
+    if (!is.null(model()) &&
+        model()$fruitsObj$modelOptions$modelType != "1") {
       groupTypChoices <- c(groupTypChoices, "Target")
       if (model()$fruitsObj$modelOptions$hierarchical) {
-        groupTypChoices <- c(groupTypChoices, colnames(model()$fruitsObj$data$covariates))
+        groupTypChoices <-
+          c(
+            groupTypChoices,
+            colnames(model()$fruitsObj$data$covariates)
+          )
         if (NCOL(model()$fruitsObj$data$covariates) > 1) {
           groupTypChoices <- c(groupTypChoices, "covariateInteraction")
         }
       }
     }
-
+    
     if (!is.null(model())) {
       estTypChoices <- unique(values$modelResultSummary[, "Group"])
     } else {
       estTypChoices <- NULL
     }
     updateSelectInput(session, "estType", choices = estTypChoices)
-
+    
     updateSelectInput(session, "groupType", choices = groupTypChoices)
-
+    
     observeEvent(input$estType, {
       if (grepl(
-        paste(c(
-          "Source contributions",
-          "Component contributions",
-          "Source contributions by proxy"
-        ), collapse = "|"),
+        paste(
+          c(
+            "Source contributions",
+            "Component contributions",
+            "Source contributions by proxy"
+          ),
+          collapse = "|"
+        ),
         input$estType
       )) {
         updateSelectInput(session, "contributionLimit", selected = "0-1")
@@ -229,10 +309,11 @@ outputPlot <- function(input, output, session, model, values) {
       }
     })
   })
-
+  
   observe({
     filterTypeChoices <- c("Estimate", "Target")
-    if (!is.null(model()) && model()$fruitsObj$modelOptions$modelType != "1") {
+    if (!is.null(model()) &&
+        model()$fruitsObj$modelOptions$modelType != "1") {
       if (model()$fruitsObj$modelOptions$hierarchical) {
         filterTypeChoices <- c(
           filterTypeChoices,
@@ -240,82 +321,97 @@ outputPlot <- function(input, output, session, model, values) {
         )
       }
     }
-    filterTypeChoices <- filterTypeChoices[filterTypeChoices != input$groupType]
-
+    filterTypeChoices <-
+      filterTypeChoices[filterTypeChoices != input$groupType]
+    
     updateSelectInput(
-      session = session, inputId = "filterType",
+      session = session,
+      inputId = "filterType",
       choices = filterTypeChoices
     )
   })
-
+  
   observe({
     if (input$filterType == "Target") {
       updateSelectInput(session,
-        "individuals",
-        label = "Target",
-        choices = unique(c(rownames(model()$fruitsObj$data$obsvn), "all"))
+                        "individuals",
+                        label = "Target",
+                        choices = unique(c(
+                          rownames(model()$fruitsObj$data$obsvn), "all"
+                        ))
       )
       updatePickerInput(session,
-        "groupVars",
-        label = "Select target"
+                        "groupVars",
+                        label = "Select target"
       )
     }
     if (input$filterType == "Estimate") {
-      parameterNames <- values$modelResultSummary[values$modelResultSummary[, "Group"] == input$estType, "Estimate"]
-      updateSelectInput(session,
+      parameterNames <-
+        values$modelResultSummary[values$modelResultSummary[, "Group"] == input$estType, "Estimate"]
+      updateSelectInput(
+        session,
         "individuals",
         label = "Estimate",
         choices = unique(parameterNames)
       )
       updatePickerInput(session,
-        "groupVars",
-        label = "Select estimates"
+                        "groupVars",
+                        label = "Select estimates"
       )
     }
     if (!(input$filterType %in% c("Target", "Estimate", ""))) {
-      covNames <- c(as.character(unique(values$modelResultSummary[, input$filterType])), "all")
-
-      updateSelectInput(session,
+      covNames <-
+        c(as.character(unique(values$modelResultSummary[, input$filterType])), "all")
+      
+      updateSelectInput(
+        session,
         "individuals",
         label = input$filterType,
         choices = unique(covNames)
       )
       updatePickerInput(session,
-        "groupVars",
-        label = "Select estimates"
+                        "groupVars",
+                        label = "Select estimates"
       )
     }
-
+    
     if (input$filterType == input$groupType) {
       updateSelectInput(session,
-        "individuals",
-        choices = "all"
+                        "individuals",
+                        choices = "all"
       )
     }
   })
-
+  
   groupChoices <- reactive({
-    as.character(unique(
-      values$modelResultSummary[values$modelResultSummary[, "Group"] == input$estType, input$groupType]
-    ))
+    as.character(unique(values$modelResultSummary[values$modelResultSummary[, "Group"] == input$estType, input$groupType]))
   })
-
-
+  
+  
   observe({
     updatePickerInput(
-      session = session, inputId = "groupVars",
-      choices = groupChoices(), selected = groupChoices()
+      session = session,
+      inputId = "groupVars",
+      choices = groupChoices(),
+      selected = groupChoices()
     )
   })
-
+  
   addRow <- function(df) {
-    rbind(df, data.frame(
-      index = nrow(df) + 1, y = NA, group = NA,
-      pointColor = "black", pointSize = 1,
-      pointAlpha = 0.5, stringsAsFactors = FALSE
-    ))
+    rbind(
+      df,
+      data.frame(
+        index = nrow(df) + 1,
+        y = NA,
+        group = NA,
+        pointColor = "black",
+        pointSize = 1,
+        pointAlpha = 0.5,
+        stringsAsFactors = FALSE
+      )
+    )
   }
-
+  
   rmRow <- function(df) {
     if (nrow(df) > 0) {
       df[-nrow(df), , drop = FALSE]
@@ -323,39 +419,62 @@ outputPlot <- function(input, output, session, model, values) {
       df
     }
   }
-
+  
   observeEvent(input$add_btn, {
     pointDat(addRow(pointDat()))
   })
-
+  
   observeEvent(input$rm_btn, {
     pointDat(rmRow(pointDat()))
   })
-
+  
   observe({
     df <- pointDat()
     indices <- df$index
-
+    
     lapply(indices, function(index) {
       yval <- input[[paste("y", index, sep = "_")]]
       groupval <- input[[paste("group", index, sep = "_")]]
       pointColor <- input[[paste("pointColor", index, sep = "_")]]
       pointSize <- input[[paste("pointSize", index, sep = "_")]]
       pointAlpha <- input[[paste("pointAlpha", index, sep = "_")]]
-      df[index, "pointColor"] <<- if (is.null(pointColor)) "#000000" else pointColor
-      df[index, "pointSize"] <<- if (is.null(pointSize)) 1 else pointSize
-      df[index, "pointAlpha"] <<- if (is.null(pointAlpha)) 1 else pointAlpha
-      df[index, "y"] <<- if (is.null(yval)) NA else yval
-      df[index, "group"] <<- if (is.null(groupval)) NA else groupval
+      df[index, "pointColor"] <<-
+        if (is.null(pointColor)) {
+          "#000000"
+        } else {
+          pointColor
+        }
+      df[index, "pointSize"] <<-
+        if (is.null(pointSize)) {
+          1
+        } else {
+          pointSize
+        }
+      df[index, "pointAlpha"] <<-
+        if (is.null(pointAlpha)) {
+          1
+        } else {
+          pointAlpha
+        }
+      df[index, "y"] <<- if (is.null(yval)) {
+        NA
+      } else {
+        yval
+      }
+      df[index, "group"] <<- if (is.null(groupval)) {
+        NA
+      } else {
+        groupval
+      }
     })
-
+    
     pointDat(df)
   })
-
+  
   inputGroup <- reactive({
     createPointInputGroup(pointDat(), groupChoices = groupChoices(), ns = session$ns)
   })
-
+  
   output$pointInput <- renderUI(inputGroup())
   output$n <- reactive(nrow(pointDat()))
   outputOptions(output, "n", suspendWhenHidden = FALSE)
@@ -376,8 +495,14 @@ createPointInputGroup <- function(df, groupChoices, ns) {
   })
 }
 
-createPointInput <- function(index, y, group, groupChoices,
-                             pointColor, pointSize, pointAlpha, ns) {
+createPointInput <- function(index,
+                             y,
+                             group,
+                             groupChoices,
+                             pointColor,
+                             pointSize,
+                             pointAlpha,
+                             ns) {
   tags$div(
     numericInput(
       ns(paste("y", index, sep = "_")),
@@ -393,14 +518,27 @@ createPointInput <- function(index, y, group, groupChoices,
       selected = group,
       choices = groupChoices
     ),
-    colourInput(ns(paste("pointColor", index, sep = "_")),
-      label = "Choose point color", value = pointColor
+    colourInput(ns(paste(
+      "pointColor", index,
+      sep = "_"
+    )),
+    label = "Choose point color", value = pointColor
     ),
-    sliderInput(ns(paste("pointSize", index, sep = "_")),
-      label = "Point size", value = pointSize, min = 0.1, max = 5, step = 0.1
+    sliderInput(
+      ns(paste("pointSize", index, sep = "_")),
+      label = "Point size",
+      value = pointSize,
+      min = 0.1,
+      max = 5,
+      step = 0.1
     ),
-    sliderInput(ns(paste("pointAlpha", index, sep = "_")),
-      label = "Point alpha", value = pointAlpha, min = 0.1, max = 1, step = 0.1
+    sliderInput(
+      ns(paste("pointAlpha", index, sep = "_")),
+      label = "Point alpha",
+      value = pointAlpha,
+      min = 0.1,
+      max = 1,
+      step = 0.1
     )
   )
 }

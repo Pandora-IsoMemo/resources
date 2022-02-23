@@ -11,7 +11,10 @@ test_that("checkClass works as expected", {
     ReSources:::checkClass(c(1:3)),
     "wrong type: integer instead of list"
   )
-  expect_error(ReSources:::checkClass("c", classesExpected = "character"), NA)
+  expect_error(
+    ReSources:::checkClass("c", classesExpected = "character"),
+    NA
+  )
   expect_error(ReSources:::checkClass(3, classesExpected = c("numeric", "integer")), NA)
   expect_error(ReSources:::checkClass(3L, classesExpected = c("numeric", "integer")), NA)
 })

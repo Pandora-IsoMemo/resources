@@ -1,8 +1,6 @@
-FROM resources-isoapp-base:latest
+FROM ghcr.io/pandora-isomemo/base-image:latest
 
-ENV PKG ReSources
-
-RUN Rscript -e "install.packages('MpiIsoApp')"
+RUN installPackage MpiIsoApp
 
 ADD . .
 

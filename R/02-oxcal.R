@@ -270,8 +270,10 @@ parseSection <- function(section) {
   lines <- unlist(strsplit(section, "@@@"))
   lines <- unlist(lapply(lines, trimws))
   lines <- Filter(isNotEmpty, lines)
-  lines <- unlist(lapply(lines, function(line) strsplit(line, "\n")), recursive = FALSE)
-
+  lines <-
+    unlist(lapply(lines, function(line) {
+      strsplit(line, "\n")
+    }), recursive = FALSE)
   list(
     title = lines[[2]],
     formula = lines[[3]],
@@ -472,7 +474,8 @@ loopOverTargets <- function(curve, parEstimates, bins, coordinates) {
   res <- lapply(
     1:nrow(parEstimates),
     function(i) {
-      getTargetString(curve,
+      getTargetString(
+        curve,
         parEstimates[i, ],
         type = bins,
         coordinates = coordinates[rownames(coordinates) == parEstimates[i, ]$Target, ]

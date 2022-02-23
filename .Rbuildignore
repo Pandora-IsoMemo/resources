@@ -19,3 +19,6 @@ dia$
 ^JenkinsfileMPI$
 ^bin$
 ^LICENSE\.md$
+^\.github$
+^deploy\.sh$
+^\..*$

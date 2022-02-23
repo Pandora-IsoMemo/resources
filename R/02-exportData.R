@@ -5,47 +5,56 @@ exportDataUI <- function(id, title) {
 
 exportData <- function(input, output, session, data) {
   observeEvent(input$export, {
-    showModal(modalDialog(
-      "Export Data",
-      easyClose = TRUE,
-      footer = modalButton("OK"),
-      selectInput(
-        session$ns("exportType"),
-        "File type",
-        choices = c("csv", "xlsx", "json"),
-        selected = "xlsx"
-      ),
-      conditionalPanel(
-        condition = "input['exportType'] == 'csv'",
-        ns = session$ns,
-        div(
-          style = "display: inline-block;horizontal-align:top; width: 80px;",
-          textInput(session$ns("colseparator"), "column separator:", value = ",")
+    showModal(
+      modalDialog(
+        "Export Data",
+        easyClose = TRUE,
+        footer = modalButton("OK"),
+        selectInput(
+          session$ns("exportType"),
+          "File type",
+          choices = c("csv", "xlsx", "json"),
+          selected = "xlsx"
         ),
-        div(
-          style = "display: inline-block;horizontal-align:top; width: 80px;",
-          textInput(session$ns("decseparator"), "decimal separator:", value = ".")
-        )
-      ),
-      checkboxInput(session$ns("bins"), "Export as bins"),
-      conditionalPanel(
-        condition = "input['bins'] == true",
-        ns = session$ns,
-        sliderInput(session$ns("binSize"), "Bin size", min = 0.01, max = 10, step = 0.01, value = 0.1)
-      ),
-      downloadButton(session$ns("exportExecute"), "Export")
-    ))
+        conditionalPanel(
+          condition = "input['exportType'] == 'csv'",
+          ns = session$ns,
+          div(
+            style = "display: inline-block;horizontal-align:top; width: 80px;",
+            textInput(session$ns("colseparator"), "column separator:", value = ",")
+          ),
+          div(
+            style = "display: inline-block;horizontal-align:top; width: 80px;",
+            textInput(session$ns("decseparator"), "decimal separator:", value = ".")
+          )
+        ),
+        checkboxInput(session$ns("bins"), "Export as bins"),
+        conditionalPanel(
+          condition = "input['bins'] == true",
+          ns = session$ns,
+          sliderInput(
+            session$ns("binSize"),
+            "Bin size",
+            min = 0.01,
+            max = 10,
+            step = 0.01,
+            value = 0.1
+          )
+        ),
+        downloadButton(session$ns("exportExecute"), "Export")
+      )
+    )
   })
-
+  
   output$exportExecute <- downloadHandler(
     filename = function() {
       exportFilename(input$exportType)
     },
     content = function(file) {
       switch(input$exportType,
-        csv = exportCSV(file, data()(), input$colseparator, input$decseparator),
-        xlsx = exportXLSX(file, data()()),
-        json = exportJSON(file, data()())
+             csv = exportCSV(file, data()(), input$colseparator, input$decseparator),
+             xlsx = exportXLSX(file, data()()),
+             json = exportJSON(file, data()())
       )
     }
   )
@@ -68,8 +77,11 @@ exportFilename <- function(fileending) {
 #' @export
 exportCSV <- function(file, dat, colseparator, decseparator) {
   write.table(
-    x = dat, file = file, sep = colseparator,
-    dec = decseparator, row.names = FALSE
+    x = dat,
+    file = file,
+    sep = colseparator,
+    dec = decseparator,
+    row.names = FALSE
   )
 }
 

@@ -140,11 +140,19 @@ test_that("getCodeAquatic", {
 
 test_that("Create OxCal Output", {
   model <- readRDS("test-oxcalData.rds")
-  basicCode <- c(
-    "Plot()", "{", "%%Terrestrial_curve_VAR1%%", "%%Aquatic_curve_1_VAR1%%",
-    "%%Aquatic_curve_2_VAR1%%", "", "%%String_from_loop%%", "", "",
-    "};"
-  )
+  basicCode <-
+    c(
+      "Plot()",
+      "{",
+      "%%Terrestrial_curve_VAR1%%",
+      "%%Aquatic_curve_1_VAR1%%",
+      "%%Aquatic_curve_2_VAR1%%",
+      "",
+      "%%String_from_loop%%",
+      "",
+      "",
+      "};"
+    )
   terrestrialCurves <- list(
     list(
       title = "IntCal20",
@@ -159,7 +167,8 @@ test_that("Create OxCal Output", {
     list(
       title = "Known mix IntCal20 andSHCal20 - must give mix values in text",
       formula = c(
-        "Curve(\"IntCal20\",\"IntCal20.14c\");", "Curve(\"SHCal20\",\"SHCal20.14c\");",
+        "Curve(\"IntCal20\",\"IntCal20.14c\");",
+        "Curve(\"SHCal20\",\"SHCal20.14c\");",
         "Mix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", Mean,SD);"
       ),
       mixture = list()
@@ -167,7 +176,8 @@ test_that("Create OxCal Output", {
     list(
       title = "Unknown mix IntCal20 andSHCal20",
       formula = c(
-        "Curve(\"IntCal20\",\"IntCal20.14c\");", "Curve(\"SHCal20\",\"SHCal20.14c\");",
+        "Curve(\"IntCal20\",\"IntCal20.14c\");",
+        "Curve(\"SHCal20\",\"SHCal20.14c\");",
         "Mix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", U(0,100));"
       ),
       mixture = list()
@@ -185,7 +195,8 @@ test_that("Create OxCal Output", {
         c(
           "Mix_Curve(%%TARGET_ID%%,\"terrestrial\",\"Aquatic1\", %%MEAN%%,%%SD%%);",
           "R_Date(“%%TARGET_ID%%“, %%RADIOCARBON_MEAN%%,%%RADIOCARBON_SD%%);"
-        ), c(
+        ),
+        c(
           "Mix_Curve(%%TARGET_ID%%,\"terrestrial\",\"Aquatic1\", P(0,100,[0,%%BINS%%,0]));",
           "R_Date(“%%TARGET_ID%%“, %%RADIOCARBON_MEAN%%,%%RADIOCARBON_SD%%);"
         )
@@ -217,7 +228,8 @@ test_that("Create OxCal Output", {
       title = "Known mix IntCal20 andSHCal20 - must give mix values in text",
       formula = c(
         "Curve(\"IntCal20\",\"IntCal20.14c\");",
-        "Curve(\"SHCal20\",\"SHCal20.14c\");", "Mix_Curves(\"mixed1\",\"IntCal20\",\"SHCal20\", Mean,SD);",
+        "Curve(\"SHCal20\",\"SHCal20.14c\");",
+        "Mix_Curves(\"mixed1\",\"IntCal20\",\"SHCal20\", Mean,SD);",
         "Delta_R(\"Aquatic1\",%%Delta_R_1%%,%%Delta_R_SD_1%%);"
       ),
       mixture = list(
@@ -229,7 +241,8 @@ test_that("Create OxCal Output", {
       title = "Unknown mix IntCal20 andSHCal20",
       formula = c(
         "Curve(\"IntCal20\",\"IntCal20.14c\");",
-        "Curve(\"SHCal20\",\"SHCal20.14c\");", "Mix_Curves(\"mixed1\",\"IntCal20\",\"SHCal20\", U(0,100));",
+        "Curve(\"SHCal20\",\"SHCal20.14c\");",
+        "Mix_Curves(\"mixed1\",\"IntCal20\",\"SHCal20\", U(0,100));",
         "Delta_R(\"Aquatic1\",%%Delta_R_1%%,%%Delta_R_SD_1%%);"
       ),
       mixture = list(
@@ -277,7 +290,8 @@ test_that("Create OxCal Output", {
       title = "Known mix IntCal20 andSHCal20 - must give mix values in text",
       formula = c(
         "Curve(\"IntCal20\",\"IntCal20.14c\");",
-        "Curve(\"SHCal20\",\"SHCal20.14c\");", "Mix_Curves(\"mixed2\",\"IntCal20\",\"SHCal20\", Mean,SD);",
+        "Curve(\"SHCal20\",\"SHCal20.14c\");",
+        "Mix_Curves(\"mixed2\",\"IntCal20\",\"SHCal20\", Mean,SD);",
         "Delta_R(\"Aquatic2\",%%Delta_R_2%%,%%Delta_R_SD_2%%);"
       ),
       mixture = list(
@@ -289,7 +303,8 @@ test_that("Create OxCal Output", {
       title = "Unknown mix IntCal20 andSHCal20",
       formula = c(
         "Curve(\"IntCal20\",\"IntCal20.14c\");",
-        "Curve(\"SHCal20\",\"SHCal20.14c\");", "Mix_Curves(\"mixed2\",\"IntCal20\",\"SHCal20\", U(0,100));",
+        "Curve(\"SHCal20\",\"SHCal20.14c\");",
+        "Mix_Curves(\"mixed2\",\"IntCal20\",\"SHCal20\", U(0,100));",
         "Delta_R(\"Aquatic2\",%%Delta_R_2%%,%%Delta_R_SD_2%%);"
       ),
       mixture = list(
@@ -305,8 +320,19 @@ test_that("Create OxCal Output", {
     c(45, 50, 55, 56, 43, 0, 5, 10, 6, 16, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
     .Dim = 5:4,
     .Dimnames = list(
-      c("Individual_1", "Individual_2", "Individual_3", "Individual_4", "Individual_5"),
-      c("longitude", "latitude", "LowerLimit/Mean/Point", "UpperLimit/SD")
+      c(
+        "Individual_1",
+        "Individual_2",
+        "Individual_3",
+        "Individual_4",
+        "Individual_5"
+      ),
+      c(
+        "longitude",
+        "latitude",
+        "LowerLimit/Mean/Point",
+        "UpperLimit/SD"
+      )
     )
   )
 
@@ -316,9 +342,14 @@ test_that("Create OxCal Output", {
     terrestrialCurve = terrestrialCurves[1],
     aquaticCurve1 = aquaticCurves1[1],
     aquaticCurve2 = aquaticCurves2[1],
-    OxCalA = oxCalA, meanDeltaR1 = 0, sdDeltaR1 = 1,
-    OxCalB = oxCalB, meanDeltaR2 = 2, sdDeltaR2 = 0.5,
-    bins = "meansd", coordinates = exportCoordinates
+    OxCalA = oxCalA,
+    meanDeltaR1 = 0,
+    sdDeltaR1 = 1,
+    OxCalB = oxCalB,
+    meanDeltaR2 = 2,
+    sdDeltaR2 = 0.5,
+    bins = "meansd",
+    coordinates = exportCoordinates
   ) %>%
     strsplit(split = "\n") %>%
     unlist()
@@ -329,9 +360,14 @@ test_that("Create OxCal Output", {
     terrestrialCurve = terrestrialCurves[1],
     aquaticCurve1 = aquaticCurves1[1],
     aquaticCurve2 = aquaticCurves2[1],
-    OxCalA = oxCalA, meanDeltaR1 = 0, sdDeltaR1 = 1,
-    OxCalB = oxCalB, meanDeltaR2 = 2, sdDeltaR2 = 0.5,
-    bins = "bins", coordinates = exportCoordinates
+    OxCalA = oxCalA,
+    meanDeltaR1 = 0,
+    sdDeltaR1 = 1,
+    OxCalB = oxCalB,
+    meanDeltaR2 = 2,
+    sdDeltaR2 = 0.5,
+    bins = "bins",
+    coordinates = exportCoordinates
   ) %>%
     strsplit(split = "\n") %>%
     unlist()
