@@ -21,3 +21,4 @@ dia$
 ^LICENSE\.md$
 ^\.github$
 ^deploy\.sh$
+^\..*$
