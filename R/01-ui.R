@@ -294,7 +294,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 ),
                 checkboxInput(
                   ns("oxcalCheck"),
-                  "Show interface for radiocarbon corrections",
+                  "Show interface for OxCal export",
                   value = FALSE
                 ),
                 radioButtons(
@@ -1146,7 +1146,7 @@ fruitsUI <- function(id, title = "FRUITS") {
             ),
             # OxCal ----
             tabPanel(
-              "OxCal",
+              "OxCal export",
               OxCalOutputUI(ns("oxcal"))
             )
           )
