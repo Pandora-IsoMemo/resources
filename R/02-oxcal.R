@@ -110,32 +110,17 @@ OxCalOutputUI <- function(id) {
 }
 
 OxCalOutput <- function(input, output, session, model, exportCoordinates) {
-  # terrestrialCurves <- reactive({
-  #     file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/afaf48cf-1a72-4996-89ba-44815bc84d8e/download/oxcal_terrestrial_curve.txt"
-  #     parseCurveFile(readLines(file, warn = FALSE))
-  # })
-
-  terrestrialCurvesXlsx <- reactive({
+   terrestrialCurvesXlsx <- reactive({
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/b7732618-7764-460a-b1fa-c614f4cdbe95/download/terrestrial.xlsx"
     read.xlsx(file)
   })
-
-  # aquaticCurves1 <- reactive({
-  #     file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/9626d93b-013d-4b02-b3d4-e4091f6ed600/download/oxcal_aquatic_curve_1.txt"
-  #     parseCurveFile(readLines(file, warn = FALSE))
-  # })
 
   aquaticCurves1Xlsx <- reactive({
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/2037632f-f984-4834-8e25-4af5498df163/download/aquatic1.xlsx"
     read.xlsx(file)
   })
-
-  # aquaticCurves2 <- reactive({
-  #     file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/e5a197c8-15c7-4752-a2d4-15ad1c39ca19/download/oxcal_aquatic_curve_2.txt"
-  #     parseCurveFile(readLines(file, warn = FALSE))
-  # })
 
   aquaticCurves2Xlsx <- reactive({
     file <-
@@ -149,12 +134,8 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
   })
 
   observe({
-    # updateSelectInput(session, "terrestrialCurve", choices = getCurveTitles(terrestrialCurves()))
     updateSelectInput(session, "terrestrialCurve", choices = getCurveTitlesXlsx(terrestrialCurvesXlsx()))
-    # updateSelectInput(session, "aquaticCurve1", choices = getCurveTitles(aquaticCurves1()))
     updateSelectInput(session, "aquaticCurve1", choices = getCurveTitlesXlsx(aquaticCurves1Xlsx()))
-    # updateSelectInput(session, "aquaticCurve2", choices = c(list("none" = NA),
-    #                                                         getCurveTitles(aquaticCurves2())))
     updateSelectInput(session, "aquaticCurve2", choices = c(
       list("none" = NA),
       getCurveTitlesXlsx(aquaticCurves2Xlsx())
@@ -205,12 +186,17 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
 
   observeEvent(input$GenerateOxCal, {
     validate(validInput(model()))
-
+browser()
     withProgress(
       {
+        if (as.numeric(input$terrestrialCurve) == 3) {
+          mixOption <- input$mixType
+        } else {
+          mixOption <- NULL
+        }
         terrestrialCurveCode <- getCodeTerrestrial(
           curve = terrestrialCurvesXlsx()[as.numeric(input$terrestrialCurve), ],
-          mixOption = input$mixType,
+          mixOption = mixOption,
           mixParams = terrestrialParams()
         )
 
@@ -337,7 +323,8 @@ getCodeAquatic <- function(curve, binOption, deltaRParams) {
       gsub(pattern = "%%Delta_R_SD_2%%", replacement = deltaRParams[[2]])
   }
 
-  paste0(codeHeader, "\n", codeOption)
+  list(header = codeHeader,
+       option = codeOption)
 }
 
 #' Create Oxcal Text
@@ -358,7 +345,9 @@ getCodeAquatic <- function(curve, binOption, deltaRParams) {
 #' @param coordinates (data.frame) containing the radiocarbon values (mean+SD) for each target
 createOxCalText <- function(model,
                             basicCode,
-                            terrestrialCurve, aquaticCurve1, aquaticCurve2,
+                            terrestrialCurve, 
+                            aquaticCurve1,
+                            aquaticCurve2,
                             OxCalA,
                             OxCalB,
                             bins,
@@ -372,14 +361,15 @@ createOxCalText <- function(model,
       return(terrestrialCurve)
     }
     if (part == "%%Aquatic_curve_1_VAR1%%") {
-      return(aquaticCurve1)
+      return(aquaticCurve1$header)
     }
     if (part == "%%Aquatic_curve_2_VAR1%%") {
-      return(aquaticCurve2)
+      return(aquaticCurve2$header)
     }
     if (part == "%%String_from_loop%%") {
       return(getLoop(
-        aquaticCurve1, aquaticCurve2,
+        aquaticCurve1$option,
+        aquaticCurve2$option,
         model, bins,
         OxCalA, OxCalB,
         coordinates
@@ -391,31 +381,6 @@ createOxCalText <- function(model,
   paste(oxcalText, collapse = "\n")
 }
 
-#' Get Curve Formula
-#'
-#' @param curve (list of strings) parsed from one section of one of the curve files
-#' @param mean (numeric) optional input of the mean for the curve
-#' @param sd (numeric) optional input of the sd for the curve
-getCurveFormula <- function(curve, mean = NULL, sd = NULL) {
-  if (is.null(curve)) {
-    return(NULL)
-  }
-
-  res <- curve[[1]]$formula
-
-  if (!is.null(mean) && !is.null(sd)) {
-    res <- res %>%
-      gsub(pattern = "%%Delta_R_1%%", replacement = mean) %>%
-      gsub(pattern = "%%Delta_R_2%%", replacement = mean) %>%
-      gsub(pattern = "%%Delta_R_SD_1%%", replacement = sd) %>%
-      gsub(pattern = "%%Delta_R_SD_2%%", replacement = sd)
-  }
-
-  res %>%
-    unlist() %>%
-    paste(collapse = "\n")
-}
-
 #' Get Loop
 #'
 #' Loop over all targets
@@ -425,16 +390,17 @@ getLoop <- function(aquaticCurve1, aquaticCurve2, model, bins, OxCalA, OxCalB, c
   if (is.null(aquaticCurve1)) {
     return(NULL)
   }
-  browser()
+  
   parEstimates <-
     getResultStatistics(model$modelResults$parameters,
       model$modelResults$userEstimateSamples,
       model$fruitsObj,
-      agg = TRUE, DT = FALSE, bins = (bins == "bins")
+      agg = TRUE, DT = FALSE, bins = bins
     ) %>%
     nameParEstimates()
+  
   res <- loopOverTargets(
-    aquaticCurve1[[1]],
+    aquaticCurve1,
     parEstimates %>% filterEstimates(OxCalA),
     bins, coordinates
   )
@@ -443,7 +409,7 @@ getLoop <- function(aquaticCurve1, aquaticCurve2, model, bins, OxCalA, OxCalB, c
     res <- c(
       res,
       loopOverTargets(
-        aquaticCurve2[[1]],
+        aquaticCurve2,
         parEstimates %>% filterEstimates(OxCalB),
         bins, coordinates
       )
@@ -490,28 +456,23 @@ getTargetString <- function(curve, parEstimate, type, coordinates) {
   if (is.null(curve)) {
     return(NULL)
   }
-  res <- switch(type,
-    "meansd" = curve$mixture[[1]] %>%
-      gsub(pattern = "%%MEAN%%", replacement = parEstimate$mean) %>%
-      gsub(pattern = "%%MEAN_B%%", replacement = parEstimate$mean) %>%
-      gsub(pattern = "%%SD%%", replacement = parEstimate$sd) %>%
-      gsub(pattern = "%%SD_B%%", replacement = parEstimate$sd),
-    "bins" = curve$mixture[[2]] %>%
-      gsub(
-        pattern = "%%BINS%%", replacement =
-          paste(parEstimate[grep("bin", colnames(parEstimate))], collapse = ", ")
-      ) %>%
-      gsub(
-        pattern = "%%BINS_B%%", replacement =
-          paste(parEstimate[grep("bin", colnames(parEstimate))], collapse = ", ")
-      )
-  ) %>%
-    gsub(pattern = "%%TARGET_ID%%", replacement = parEstimate$Target)
-  browser()
-  res <- res %>%
-    gsub(pattern = "%%RADIOCARBON_MEAN%%", replacement = cleanNA(coordinates["LowerLimit/Mean/Point"])) %>%
-    gsub(pattern = "%%RADIOCARBON_SD%%", replacement = cleanNA(coordinates["UpperLimit/SD"]))
-
+  res <- curve %>%
+    gsub(pattern = "%%MEAN%%", replacement = parEstimate$mean) %>%
+    gsub(pattern = "%%MEAN_B%%", replacement = parEstimate$mean) %>%
+    gsub(pattern = "%%SD%%", replacement = parEstimate$sd) %>%
+    gsub(pattern = "%%SD_B%%", replacement = parEstimate$sd) %>%
+    gsub(pattern = "%%BINS%%", 
+         replacement = paste(parEstimate[grep("bin", colnames(parEstimate))], 
+                             collapse = ", ")) %>%
+    gsub(pattern = "%%BINS_B%%", 
+         replacement = paste(parEstimate[grep("bin", colnames(parEstimate))], 
+                             collapse = ", ")) %>%
+    gsub(pattern = "%%TARGET_ID%%", replacement = parEstimate$Target) %>%
+    gsub(pattern = "%%RADIOCARBON_MEAN%%", 
+         replacement = cleanNA(coordinates["LowerLimit/Mean/Point"])) %>%
+    gsub(pattern = "%%RADIOCARBON_SD%%", 
+         replacement = cleanNA(coordinates["UpperLimit/SD"]))
+  
   res %>% paste(collapse = " ")
 }
 
@@ -522,78 +483,3 @@ cleanNA <- function(x) {
     x
   }
 }
-
-# createOxCalTextOutput <- function(model, OxcalType, OxCalA, OxCalB, Bins, Coordinates){
-#
-#   ParEstimatesNames <- getParEstimatesNames(model, Bins)
-#   targets <- as.character(unique(ParEstimatesNames$Target))
-#   targets <- targets[targets != "all"]
-#   Coordinates <- as.data.frame(Coordinates)
-#   # rownames(Coordinates) <- targets #
-#
-#   if(OxcalType == "A"){
-#     startString <- "Start string A for item selected in A"
-#     endString <- "Start string A for item selected in A"
-#   }
-#   if(OxcalType == "B"){
-#     startString <- "Start string B for item selected in A"
-#     endString <- "Start string B for item selected in A"
-#   }
-#   if(OxcalType == "C"){
-#     startString <- "Start string C for item selected in A"
-#     endString <- "Start string C for item selected in A"
-#   }
-#   if(OxcalType == "D"){
-#     startString <- "Start string D for item selected in A"
-#     endString <- "Start string D for item selected in A"
-#   }
-#
-#   if(OxCalA == "none"){
-#     return("Please select an estimate")
-#   }
-#
-#   if(OxCalB == "none"){
-#     parA <- ParEstimatesNames[ParEstimatesNames$Name == OxCalA, ]
-#
-#     midText <- paste(lapply(targets, function(x){
-#       paste("Mean Target", x, parA$mean[parA$Target %in% c(x, "all")][1],
-#             "Sd", parA$sd[parA$Target %in% c(x, "all")][1],
-#             "LowerLimit/Mean/Point", Coordinates$DateLowerLimit[which(rownames(Coordinates) == x)],
-#             "UpperLimit/SD", Coordinates$DateUpperLimit[which(rownames(Coordinates) == x)],
-#             "Text", collapse = " ")
-#     }), collapse = " \n ")
-#
-#   } else {
-#     parA <- ParEstimatesNames[ParEstimatesNames$Name == OxCalA, ]
-#     parB <- ParEstimatesNames[ParEstimatesNames$Name == OxCalB, ]
-#
-#     midText <- paste(lapply(targets, function(x){
-#       paste("Mean 1 Target", x, parA$mean[parA$Target %in% c(x, "all")][1],
-#             "Sd 1", parA$sd[parA$Target %in% c(x, "all")][1],
-#             "Mean 2 Target", parB$mean[parB$Target %in% c(x, "all")][1],
-#             "Sd 2", parB$sd[parB$Target %in% c(x, "all")][1],
-#             "Date Lower Limit", Coordinates$DateLowerLimit[which(rownames(Coordinates) == x)],
-#             "Date Upper Limit", Coordinates$DateUpperLimit[which(rownames(Coordinates) == x)],
-#             "Text", collapse = " ")
-#     }), collapse = " \n ")
-#   }
-#
-#   completeText <- paste(startString, midText, endString, sep = " \n ")
-#
-#   return(completeText)
-# }
-
-# getParEstimatesNames <- function(model, Bins){
-#   if(Bins == "meansd"){
-#     bins <- TRUE
-#   } else {
-#     bins <- FALSE
-#   }
-#   parEstimates <- getResultStatistics(model$modelResults$parameters,
-#                                       model$modelResults$userEstimateSamples,
-#                                       model$fruitsObj, agg = TRUE, DT = FALSE, bins = bins)
-#   parEstimates$Name <- sapply(1:nrow(parEstimates), function(x){
-#     paste(parEstimates$`Group`[x], parEstimates$`Estimate`[x], sep = "_")
-#   })
-#   return(parEstimates)
-# }
