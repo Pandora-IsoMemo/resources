@@ -297,7 +297,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ),
                     checkboxInput(
                       ns("oxcalCheck"),
-                      "Show interface for OxCal export",
+                      "Show interface for Oxcal export",
                       value = FALSE
                     )
                   ),
@@ -1155,7 +1155,7 @@ fruitsUI <- function(id, title = "FRUITS") {
             ),
             # OxCal ----
             tabPanel(
-              "OxCal export",
+              "Oxcal export",
               OxCalOutputUI(ns("oxcal"))
             )
           )

@@ -98,14 +98,14 @@ OxCalOutputUI <- function(id) {
         value = 1
       ))
     ),
-    actionButton(ns("GenerateOxCal"), "Generate oxcal code"),
+    actionButton(ns("GenerateOxCal"), "Generate Oxcal code"),
     tags$hr(),
-    textAreaInput(ns("OxCalText"), "OxCal Output",
+    textAreaInput(ns("OxCalText"), "Oxcal Output",
       width = "100%", height = "400px"
     ) %>%
       shiny::tagAppendAttributes(style = "width: 100%;"),
     actionButton(ns("OxcalExecute"), "Execute in Oxcal"),
-    downloadButton(ns("downloadOxCal"), "Download oxcal code")
+    downloadButton(ns("downloadOxCal"), "Download Oxcal code")
   )
 }
 
