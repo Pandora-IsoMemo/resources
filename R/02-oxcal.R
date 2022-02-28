@@ -458,7 +458,7 @@ getTargetString <- function(curve, parEstimate, type, coordinates) {
   if (is.null(curve)) {
     return(NULL)
   }
-  
+
   res <- curve %>%
     gsub(pattern = "%%TARGET_ID%%", replacement = paste0("\"", parEstimate$Target, "\"")) %>%
     gsub(pattern = "%%MEAN%%", replacement = parEstimate$mean) %>%
