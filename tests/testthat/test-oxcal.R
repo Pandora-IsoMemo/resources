@@ -185,19 +185,75 @@ test_that("Create OxCal Output", {
     strsplit(split = "\n") %>%
     unlist()
 
-  expect_equal(oxcalLines1[1], "Plot()")
-  expect_equal(oxcalLines1[3], "Curve(\"IntCal20\",\"IntCal20.14c\");\r")
-  expect_equal(oxcalLines1[4], "Curve(\"SHCal20\",\"SHCal20.14c\");\r")
-  expect_equal(oxcalLines1[5], "Mix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", 2,1);")
-  expect_equal(oxcalLines1[6], "Curve(\"Marine20\",\"Marine20.14c\");\r")
-  expect_equal(oxcalLines1[7], "Delta_R(\"Aquatic1\",2,1);")
   expect_equal(
-    oxcalLines1[9] %>% substr(start = 1, stop = 100),
-    "Delta_R(\"Aquatic1\",2,1);"
-  )
-  expect_equal(
-    oxcalLines1[11] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(\"Individual_1\",\"terrestrial\",\"Aquatic1\", 0.511,0.29);\r"
+    oxcalLines1,
+    c(
+      "Plot()",
+      "{",
+      "Curve(\"IntCal20\",\"IntCal20.14c\");\r",
+      "Curve(\"SHCal20\",\"SHCal20.14c\");\r",
+      "Mix_Curves(\"terrestrial\",\"IntCal20\",\"SHCal20\", 2,1);",
+      "Curve(\"Marine20\",\"Marine20.14c\");\r",
+      "Delta_R(\"Aquatic1\",2,1);",
+      "Curve(\"terrestrial\");\r",
+      "Delta_R(\"Aquatic1\",2,1);",
+      "",
+      "Mix_Curve(\"Individual_1\",\"terrestrial\",\"Aquatic1\", 0.511,0.29);\r",
+      "R_Date(“\"Individual_1\"“, 1001,1);",
+      "Mix_Curve(\"Individual_2\",\"terrestrial\",\"Aquatic1\", 0.146,0.159);\r",
+      "R_Date(“\"Individual_2\"“, 1002,2);",
+      "Mix_Curve(\"Individual_3\",\"terrestrial\",\"Aquatic1\", 0.096,0.119);\r",
+      "R_Date(“\"Individual_3\"“, 1003,3);",
+      "Mix_Curve(\"Individual_4\",\"terrestrial\",\"Aquatic1\", 0.092,0.119);\r",
+      "R_Date(“\"Individual_4\"“, 1004,4);",
+      "Mix_Curve(\"Individual_5\",\"terrestrial\",\"Aquatic1\", 0.234,0.205);\r",
+      "R_Date(“\"Individual_5\"“, 1005,5);",
+      "Mix_Curve(\"male\",\"terrestrial\",\"Aquatic1\", 0.328,0.297);\r",
+      "R_Date(“\"male\"“, NA,NA);",
+      "Mix_Curve(\"female\",\"terrestrial\",\"Aquatic1\", 0.141,0.167);\r",
+      "R_Date(“\"female\"“, NA,NA);",
+      "Mix_Curve(\"germany\",\"terrestrial\",\"Aquatic1\", 0.28,0.277);\r",
+      "R_Date(“\"germany\"“, NA,NA);",
+      "Mix_Curve(\"england\",\"terrestrial\",\"Aquatic1\", 0.119,0.143);\r",
+      "R_Date(“\"england\"“, NA,NA);",
+      "Mix_Curve(\"germany.male\",\"terrestrial\",\"Aquatic1\", 0.511,0.29);\r",
+      "R_Date(“\"germany.male\"“, NA,NA);",
+      "Mix_Curve(\"england.male\",\"terrestrial\",\"Aquatic1\", 0.146,0.159);\r",
+      "R_Date(“\"england.male\"“, NA,NA);",
+      "Mix_Curve(\"germany.female\",\"terrestrial\",\"Aquatic1\", 0.165,0.181);\r",
+      "R_Date(“\"germany.female\"“, NA,NA);",
+      "Mix_Curve(\"england.female\",\"terrestrial\",\"Aquatic1\", 0.092,0.119);\r",
+      "R_Date(“\"england.female\"“, NA,NA);",
+      "Mix_Curve(\"Individual_1\",\"terrestrial\",\"Aquatic1\", 0.077,0.08);\r",
+      "R_Date(“\"Individual_1\"“, 1001,1);",
+      "Mix_Curve(\"Individual_2\",\"terrestrial\",\"Aquatic1\", 0.087,0.102);\r",
+      "R_Date(“\"Individual_2\"“, 1002,2);",
+      "Mix_Curve(\"Individual_3\",\"terrestrial\",\"Aquatic1\", 0.027,0.041);\r",
+      "R_Date(“\"Individual_3\"“, 1003,3);",
+      "Mix_Curve(\"Individual_4\",\"terrestrial\",\"Aquatic1\", 0.523,0.233);\r",
+      "R_Date(“\"Individual_4\"“, 1004,4);",
+      "Mix_Curve(\"Individual_5\",\"terrestrial\",\"Aquatic1\", 0.045,0.041);\r",
+      "R_Date(“\"Individual_5\"“, 1005,5);",
+      "Mix_Curve(\"male\",\"terrestrial\",\"Aquatic1\", 0.082,0.092);\r",
+      "R_Date(“\"male\"“, NA,NA);",
+      "Mix_Curve(\"female\",\"terrestrial\",\"Aquatic1\", 0.198,0.269);\r",
+      "R_Date(“\"female\"“, NA,NA);",
+      "Mix_Curve(\"germany\",\"terrestrial\",\"Aquatic1\", 0.05,0.061);\r",
+      "R_Date(“\"germany\"“, NA,NA);",
+      "Mix_Curve(\"england\",\"terrestrial\",\"Aquatic1\", 0.305,0.283);\r",
+      "R_Date(“\"england\"“, NA,NA);",
+      "Mix_Curve(\"germany.male\",\"terrestrial\",\"Aquatic1\", 0.077,0.08);\r",
+      "R_Date(“\"germany.male\"“, NA,NA);",
+      "Mix_Curve(\"england.male\",\"terrestrial\",\"Aquatic1\", 0.087,0.102);\r",
+      "R_Date(“\"england.male\"“, NA,NA);",
+      "Mix_Curve(\"germany.female\",\"terrestrial\",\"Aquatic1\", 0.036,0.042);\r",
+      "R_Date(“\"germany.female\"“, NA,NA);",
+      "Mix_Curve(\"england.female\",\"terrestrial\",\"Aquatic1\", 0.523,0.233);\r",
+      "R_Date(“\"england.female\"“, NA,NA);",
+      "",
+      "",
+      "};"
+    )
   )
 
   expect_equal(oxcalLines2[1], "Plot()")

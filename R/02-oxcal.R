@@ -186,7 +186,7 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
 
   observeEvent(input$GenerateOxCal, {
     validate(validInput(model()))
-browser()
+
     withProgress(
       {
         if (as.numeric(input$terrestrialCurve) == 3) {
@@ -352,8 +352,10 @@ createOxCalText <- function(model,
                             OxCalB,
                             bins,
                             coordinates) {
+  
   if (OxCalA == "none") {
-    return("Please select an estimate")
+    shinyjs::alert("Please select Estimate 1")
+    return("")
   }
 
   oxcalText <- lapply(basicCode, function(part) {
