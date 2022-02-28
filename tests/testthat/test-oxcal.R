@@ -196,8 +196,8 @@ test_that("Create OxCal Output", {
     "Delta_R(\"Aquatic1\",2,1);"
   )
   expect_equal(
-    oxcalLines1[23] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_2,\"Aquatic1\",\"Aquatic2\", 0.087,0.102);"
+    oxcalLines1[11] %>% substr(start = 1, stop = 100),
+    "Mix_Curve(\"Individual_1\",\"terrestrial\",\"Aquatic1\", 0.511,0.29);\r"
   )
 
   expect_equal(oxcalLines2[1], "Plot()")

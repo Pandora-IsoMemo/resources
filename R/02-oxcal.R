@@ -456,7 +456,9 @@ getTargetString <- function(curve, parEstimate, type, coordinates) {
   if (is.null(curve)) {
     return(NULL)
   }
+  
   res <- curve %>%
+    gsub(pattern = "%%TARGET_ID%%", replacement = paste0("\"", parEstimate$Target, "\"")) %>%
     gsub(pattern = "%%MEAN%%", replacement = parEstimate$mean) %>%
     gsub(pattern = "%%MEAN_B%%", replacement = parEstimate$mean) %>%
     gsub(pattern = "%%SD%%", replacement = parEstimate$sd) %>%
@@ -467,7 +469,6 @@ getTargetString <- function(curve, parEstimate, type, coordinates) {
     gsub(pattern = "%%BINS_B%%", 
          replacement = paste(parEstimate[grep("bin", colnames(parEstimate))], 
                              collapse = ", ")) %>%
-    gsub(pattern = "%%TARGET_ID%%", replacement = parEstimate$Target) %>%
     gsub(pattern = "%%RADIOCARBON_MEAN%%", 
          replacement = cleanNA(coordinates["LowerLimit/Mean/Point"])) %>%
     gsub(pattern = "%%RADIOCARBON_SD%%", 
