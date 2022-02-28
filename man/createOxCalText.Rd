@@ -21,7 +21,8 @@ createOxCalText(
 
 \item{basicCode}{(character) basic text read from external source}
 
-\item{terrestrialCurve}{(character) basic text for the terrestrial curve read from external source}
+\item{terrestrialCurve}{(character) basic text for the terrestrial curve read from external
+source}
 
 \item{aquaticCurve1}{(character) basic text for the aquatic curve 1 read from external source}
 
@@ -35,14 +36,6 @@ createOxCalText(
 of pdf for the selected parameter estimate(s)}
 
 \item{coordinates}{(data.frame) containing the radiocarbon values (mean+SD) for each target}
-
-\item{meanDeltaR1}{(numeric) input of the mean for aquatic curve 1}
-
-\item{sdDeltaR1}{(numeric) input of the sd for aquatic curve 1}
-
-\item{meanDeltaR2}{(numeric) input of the mean for aquatic curve 2}
-
-\item{sdDeltaR2}{(numeric) input of the sd for aquatic curve 2}
 }
 \description{
 Create Oxcal Text

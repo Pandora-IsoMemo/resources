@@ -110,36 +110,40 @@ OxCalOutputUI <- function(id) {
 }
 
 OxCalOutput <- function(input, output, session, model, exportCoordinates) {
-   terrestrialCurvesXlsx <- reactive({
+  terrestrialCurvesXlsx <- reactive({
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/b7732618-7764-460a-b1fa-c614f4cdbe95/download/terrestrial.xlsx"
     read.xlsx(file)
   })
-
+  
   aquaticCurves1Xlsx <- reactive({
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/2037632f-f984-4834-8e25-4af5498df163/download/aquatic1.xlsx"
     read.xlsx(file)
   })
-
+  
   aquaticCurves2Xlsx <- reactive({
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/120d810e-ff7d-49b7-80b8-e9791e2980b3/download/aquatic2.xlsx"
     read.xlsx(file)
   })
-
+  
   oxCalBasicCode <- reactive({
-    file <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/f4b0a2b4-8f65-463d-aff4-2a31490abc78/download/oxcal_basic_code.txt"
+    file <-
+      "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/f4b0a2b4-8f65-463d-aff4-2a31490abc78/download/oxcal_basic_code.txt"
     readLines(file, warn = FALSE)
   })
 
   observe({
-    updateSelectInput(session, "terrestrialCurve", choices = getCurveTitlesXlsx(terrestrialCurvesXlsx()))
-    updateSelectInput(session, "aquaticCurve1", choices = getCurveTitlesXlsx(aquaticCurves1Xlsx()))
-    updateSelectInput(session, "aquaticCurve2", choices = c(
-      list("none" = NA),
-      getCurveTitlesXlsx(aquaticCurves2Xlsx())
-    ))
+    updateSelectInput(session,
+                      "terrestrialCurve",
+                      choices = getCurveTitlesXlsx(terrestrialCurvesXlsx()))
+    updateSelectInput(session, "aquaticCurve1",
+                      choices = getCurveTitlesXlsx(aquaticCurves1Xlsx()))
+    updateSelectInput(session,
+                      "aquaticCurve2",
+                      choices = c(list("none" = NA),
+                                  getCurveTitlesXlsx(aquaticCurves2Xlsx())))
   })
 
   observe({
@@ -160,13 +164,10 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
   })
 
   observeEvent(input$help, {
-    helpFile <- "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/aa53dfbf-a521-4aaa-81a6-a01ac89f1667/download/oxcal_help.txt"
-    showModal(
-      modalDialog(
-        title = "OxCal Help",
-        readLines(helpFile)
-      )
-    )
+    helpFile <-
+      "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/aa53dfbf-a521-4aaa-81a6-a01ac89f1667/download/oxcal_help.txt"
+    showModal(modalDialog(title = "OxCal Help",
+                          readLines(helpFile)))
   })
 
   terrestrialParams <- reactiveVal(NULL)
@@ -331,15 +332,12 @@ getCodeAquatic <- function(curve, binOption, deltaRParams) {
 #'
 #' @param model output of the model
 #' @param basicCode (character) basic text read from external source
-#' @param terrestrialCurve (character) basic text for the terrestrial curve read from external source
+#' @param terrestrialCurve (character) basic text for the terrestrial curve read from external
+#'  source
 #' @param aquaticCurve1 (character) basic text for the aquatic curve 1 read from external source
 #' @param aquaticCurve2 (character) basic text for the aquatic curve 2 read from external source
 #' @param OxCalA (character) parameter estimate for aquatic curve 1
-#' @param meanDeltaR1 (numeric) input of the mean for aquatic curve 1
-#' @param sdDeltaR1 (numeric) input of the sd for aquatic curve 1
 #' @param OxCalB (character) parameter estimate for aquatic curve 2
-#' @param meanDeltaR2 (numeric) input of the mean for aquatic curve 2
-#' @param sdDeltaR2 (numeric) input of the sd for aquatic curve 2
 #' @param bins (character) either "meansd" for the usage of mean and sd, or "bins" for the usage
 #'  of pdf for the selected parameter estimate(s)
 #' @param coordinates (data.frame) containing the radiocarbon values (mean+SD) for each target
