@@ -60,7 +60,8 @@ OxCalOutputUI <- function(id) {
       )),
       column(width = 2, selectInput(ns("OxCalA"),
         "Estimate 1",
-        choices = c("none")
+        #choices = c("none")
+        choices = NULL
       )),
       column(width = 2, numericInput(ns("meanDeltaR1"),
         "Mean Delta R 1",
@@ -83,20 +84,25 @@ OxCalOutputUI <- function(id) {
     fluidRow(
       column(width = 3, selectInput(ns("aquaticCurve2"),
         label = "Aquatic Curve 2",
-        choices = NULL
+        choices = list("none" = NA)
       )),
-      column(width = 2, selectInput(ns("OxCalB"),
-        "Estimate 2",
-        choices = c("none")
-      )),
-      column(width = 2, numericInput(ns("meanDeltaR2"),
-        "Mean Delta R 2",
-        value = 0
-      )),
-      column(width = 2, numericInput(ns("sdDeltaR2"),
-        "SD Delta R 2",
-        value = 1
-      ))
+      conditionalPanel(
+        condition = "input.aquaticCurve2 != 'NA'",
+        ns = ns,
+        column(width = 2, selectInput(ns("OxCalB"),
+                                      "Estimate 2",
+                                      #choices = c("none")
+                                      choices = NULL
+        )),
+        column(width = 2, numericInput(ns("meanDeltaR2"),
+                                       "Mean Delta R 2",
+                                       value = 0
+        )),
+        column(width = 2, numericInput(ns("sdDeltaR2"),
+                                       "SD Delta R 2",
+                                       value = 1
+        ))
+      )
     ),
     actionButton(ns("GenerateOxCal"), "Generate Oxcal code"),
     tags$hr(),
@@ -159,8 +165,10 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
       nameParEstimates() %>%
       pull("Name") %>%
       unique()
-    updateSelectInput(session, "OxCalA", choices = c("none", parEstimatesNames))
-    updateSelectInput(session, "OxCalB", choices = c("none", parEstimatesNames))
+    updateSelectInput(session, "OxCalA", choices = c(#"none", 
+                                                     parEstimatesNames))
+    updateSelectInput(session, "OxCalB", choices = c(#"none", 
+                                                     parEstimatesNames))
   })
 
   observeEvent(input$help, {
@@ -328,10 +336,10 @@ createOxCalText <- function(model,
                             bins,
                             coordinates) {
   
-  if (OxCalA == "none") {
-    shinyjs::alert("Please select Estimate 1")
-    return("")
-  }
+  # if (OxCalA == "none") {
+  #   shinyjs::alert("Please select Estimate 1")
+  #   return("")
+  # }
   
   oxcalText <- basicCode %>% 
     gsub(pattern = "%%Terrestrial_curve_VAR1%%", replacement = terrestrialCurve) %>%
@@ -380,11 +388,11 @@ getLoop <- function(optionCurve1, optionCurve2, model, bins, OxCalA, OxCalB, coo
   
   parEstimates1 <- parEstimates %>% filterEstimates(OxCalA)
   
-  if (OxCalB != "none") {
+  #if (OxCalB != "none") {
     parEstimates2 <- parEstimates %>% filterEstimates(OxCalB)
-  } else {
-    parEstimates2 <- parEstimates[FALSE, ]
-  }
+  # } else {
+  #   parEstimates2 <- parEstimates[FALSE, ]
+  # }
   
   
   if (nrow(parEstimates1) == 0) {
