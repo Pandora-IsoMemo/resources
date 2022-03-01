@@ -172,7 +172,7 @@ test_that("Create OxCal Output", {
 
   oxcalLines1 <- createOxCalText(
     model = model,
-    basicCode = basicCode,
+    basicCode = basicCode %>% paste(collapse = "\n"),
     terrestrialCurve = terrestrialCurve,
     aquaticCurve1 = aquaticCurve1Mean,
     aquaticCurve2 = aquaticCurve2Mean,
@@ -186,7 +186,7 @@ test_that("Create OxCal Output", {
 
   oxcalLines2 <- createOxCalText(
     model = model,
-    basicCode = basicCode,
+    basicCode = basicCode %>% paste(collapse = "\n"),
     terrestrialCurve = terrestrialCurve,
     aquaticCurve1 = aquaticCurve1PDF,
     aquaticCurve2 = aquaticCurve2PDF,
@@ -211,4 +211,5 @@ test_that("Create OxCal Output", {
     oxcalLines2[11],
     "Mix_Curve(\"Individual_1\",\"terrestrial\",\"Aquatic1\", P(0,100,[0,0, 0, 0.001, 0.002, 0.007, 0.013, 0.018, 0.023, 0.034, 0.044, 0.06, 0.073, 0.089, 0.108, 0.124, 0.138, 0.153, 0.167, 0.175, 0.188, 0.208, 0.227, 0.238, 0.248, 0.26, 0.267, 0.28, 0.295, 0.305, 0.317, 0.328, 0.332, 0.345, 0.359, 0.383, 0.394, 0.405, 0.423, 0.434, 0.448, 0.455, 0.467, 0.479, 0.491, 0.497, 0.51, 0.519, 0.523, 0.536, 0.543, 0.55, 0.561, 0.57, 0.58, 0.593, 0.598, 0.608, 0.612, 0.62, 0.628, 0.639, 0.644, 0.652, 0.663, 0.669, 0.677, 0.687, 0.693, 0.7, 0.705, 0.711, 0.718, 0.732, 0.736, 0.74, 0.746, 0.759, 0.766, 0.772, 0.776, 0.786, 0.794, 0.804, 0.813, 0.821, 0.829, 0.839, 0.848, 0.86, 0.869, 0.883, 0.889, 0.9, 0.912, 0.921, 0.931, 0.942, 0.954, 0.964, 0.98, 0.999,0]));"
     )
-})
+
+  })

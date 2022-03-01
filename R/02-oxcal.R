@@ -207,15 +207,20 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
           deltaRParams = c(input$meanDeltaR1, input$sdDeltaR1)
         )
 
-        aquaticCurve2Code <- getCodeAquatic(
-          curve = aquaticCurves2Xlsx()[as.numeric(input$aquaticCurve2), ],
-          binOption = input$bins,
-          deltaRParams = c(input$meanDeltaR2, input$sdDeltaR2)
-        )
+        if (is.null(input$aquaticCurve2) || is.na(input$aquaticCurve2) || 
+            input$aquaticCurve2 == "NA") {
+          aquaticCurve2Code <- NULL
+        } else {
+          aquaticCurve2Code <- getCodeAquatic(
+            curve = aquaticCurves2Xlsx()[as.numeric(input$aquaticCurve2), ],
+            binOption = input$bins,
+            deltaRParams = c(input$meanDeltaR2, input$sdDeltaR2)
+          )
+        }
 
         TextOxCal <- createOxCalText(
           model = model(),
-          basicCode = oxCalBasicCode(),
+          basicCode = oxCalBasicCode() %>% paste(collapse = "\n"),
           terrestrialCurve = terrestrialCurveCode,
           aquaticCurve1 = aquaticCurve1Code,
           OxCalA = input$OxCalA,
@@ -327,30 +332,30 @@ createOxCalText <- function(model,
     shinyjs::alert("Please select Estimate 1")
     return("")
   }
-
-  oxcalText <- lapply(basicCode, function(part) {
-    if (part == "%%Terrestrial_curve_VAR1%%") {
-      return(terrestrialCurve)
-    }
-    if (part == "%%Aquatic_curve_1_VAR1%%") {
-      return(aquaticCurve1$header)
-    }
-    if (part == "%%Aquatic_curve_2_VAR1%%") {
-      return(aquaticCurve2$header)
-    }
-    if (part == "%%String_from_loop%%") {
-      return(getLoop(
-        aquaticCurve1$option,
-        aquaticCurve2$option,
-        model, bins,
-        OxCalA, OxCalB,
-        coordinates
-      ))
-    }
-    part
-  })
-
-  paste(oxcalText, collapse = "\n")
+  
+  oxcalText <- basicCode %>% 
+    gsub(pattern = "%%Terrestrial_curve_VAR1%%", replacement = terrestrialCurve) %>%
+    gsub(pattern = "%%Aquatic_curve_1_VAR1%%", replacement = aquaticCurve1$header)
+  
+  if (!is.null(aquaticCurve2$header)) {
+    oxcalText <- oxcalText %>%
+      gsub(pattern = "%%Aquatic_curve_2_VAR1%%", replacement = aquaticCurve2$header)
+  } else {
+    oxcalText <- oxcalText %>%
+      gsub(pattern = "%%Aquatic_curve_2_VAR1%%\n", replacement = "")
+  }
+  
+  oxcalText %>%
+    gsub(pattern = "%%String_from_loop%%",
+         replacement = getLoop(
+           optionCurve1 = aquaticCurve1$option,
+           optionCurve2 = aquaticCurve2$option,
+           model = model,
+           bins = bins,
+           OxCalA = OxCalA,
+           OxCalB = OxCalB,
+           coordinates = coordinates
+         ))
 }
 
 #' Get Loop
@@ -374,7 +379,13 @@ getLoop <- function(optionCurve1, optionCurve2, model, bins, OxCalA, OxCalB, coo
     nameParEstimates()
   
   parEstimates1 <- parEstimates %>% filterEstimates(OxCalA)
-  parEstimates2 <- parEstimates %>% filterEstimates(OxCalB)
+  
+  if (OxCalB != "none") {
+    parEstimates2 <- parEstimates %>% filterEstimates(OxCalB)
+  } else {
+    parEstimates2 <- parEstimates[FALSE, ]
+  }
+  
   
   if (nrow(parEstimates1) == 0) {
     return(NULL)
@@ -410,10 +421,10 @@ filterEstimates <- function(estimates, pattern) {
 getTargetString <-
   function(optionCurve1,
            parEstimate1,
-           optionCurve2,
-           parEstimate2,
            type,
-           coordinates) {
+           coordinates,
+           optionCurve2 = NULL,
+           parEstimate2 = NULL) {
     if (is.null(optionCurve1) || nrow(parEstimate1) == 0) {
       return(NULL)
     }
