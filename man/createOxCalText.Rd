@@ -24,9 +24,11 @@ createOxCalText(
 \item{terrestrialCurve}{(character) basic text for the terrestrial curve read from external
 source}
 
-\item{aquaticCurve1}{(character) basic text for the aquatic curve 1 read from external source}
+\item{aquaticCurve1}{(list) header and option text for the aquatic curve 1 read from external 
+source}
 
-\item{aquaticCurve2}{(character) basic text for the aquatic curve 2 read from external source}
+\item{aquaticCurve2}{(list) header and option text for the aquatic curve 2 read from external 
+source}
 
 \item{OxCalA}{(character) parameter estimate for aquatic curve 1}
 

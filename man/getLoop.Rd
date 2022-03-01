@@ -4,12 +4,12 @@
 \alias{getLoop}
 \title{Get Loop}
 \usage{
-getLoop(aquaticCurve1, aquaticCurve2, model, bins, OxCalA, OxCalB, coordinates)
+getLoop(optionCurve1, optionCurve2, model, bins, OxCalA, OxCalB, coordinates)
 }
 \arguments{
-\item{aquaticCurve1}{(character) basic text for the aquatic curve 1 read from external source}
+\item{optionCurve1}{(character) option text for the aquatic curve 1 read from external source}
 
-\item{aquaticCurve2}{(character) basic text for the aquatic curve 2 read from external source}
+\item{optionCurve2}{(character) option text for the aquatic curve 2 read from external source}
 
 \item{model}{output of the model}
 
