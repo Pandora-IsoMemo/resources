@@ -160,18 +160,22 @@ fruitsTab <- function(input,
     )
   })
   
-  observeEvent(values$status, {
+  observeEvent({
+    values$status 
+    input$oxcalCheck
+    },{
     logDebug("Entering observeEvent(value$status)")
     checkOxcal <- "FALSE"
+    
     if (input$oxcalCheck & values$status == "COMPLETED") {
       checkOxcal <- "COMPLETED"
     }
     switch(checkOxcal,
            COMPLETED = {
-             showTab("mainTabs", "OxCal")
+             showTab("mainTabs", "Oxcal export")
            },
            {
-             hideTab("mainTabs", "OxCal")
+             hideTab("mainTabs", "Oxcal export")
            }
     )
   })
@@ -205,23 +209,6 @@ fruitsTab <- function(input,
     } else {
       hideTab("MCharResults", "concentrationsPlot")
     }
-  })
-  
-  
-  observeEvent(input$oxcalCheck, {
-    logDebug("Entering observeEvent(value$status)")
-    checkOxcal <- "FALSE"
-    if (input$oxcalCheck & values$status == "COMPLETED") {
-      checkOxcal <- "COMPLETED"
-    }
-    switch(checkOxcal,
-           COMPLETED = {
-             showTab("mainTabs", "OxCal")
-           },
-           {
-             hideTab("mainTabs", "OxCal")
-           }
-    )
   })
   
   
@@ -1515,23 +1502,6 @@ fruitsTab <- function(input,
       modelCharacteristics(list(fruitsObj = fruitsObj, modelResults = modelResults))
     }
   })
-  
-  
-  observeEvent(values$status, {
-    logDebug("Entering observeEvent(value$status)")
-    switch(values$status,
-           COMPLETED = {
-             showTab("mainTabs", "resultsReport")
-             showTab("mainTabs", "modelDiagnostics")
-             showTab("mainTabs", "Output")
-             showTab("mainTabs", "isomemo")
-           },
-           {
-             
-           }
-    )
-  })
-  
   
   observe({
     updatePickerInput(
