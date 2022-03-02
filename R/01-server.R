@@ -124,6 +124,7 @@ fruitsTab <- function(input,
       shinyjs::alert("File format not valid. Model object not found")
       return()
     }
+    
     for (name in names(model)) {
       values[[name]] <- model[[name]]
     }
@@ -1062,16 +1063,16 @@ fruitsTab <- function(input,
         values$targetValuesCovariates,
         values$sourceNames,
         vars = values$categoricalVars
-      )
+      ) %>% nullToEmptyList()
     )
     updateSelectInput(
-      session,
-      "priorHierarchicalValuesBeta",
+      session = session,
+      inputId = "priorHierarchicalValuesBeta",
       choices = getAllMainInteractions(
         values$targetValuesCovariates,
         values$fractionNames,
         vars = values$categoricalVars
-      )
+      ) %>% nullToEmptyList()
     )
     updateSelectInput(
       session,
@@ -1081,7 +1082,7 @@ fruitsTab <- function(input,
         values$targetNames,
         values$sourceNames,
         vars = values$categoricalVars
-      )
+      ) %>% nullToEmptyList()
     )
   })
 
@@ -1216,7 +1217,7 @@ fruitsTab <- function(input,
         values$targetValuesCovariates,
         values$sourceNames,
         vars = values$categoricalVars
-      )
+      ) %>% nullToEmptyList()
     )
     updateSelectInput(
       session,
@@ -1225,7 +1226,7 @@ fruitsTab <- function(input,
         values$targetValuesCovariates,
         values$fractionNames,
         vars = values$categoricalVars
-      )
+      ) %>% nullToEmptyList()
     )
     updateSelectInput(
       session,
@@ -1235,7 +1236,7 @@ fruitsTab <- function(input,
         values$targetNames,
         values$sourceNames,
         vars = values$categoricalVars
-      )
+      ) %>% nullToEmptyList()
     )
   })
 
