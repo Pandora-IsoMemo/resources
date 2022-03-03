@@ -11,11 +11,7 @@ createOxCalText(
   aquaticCurve1,
   aquaticCurve2,
   OxCalA,
-  meanDeltaR1,
-  sdDeltaR1,
   OxCalB,
-  meanDeltaR2,
-  sdDeltaR2,
   bins,
   coordinates
 )
@@ -25,23 +21,18 @@ createOxCalText(
 
 \item{basicCode}{(character) basic text read from external source}
 
-\item{terrestrialCurve}{(character) basic text for the terrestrial curve read from external source}
+\item{terrestrialCurve}{(character) basic text for the terrestrial curve read from external
+source}
 
-\item{aquaticCurve1}{(character) basic text for the aquatic curve 1 read from external source}
+\item{aquaticCurve1}{(list) header and option text for the aquatic curve 1 read from external 
+source}
 
-\item{aquaticCurve2}{(character) basic text for the aquatic curve 2 read from external source}
+\item{aquaticCurve2}{(list) header and option text for the aquatic curve 2 read from external 
+source}
 
 \item{OxCalA}{(character) parameter estimate for aquatic curve 1}
 
-\item{meanDeltaR1}{(numeric) input of the mean for aquatic curve 1}
-
-\item{sdDeltaR1}{(numeric) input of the sd for aquatic curve 1}
-
 \item{OxCalB}{(character) parameter estimate for aquatic curve 2}
-
-\item{meanDeltaR2}{(numeric) input of the mean for aquatic curve 2}
-
-\item{sdDeltaR2}{(numeric) input of the sd for aquatic curve 2}
 
 \item{bins}{(character) either "meansd" for the usage of mean and sd, or "bins" for the usage
 of pdf for the selected parameter estimate(s)}

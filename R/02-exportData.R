@@ -45,16 +45,16 @@ exportData <- function(input, output, session, data) {
       )
     )
   })
-
+  
   output$exportExecute <- downloadHandler(
     filename = function() {
       exportFilename(input$exportType)
     },
     content = function(file) {
       switch(input$exportType,
-        csv = exportCSV(file, data()(), input$colseparator, input$decseparator),
-        xlsx = exportXLSX(file, data()()),
-        json = exportJSON(file, data()())
+             csv = exportCSV(file, data()(), input$colseparator, input$decseparator),
+             xlsx = exportXLSX(file, data()()),
+             json = exportJSON(file, data()())
       )
     }
   )

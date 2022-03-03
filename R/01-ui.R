@@ -80,7 +80,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               fruitsMatrixDistribution(scope = ns("targetValues")),
               fruitsMatrixInput(ns("targetValues"), "obsvnNames", "targetNames"),
               checkboxInput(ns("targetOffset"), "Include target offset",
-                value = TRUE
+                            value = TRUE
               ),
               conditionalPanel(
                 condition = "input.targetOffset == true",
@@ -226,110 +226,119 @@ fruitsUI <- function(id, title = "FRUITS") {
             "Model options",
             fluidRow(
               column(
-                4,
-                "Model options",
-                radioButtons(
-                  ns("modelType"),
-                  "Model type:",
-                  choices = list(
-                    "Update model (all info shared)" = "1",
-                    "Individual targets (partially shared info)" = "2",
-                    "Baseline model (partially shared info)" = "3",
-                    "Individual targets (no shared info)" = "4",
-                    "Baseline model (no shared info)" = "5"
+                width = 8,
+                tags$h4("Model options"),
+                fluidRow(
+                  column(
+                    width = 6,
+                    radioButtons(
+                      ns("modelType"),
+                      "Model type:",
+                      choices = list(
+                        "Update model (all info shared)" = "1",
+                        "Individual targets (partially shared info)" = "2",
+                        "Baseline model (partially shared info)" = "3",
+                        "Individual targets (no shared info)" = "4",
+                        "Baseline model (no shared info)" = "5"
+                      ),
+                      selected = 1
+                    ),
+                    numericInput(
+                      ns("minUnc"),
+                      "Minimum uncertainty",
+                      value = 0.005,
+                      min = 0.0001,
+                      max = 1,
+                      step = 0.001
+                    ),
+                    checkboxInput(ns("modelWeights"), "Include components",
+                                  value = FALSE
+                    ),
+                    conditionalPanel(
+                      condition = "input.modelWeights == true",
+                      ns = ns,
+                      checkboxInput(
+                        ns("modelWeightsContrained"),
+                        "Constrain weights between 0 and 100",
+                        value = TRUE
+                      )
+                    ),
+                    checkboxInput(ns("modelConcentrations"), "Include concentrations",
+                                  value = TRUE
+                    ),
+                    conditionalPanel(
+                      condition = "input.modelConcentrations == true",
+                      ns = ns,
+                      checkboxInput(
+                        ns("modelConcentrationsContrained"),
+                        "Constrain concentration between 0 and 100",
+                        value = TRUE
+                      )
+                    ),
+                    radioButtons(
+                      ns("inflatedBeta"),
+                      "Source contribution distribution:",
+                      choices = list(
+                        "Dirichlet" = 0,
+                        "Zero Inflated Beta" = 1
+                      ),
+                      selected = 0
+                    ),
+                    conditionalPanel(
+                      condition = "input.inflatedBeta == '0'",
+                      ns = ns,
+                      numericInput(
+                        ns("alphaHyper"),
+                        "Hyperparameters for alpha/sources",
+                        value = 1,
+                        min = 0.0001,
+                        max = 100
+                      )
+                    ),
+                    checkboxInput(
+                      ns("oxcalCheck"),
+                      "Show interface for Oxcal export",
+                      value = FALSE
+                    )
                   ),
-                  selected = 1
-                ),
-                numericInput(
-                  ns("minUnc"),
-                  "Minimum uncertainty",
-                  value = 0.005,
-                  min = 0.0001,
-                  max = 1,
-                  step = 0.001
-                ),
-                checkboxInput(ns("modelWeights"), "Include components",
-                  value = FALSE
-                ),
-                conditionalPanel(
-                  condition = "input.modelWeights == true",
-                  ns = ns,
-                  checkboxInput(
-                    ns("modelWeightsContrained"),
-                    "Constrain weights between 0 and 100",
-                    value = TRUE
-                  )
-                ),
-                checkboxInput(ns("modelConcentrations"), "Include concentrations",
-                  value = TRUE
-                ),
-                conditionalPanel(
-                  condition = "input.modelConcentrations == true",
-                  ns = ns,
-                  checkboxInput(
-                    ns("modelConcentrationsContrained"),
-                    "Constrain concentration between 0 and 100",
-                    value = TRUE
-                  )
-                ),
-                radioButtons(
-                  ns("inflatedBeta"),
-                  "Source contribution distribution:",
-                  choices = list(
-                    "Dirichlet" = 0,
-                    "Zero Inflated Beta" = 1
-                  ),
-                  selected = 0
-                ),
-                conditionalPanel(
-                  condition = "input.inflatedBeta == '0'",
-                  ns = ns,
-                  numericInput(
-                    ns("alphaHyper"),
-                    "Hyperparameters for alpha/sources",
-                    value = 1,
-                    min = 0.0001,
-                    max = 100
-                  )
-                ),
-                checkboxInput(
-                  ns("oxcalCheck"),
-                  "Show interface for radiocarbon corrections",
-                  value = FALSE
-                ),
-                radioButtons(
-                  ns("covariateType"),
-                  "Covariates model:",
-                  choices = list(
-                    "none" = 0,
-                    "fixed intercept (cat. vars), fixed slope (num. vars)" = 1,
-                    "random intercept (cat. vars), fixed slope (num. vars)" = 2,
-                    "random intercept (cat. vars), random slope (num. vars)" = 3
-                  ),
-                  selected = 0
-                ),
-                conditionalPanel(
-                  condition = "input.covariateType !== '0'",
-                  ns = ns,
-                  pickerInput(
-                    ns("categoricalVars"),
-                    "Select categorical variables",
-                    choices = list(),
-                    selected = NULL,
-                    multiple = TRUE
-                  ),
-                  pickerInput(
-                    ns("numericVars"),
-                    "Select numeric variables",
-                    choices = list(),
-                    selected = NULL,
-                    multiple = TRUE
+                  column(
+                    width = 6,
+                    radioButtons(
+                      ns("covariateType"),
+                      "Covariates model:",
+                      choices = list(
+                        "none" = 0,
+                        "fixed intercept (cat. vars), fixed slope (num. vars)" = 1,
+                        "random intercept (cat. vars), fixed slope (num. vars)" = 2,
+                        "random intercept (cat. vars), random slope (num. vars)" = 3
+                      ),
+                      selected = 0
+                    ),
+                    conditionalPanel(
+                      condition = "input.covariateType !== '0'",
+                      ns = ns,
+                      pickerInput(
+                        ns("categoricalVars"),
+                        "Select categorical variables",
+                        choices = list(),
+                        selected = NULL,
+                        multiple = TRUE
+                      ),
+                      pickerInput(
+                        ns("numericVars"),
+                        "Select numeric variables",
+                        choices = list(),
+                        selected = NULL,
+                        multiple = TRUE
+                      )
+                    )
                   )
                 )
               ),
               column(
-                4,
-                "MCMC options",
+                width = 3,
+                offset = 1,
+                tags$h4("MCMC options"),
                 numericInput(ns("burnin"), "Burn-In", value = 1e4, step = 1e3),
                 numericInput(
                   ns("iterations"),
@@ -677,19 +686,19 @@ fruitsUI <- function(id, title = "FRUITS") {
             value = "Characteristics",
             sidebarPanel(
               checkboxInput(ns("showConfidence"),
-                label = "Show credible bars/ellipses",
-                value = TRUE
+                            label = "Show credible bars/ellipses",
+                            value = TRUE
               ),
               checkboxInput(ns("showLegend"),
-                label = "Show legend if available",
-                value = FALSE
+                            label = "Show legend if available",
+                            value = FALSE
               ),
               conditionalPanel(
                 condition = "input.showLegend == true",
                 ns = ns,
                 checkboxInput(ns("legendInside"),
-                  label = "Show legend within plot",
-                  value = FALSE
+                              label = "Show legend within plot",
+                              value = FALSE
                 )
               ),
               sliderInput(
@@ -1146,7 +1155,7 @@ fruitsUI <- function(id, title = "FRUITS") {
             ),
             # OxCal ----
             tabPanel(
-              "OxCal",
+              "Oxcal export",
               OxCalOutputUI(ns("oxcal"))
             )
           )
