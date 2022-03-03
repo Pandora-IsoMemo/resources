@@ -428,6 +428,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                   ),
                   conditionalPanel(
                     condition = "input.modelConcentrations == true",
+                    ns = ns,
                     selectInput(
                       ns("priorConcentration"),
                       "Concentrations",
@@ -435,11 +436,11 @@ fruitsUI <- function(id, title = "FRUITS") {
                       selectize = FALSE,
                       multiple = TRUE,
                       size = 3
-                    ),
-                    ns = ns
+                    )
                   ),
                   conditionalPanel(
                     condition = "input.targetValuesShowCovariates == true & input.covariateType !== '0'",
+                    ns = ns,
                     selectInput(
                       ns("priorHierarchicalValues"),
                       "Source contribution categories",
@@ -463,8 +464,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                       selectize = FALSE,
                       multiple = TRUE,
                       size = 3
-                    ),
-                    ns = ns
+                    )
                   )
                 ),
                 column(

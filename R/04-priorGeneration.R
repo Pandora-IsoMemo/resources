@@ -636,6 +636,7 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
 }
 
 getAllMainInteractions <- function(covariates, Names1, Names2 = NULL, vars = NULL) {
+
   if (is.null(covariates) || is.null(vars) || length(vars) == 0 || all(covariates == "")) {
     return(c())
   }
@@ -678,6 +679,14 @@ getAllMainInteractions <- function(covariates, Names1, Names2 = NULL, vars = NUL
     return(unique(interaction(expand.grid(allInteractions, Names1, Names2), sep = "-")))
   } else {
     return(unique(interaction(expand.grid(allInteractions, Names1), sep = "-")))
+  }
+}
+
+nullToEmptyList <- function(val){
+  if (is.null(val)) {
+    return(list())
+  } else {
+    return(val)
   }
 }
 
