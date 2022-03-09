@@ -883,10 +883,11 @@ fruitsTab <- function(input,
   )
 
   ## MySql table contents
-  callModule(dbContent, "feeding", table = "feeding")
-  callModule(dbContent, "suess", table = "suess")
-  callModule(dbContent, "diet", table = "diet")
-  callModule(dbContent, "digest", table = "digest")
+  # callModule(dbContent, "feeding", table = "feeding")
+  # callModule(dbContent, "suess", table = "suess")
+  # callModule(dbContent, "diet", table = "diet")
+  # callModule(dbContent, "digest", table = "digest")
+  callModule(dbContentSelect, "popUpTables")
 
   ## About
   observeEvent(input$showAbout, {

@@ -38,18 +38,19 @@ fruitsUI <- function(id, title = "FRUITS") {
           "This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"
         ),
         tags$hr(),
-        tags$h4("View data table"),
-        tags$button(
-          class = "btn btn-default",
-          type = "button",
-          onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-          "IsoMemo"
-        ),
-        dbContentButton(ns("feeding"), table = "feeding"),
-        tags$br(),
-        dbContentButton(ns("suess"), table = "suess"),
-        dbContentButton(ns("diet"), table = "diet"),
-        dbContentButton(ns("digest"), table = "digest"),
+        # tags$h4("View data table"),
+        # tags$button(
+        #   class = "btn btn-default",
+        #   type = "button",
+        #   onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
+        #   "IsoMemo"
+        # ),
+        # dbContentButton(ns("feeding"), table = "feeding"),
+        # tags$br(),
+        # dbContentButton(ns("suess"), table = "suess"),
+        # dbContentButton(ns("diet"), table = "diet"),
+        # dbContentButton(ns("digest"), table = "digest"),
+        dbContentSelectUI(ns("popUpTables"), label = "View data table"),
         div(
           style = "display:none;",
           verbatimTextOutput(ns("status")),

@@ -4,6 +4,7 @@ dbContentButton <- function(id, table) {
   actionButton(ns("popup"), tableLabels(table))
 }
 
+
 dbContent <- function(input, output, session, table) {
   observeEvent(input$popup, {
     showModal(dbContentDialog(id = table, ns = session$ns))
@@ -17,6 +18,46 @@ dbContent <- function(input, output, session, table) {
 
   callModule(exportData, "export", data = reactive(function() {
     getDbContent(table)
+  }))
+}
+
+dbContentSelectUI <- function(id, label) {
+  ns <- NS(id)
+  
+  tagList(
+    tags$h4(label),
+    selectizeInput(ns("popup"), label = NULL,
+                choices = list("Feeding experiments" = "feeding",
+                               "Suess effect" = "suess",
+                               "Diet-to-consumer parameters" = "diet",
+                               "Digestibility" = "digest"),
+                options = list(
+                  placeholder = 'Please select a table',
+                  onInitialize = I('function() { this.setValue(""); }')
+                )),
+    tags$button(
+      class = "btn btn-default",
+      type = "button",
+      onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
+      "IsoMemo"
+    )
+  )
+}
+
+dbContentSelect <- function(input, output, session) {
+  observeEvent(input$popup, {
+    req(input$popup)
+    showModal(dbContentDialog(id = input$popup, ns = session$ns))
+  })
+  
+  data <- reactive({
+    getDbContent(input$popup)
+  })
+  
+  output$table <- renderDT(data())
+  
+  callModule(exportData, "export", data = reactive(function() {
+    getDbContent(input$popup)
   }))
 }
 
