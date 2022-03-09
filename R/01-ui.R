@@ -11,12 +11,12 @@ fruitsUI <- function(id, title = "FRUITS") {
     id = id,
     value = id,
     useShinyjs(),
-    sidebarLayout(
+    fluidRow(
       sidebarPanel(
-        width = 3,
-        uploadModelUI(ns("modelUpload"), "Upload Model"),
-        downloadModelUI(ns("modelDownload"), "Download Model"),
-        tags$hr(),
+        width = 2,
+        # uploadModelUI(ns("modelUpload"), "Upload Model"),
+        # downloadModelUI(ns("modelDownload"), "Download Model"),
+        # tags$hr(),
         selectInput(
           ns("exampleData"),
           label = "Select example models",
@@ -58,6 +58,7 @@ fruitsUI <- function(id, title = "FRUITS") {
       ),
       # Data ----
       mainPanel(
+        width = 8,
         tabsetPanel(
           id = ns("mainTabs"),
           type = "tabs",
@@ -1144,6 +1145,11 @@ fruitsUI <- function(id, title = "FRUITS") {
             )
           )
         )
+      ),
+      sidebarPanel(
+        width = 2,
+        downloadModelUI(ns("modelDownload"), "Download Model"),
+        uploadModelUI(ns("modelUpload"), "Upload Model")
       )
     )
   )

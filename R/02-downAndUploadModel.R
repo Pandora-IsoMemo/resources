@@ -14,7 +14,7 @@ downloadModelUI <- function(id, label) {
   tagList(
     tags$h4(label),
     textAreaInput(ns("notes"), "Notes"),
-    downloadButton(ns("downloadModelFile"), "Download Model"),
+    downloadButton(ns("downloadModelFile"), "Download"),
     tags$br()
   )
 }
