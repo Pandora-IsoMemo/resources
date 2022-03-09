@@ -43,4 +43,5 @@
 #' @importFrom tidyr gather
 #' @importFrom utils read.csv data packageVersion head combn compareVersion tail
 #' installed.packages write.table capture.output read.table
+#' @importFrom zip zipr
 NULL

@@ -14,15 +14,8 @@ fruitsUI <- function(id, title = "FRUITS") {
     sidebarLayout(
       sidebarPanel(
         width = 3,
-        tags$h4("Model File"),
-        fileInput(
-          ns("modelFile"),
-          "Upload Model File",
-          multiple = FALSE,
-          accept = ".rdata"
-        ),
-        downloadButton(ns("saveModelFile"), "Save Model File"),
-        actionButton(ns("showFileNotes"), "File Notes"),
+        uploadModelUI(ns("modelUpload"), "Upload Model"),
+        downloadModelUI(ns("modelDownload"), "Download Model"),
         tags$hr(),
         selectInput(
           ns("exampleData"),

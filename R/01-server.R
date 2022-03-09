@@ -91,49 +91,15 @@ fruitsTab <- function(input,
     },
     priority = 500
   )
+  
+  uploadedNotes <- reactiveVal()
+  callModule(downloadModel, "modelDownload", session = session,
+             values = values, 
+             uploadedNotes = uploadedNotes)
 
-  ## Save Model in File
-  output$saveModelFile <- downloadHandler(
-    filename = function() {
-      paste0(Sys.Date(), "fruitsModel", ".RData")
-    },
-    content = function(file) {
-      model <- reactiveValuesToList(values)
-      model <- model[allVariables()]
-      model$version <- packageVersion("ReSources")
-
-      save(model, file = file)
-    }
-  )
-
-  ## Load Model from file
-  observeEvent(input$modelFile, {
-    logDebug("Entering observe() (Load Model from file)")
-    req(input$modelFile)
-
-    res <- try({
-      load(input$modelFile$datapath)
-    })
-
-    if (inherits(res, "try-error")) {
-      shinyjs::alert("Could not load file.")
-      return()
-    }
-
-    if (!exists("model")) {
-      shinyjs::alert("File format not valid. Model object not found")
-      return()
-    }
-    
-    for (name in names(model)) {
-      values[[name]] <- model[[name]]
-    }
-
-    values$status <- values$statusSim <- "INITIALIZE"
-    values$reset <- runif(1)
-    values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
-  })
-
+  callModule(uploadModel, "modelUpload", session = session,
+             values = values, 
+             uploadedNotes = uploadedNotes)
 
   ## status
 
