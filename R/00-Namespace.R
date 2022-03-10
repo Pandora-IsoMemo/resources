@@ -12,7 +12,7 @@
 #' geom_histogram geom_line theme element_text scale_fill_brewer labs ylim scale_fill_manual scale_color_manual
 #' geom_point scale_color_brewer xlim aes geom_errorbar
 #' @importFrom grDevices dev.off pdf png svg tiff chull pdfFonts postscriptFonts colorRampPalette
-#' @importFrom htmltools withTags
+#' @importFrom htmltools save_html withTags
 #' @importFrom jsonlite fromJSON toJSON
 #' @importFrom nimble calculateWAIC nimbleOptions nimbleModel configureMCMC buildMCMC compileNimble runMCMC
 #' nimbleFunction registerDistributions rmulti
