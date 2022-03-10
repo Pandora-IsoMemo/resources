@@ -554,6 +554,19 @@ fruitsTab <- function(input,
     }
   })
   
+  observeEvent(values$oxcalCheck, {
+    logDebug("Entering observeEvent(values$oxcalCheck)")
+    
+    updateRadioButtons(session, "oxcalCheck",
+                       selected = values$oxcalCheck
+    )
+  })
+  
+  observeEvent(input$oxcalCheck, {
+    logDebug("Entering observeEvent(input$oxcalCheck)")
+    values$oxcalCheck <- input$oxcalCheck
+  })
+  
   observeEvent(values$covariateType, {
     logDebug("Entering observeEvent(input$covariateType)")
     if (!identical(input$covariateType, values$covariateType)) {
