@@ -7,7 +7,7 @@
 \usage{
 uploadModelUI(id, label)
 
-uploadModel(input, output, session, values, uploadedNotes)
+uploadModel(input, output, session, values, model, uploadedNotes)
 }
 \arguments{
 \item{id}{id of module}
@@ -21,6 +21,8 @@ uploadModel(input, output, session, values, uploadedNotes)
 \item{session}{shiny session}
 
 \item{values}{(reactive) list: Shiny input}
+
+\item{model}{(reactive) output of the model}
 
 \item{uploadedNotes}{(reactive) variable that stores content of README.txt}
 }
