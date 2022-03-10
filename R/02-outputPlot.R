@@ -1,6 +1,6 @@
 outputPlotUI <- function(id) {
   ns <- NS(id)
-
+  
   fluidRow(
     mainPanel(
       width = 8,
@@ -163,9 +163,9 @@ outputPlotUI <- function(id) {
 
 outputPlot <- function(input, output, session, model, values) {
   callModule(plotExport,
-    "exportSourcePlot",
-    plotFun = plotFunTarget,
-    type = "output"
+             "exportSourcePlot",
+             plotFun = plotFunTarget,
+             type = "output"
   )
   options(deparse.max.lines = 1)
   pointDat <- reactiveVal({
@@ -178,7 +178,7 @@ outputPlot <- function(input, output, session, model, values) {
       pointColor = character(0)
     )
   })
-
+  
   observeEvent(model(), ignoreNULL = FALSE, {
     pointDat(
       data.frame(
@@ -194,7 +194,7 @@ outputPlot <- function(input, output, session, model, values) {
   plotParams <- reactive({
     binSize <- NULL
     if (!is.null(input$`exportData-bins`) &&
-      input$`exportData-bins` == TRUE) {
+        input$`exportData-bins` == TRUE) {
       binSize <- input$`exportData-binSize`
     }
     list(
@@ -226,7 +226,7 @@ outputPlot <- function(input, output, session, model, values) {
       whiskerMultiplier = input$whiskerMultiplier
     )
   }) %>% debounce(100)
-
+  
   plotFunTarget <- reactive({
     validate(validInput(model()))
     function() {
@@ -237,12 +237,12 @@ outputPlot <- function(input, output, session, model, values) {
       )
     }
   })
-
+  
   dataFunTarget <- reactive({
     validate(validInput(model()))
     function() {
       params <- c(plotParams(),
-        returnType = "data"
+                  returnType = "data"
       )
       do.call(
         plotTargets,
@@ -250,7 +250,7 @@ outputPlot <- function(input, output, session, model, values) {
       )
     }
   })
-
+  
   output$SourcePlot <- renderCachedPlot(
     {
       validate(validInput(model()))
@@ -260,15 +260,15 @@ outputPlot <- function(input, output, session, model, values) {
       plotParams()
     }
   )
-
-
+  
+  
   callModule(exportData, "exportData", dataFunTarget)
-
+  
   observe({
     groupTypChoices <- c("Estimate")
-
+    
     if (!is.null(model()) &&
-      model()$fruitsObj$modelOptions$modelType != "1") {
+        model()$fruitsObj$modelOptions$modelType != "1") {
       groupTypChoices <- c(groupTypChoices, "Target")
       if (model()$fruitsObj$modelOptions$hierarchical) {
         groupTypChoices <-
@@ -281,16 +281,16 @@ outputPlot <- function(input, output, session, model, values) {
         }
       }
     }
-
+    
     if (!is.null(model())) {
       estTypChoices <- unique(values$modelResultSummary[, "Group"])
     } else {
       estTypChoices <- NULL
     }
     updateSelectInput(session, "estType", choices = estTypChoices)
-
+    
     updateSelectInput(session, "groupType", choices = groupTypChoices)
-
+    
     observeEvent(input$estType, {
       if (grepl(
         paste(
@@ -309,11 +309,11 @@ outputPlot <- function(input, output, session, model, values) {
       }
     })
   })
-
+  
   observe({
     filterTypeChoices <- c("Estimate", "Target")
     if (!is.null(model()) &&
-      model()$fruitsObj$modelOptions$modelType != "1") {
+        model()$fruitsObj$modelOptions$modelType != "1") {
       if (model()$fruitsObj$modelOptions$hierarchical) {
         filterTypeChoices <- c(
           filterTypeChoices,
@@ -323,26 +323,26 @@ outputPlot <- function(input, output, session, model, values) {
     }
     filterTypeChoices <-
       filterTypeChoices[filterTypeChoices != input$groupType]
-
+    
     updateSelectInput(
       session = session,
       inputId = "filterType",
       choices = filterTypeChoices
     )
   })
-
+  
   observe({
     if (input$filterType == "Target") {
       updateSelectInput(session,
-        "individuals",
-        label = "Target",
-        choices = unique(c(
-          rownames(model()$fruitsObj$data$obsvn), "all"
-        ))
+                        "individuals",
+                        label = "Target",
+                        choices = unique(c(
+                          rownames(model()$fruitsObj$data$obsvn), "all"
+                        ))
       )
       updatePickerInput(session,
-        "groupVars",
-        label = "Select target"
+                        "groupVars",
+                        label = "Select target"
       )
     }
     if (input$filterType == "Estimate") {
@@ -355,14 +355,14 @@ outputPlot <- function(input, output, session, model, values) {
         choices = unique(parameterNames)
       )
       updatePickerInput(session,
-        "groupVars",
-        label = "Select estimates"
+                        "groupVars",
+                        label = "Select estimates"
       )
     }
     if (!(input$filterType %in% c("Target", "Estimate", ""))) {
       covNames <-
         c(as.character(unique(values$modelResultSummary[, input$filterType])), "all")
-
+      
       updateSelectInput(
         session,
         "individuals",
@@ -370,24 +370,24 @@ outputPlot <- function(input, output, session, model, values) {
         choices = unique(covNames)
       )
       updatePickerInput(session,
-        "groupVars",
-        label = "Select estimates"
+                        "groupVars",
+                        label = "Select estimates"
       )
     }
-
+    
     if (input$filterType == input$groupType) {
       updateSelectInput(session,
-        "individuals",
-        choices = "all"
+                        "individuals",
+                        choices = "all"
       )
     }
   })
-
+  
   groupChoices <- reactive({
     as.character(unique(values$modelResultSummary[values$modelResultSummary[, "Group"] == input$estType, input$groupType]))
   })
-
-
+  
+  
   observe({
     updatePickerInput(
       session = session,
@@ -396,7 +396,7 @@ outputPlot <- function(input, output, session, model, values) {
       selected = groupChoices()
     )
   })
-
+  
   addRow <- function(df) {
     rbind(
       df,
@@ -411,7 +411,7 @@ outputPlot <- function(input, output, session, model, values) {
       )
     )
   }
-
+  
   rmRow <- function(df) {
     if (nrow(df) > 0) {
       df[-nrow(df), , drop = FALSE]
@@ -419,19 +419,19 @@ outputPlot <- function(input, output, session, model, values) {
       df
     }
   }
-
+  
   observeEvent(input$add_btn, {
     pointDat(addRow(pointDat()))
   })
-
+  
   observeEvent(input$rm_btn, {
     pointDat(rmRow(pointDat()))
   })
-
+  
   observe({
     df <- pointDat()
     indices <- df$index
-
+    
     lapply(indices, function(index) {
       yval <- input[[paste("y", index, sep = "_")]]
       groupval <- input[[paste("group", index, sep = "_")]]
@@ -467,14 +467,14 @@ outputPlot <- function(input, output, session, model, values) {
         groupval
       }
     })
-
+    
     pointDat(df)
   })
-
+  
   inputGroup <- reactive({
     createPointInputGroup(pointDat(), groupChoices = groupChoices(), ns = session$ns)
   })
-
+  
   output$pointInput <- renderUI(inputGroup())
   output$n <- reactive(nrow(pointDat()))
   outputOptions(output, "n", suspendWhenHidden = FALSE)

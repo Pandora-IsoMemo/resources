@@ -17,12 +17,12 @@ fruitsTab <- function(input,
                         list(data = NULL, event = NULL)
                       }) {
   ns <- session$ns
-
+  
   values <- do.call(
     "reactiveValues",
     defaultValues()
   )
-
+  
   events <-
     reactiveValues(
       name = list(),
@@ -32,12 +32,12 @@ fruitsTab <- function(input,
       copyField = "",
       adaptive = FALSE
     )
-
+  
   ## remove names
   observeEvent(input$removeName, {
     events$removeName <- input$removeName
   })
-
+  
   observe({
     if (events$processed == events$processedCache) {
       events$name <- list()
@@ -47,51 +47,52 @@ fruitsTab <- function(input,
       events$processedCache <- events$processed
     }
   })
-
+  
   ## Reset Input
   observeEvent(input$reset, {
     logDebug("Entering observeEvent(input$reset)")
     vars <- defaultValues()
-
+    
     for (name in names(vars)) {
       values[[name]] <- vars[[name]]
     }
-
+    
     values$status <- values$statusSim <- "INITIALIZE"
-
+    
     values$reset <- runif(1)
   })
-
-
+  
+  
   ## Load Example Model
   observeEvent(input$exampleModel,
-    {
-      logDebug("Entering observeEvent(input$exampleModel)")
-
-      values$status <- values$statusSim <- "INITIALIZE"
-
-      if (input$exampleData == "Five Sources Data") {
-        vars <- readRDS("exampleModels/Five_Sources_Data.rds")
-      }
-      if (input$exampleData == "Brown Bear Data") {
-        vars <- readRDS("exampleModels/bear.rds")
-      }
-      if (input$exampleData == "Black Bear Data") {
-        vars <- readRDS("exampleModels/blackBear.rds")
-      }
-      if (input$exampleData == "Roman Data") {
-        vars <- readRDS("exampleModels/Roman.rds")
-      }
-
-      for (name in names(vars)) {
-        values[[name]] <- vars[[name]]
-      }
-
-      values$reset <- runif(1)
-    },
-    priority = 500
+               {
+                 logDebug("Entering observeEvent(input$exampleModel)")
+                 
+                 values$status <- values$statusSim <- "INITIALIZE"
+                 
+                 if (input$exampleData == "Five Sources Data") {
+                   vars <- readRDS("exampleModels/Five_Sources_Data.rds")
+                 }
+                 if (input$exampleData == "Brown Bear Data") {
+                   vars <- readRDS("exampleModels/bear.rds")
+                 }
+                 if (input$exampleData == "Black Bear Data") {
+                   vars <- readRDS("exampleModels/blackBear.rds")
+                 }
+                 if (input$exampleData == "Roman Data") {
+                   vars <- readRDS("exampleModels/Roman.rds")
+                 }
+                 
+                 for (name in names(vars)) {
+                   values[[name]] <- vars[[name]]
+                 }
+                 
+                 values$reset <- runif(1)
+               },
+               priority = 500
   )
   
+
   uploadedNotes <- reactiveVal()
   callModule(downloadModel, "modelDownload", session = session,
              values = values, 
@@ -100,71 +101,75 @@ fruitsTab <- function(input,
   callModule(uploadModel, "modelUpload", session = session,
              values = values, 
              uploadedNotes = uploadedNotes)
-
+  
   ## status
-
+  
   output$status <- renderText(values$status)
   output$statusSim <- renderText(values$statusSim)
   outputOptions(output, "status", suspendWhenHidden = FALSE)
   outputOptions(output, "statusSim", suspendWhenHidden = FALSE)
-
+  
   ## hide Model Diagnostics & Output Tab until model has run
   observeEvent(values$status, {
     logDebug("Entering observeEvent(value$status)")
     switch(values$status,
-      COMPLETED = {
-        showTab("mainTabs", "resultsReport")
-        showTab("mainTabs", "modelDiagnostics")
-        showTab("mainTabs", "Output")
-        showTab("mainTabs", "isomemo")
-      },
-      {
-        hideTab("mainTabs", "resultsReport")
-        hideTab("mainTabs", "modelDiagnostics")
-        hideTab("mainTabs", "Output")
-        hideTab("mainTabs", "isomemo")
-      }
+           COMPLETED = {
+             showTab("mainTabs", "resultsReport")
+             showTab("mainTabs", "modelDiagnostics")
+             showTab("mainTabs", "Output")
+             showTab("mainTabs", "isomemo")
+           },
+           {
+             hideTab("mainTabs", "resultsReport")
+             hideTab("mainTabs", "modelDiagnostics")
+             hideTab("mainTabs", "Output")
+             hideTab("mainTabs", "isomemo")
+           }
     )
   })
-
-  observeEvent(values$status, {
+  
+  observeEvent({
+    values$status 
+    input$oxcalCheck
+    },{
     logDebug("Entering observeEvent(value$status)")
     checkOxcal <- "FALSE"
+    
     if (input$oxcalCheck & values$status == "COMPLETED") {
       checkOxcal <- "COMPLETED"
     }
     switch(checkOxcal,
-      COMPLETED = {
-        showTab("mainTabs", "OxCal")
-      },
-      {
-        hideTab("mainTabs", "OxCal")
-      }
+           COMPLETED = {
+             showTab("mainTabs", "Oxcal export")
+           },
+           {
+             hideTab("mainTabs", "Oxcal export")
+           }
     )
   })
-
+  
   observeEvent(values$statusSim, {
     logDebug("Entering observeEvent(values$statusSim)")
     switch(values$statusSim,
-      COMPLETED = {
-        showTab("MCharResults", "sourcePlot")
-        showTab("MCharResults", "sourceMixPlot")
-        showTab("MCharResults", "zScorePlot")
-        showTab("MCharResults", "mahaPlot")
-        showTab("MCharResults", "scoreSepTest")
-        showTab("MCharResults", "corrPlot")
-      },
-      {
-        hideTab("MCharResults", "sourcePlot")
-        hideTab("MCharResults", "sourceMixPlot")
-        hideTab("MCharResults", "zScorePlot")
-        hideTab("MCharResults", "mahaPlot")
-        hideTab("MCharResults", "scoreSepTest")
-        hideTab("MCharResults", "corrPlot")
-      }
+           COMPLETED = {
+             showTab("MCharResults", "sourcePlot")
+             showTab("MCharResults", "sourceMixPlot")
+             showTab("MCharResults", "zScorePlot")
+             showTab("MCharResults", "mahaPlot")
+             showTab("MCharResults", "scoreSepTest")
+             showTab("MCharResults", "corrPlot")
+           },
+           {
+             hideTab("MCharResults", "sourcePlot")
+             hideTab("MCharResults", "sourceMixPlot")
+             hideTab("MCharResults", "zScorePlot")
+             hideTab("MCharResults", "mahaPlot")
+             hideTab("MCharResults", "scoreSepTest")
+             hideTab("MCharResults", "corrPlot")
+           }
     )
   })
-
+  
   observeEvent(values$modelConcentrations, {
     logDebug("Entering observeEvent(values$modelConcentrations)")
     if (values$modelConcentrations == TRUE) {
@@ -173,25 +178,8 @@ fruitsTab <- function(input,
       hideTab("MCharResults", "concentrationsPlot")
     }
   })
-
-
-  observeEvent(input$oxcalCheck, {
-    logDebug("Entering observeEvent(value$status)")
-    checkOxcal <- "FALSE"
-    if (input$oxcalCheck & values$status == "COMPLETED") {
-      checkOxcal <- "COMPLETED"
-    }
-    switch(checkOxcal,
-      COMPLETED = {
-        showTab("mainTabs", "OxCal")
-      },
-      {
-        hideTab("mainTabs", "OxCal")
-      }
-    )
-  })
-
-
+  
+  
   ## Set names
   observe(priority = 200, {
     logDebug("Entering observe() (set values$xxxNames)")
@@ -219,25 +207,25 @@ fruitsTab <- function(input,
     values$targetValuesCovariatesNames <-
       unique(colnames(values$targetValuesCovariates))
   })
-
+  
   ## Model options
   observeEvent(values$modelType, {
     logDebug("Entering observeEvent(values$modelType)")
-
+    
     updateRadioButtons(session, "modelType",
-      selected = values$modelType
+                       selected = values$modelType
     )
   })
-
+  
   observeEvent(input$modelType, {
     logDebug("Entering observeEvent(input$modelType)")
     values$modelType <- input$modelType
-
+    
     if (input$modelType == "1" & input$targetValuesShowCovariates) {
       updateCheckboxInput(session, "targetValuesShowCovariates", value = FALSE)
     }
   })
-
+  
   observe({
     if (input$targetValuesShowCovariates) {
       if (ncol(values$targetValuesCovariates) > 0) {
@@ -257,7 +245,7 @@ fruitsTab <- function(input,
               all(!is.na(values$targetValuesCovariates[, x]))
             }
           )]
-
+        
         updatePickerInput(
           session,
           inputId = "categoricalVars",
@@ -273,21 +261,21 @@ fruitsTab <- function(input,
       }
     }
   })
-
+  
   observeEvent(values$categoricalVars, {
     logDebug("Entering observeEvent(input$categoricalVars)")
-
+    
     if (!identical(input$categoricalVars, values$categoricalVars) &
-      ncol(values$targetValuesCovariates) > 0) {
+        ncol(values$targetValuesCovariates) > 0) {
       updatePickerInput(session, "categoricalVars", selected = values$categoricalVars)
     }
   })
-
-
+  
+  
   observeEvent(input$categoricalVars, {
     logDebug("Entering observeEvent(input$categoricalVars)")
     if (!identical(input$categoricalVars, values$categoricalVars) &
-      ncol(values$targetValuesCovariates) > 0) {
+        ncol(values$targetValuesCovariates) > 0) {
       values$categoricalVars <- input$categoricalVars
       potentialNumerics <-
         colnames(values$targetValuesCovariates)[sapply(
@@ -302,20 +290,20 @@ fruitsTab <- function(input,
         values$numericVars[!(potentialNumerics %in% values$categoricalVars)]
     }
   })
-
+  
   observeEvent(values$numericVars, {
     logDebug("Entering observeEvent(input$numericVars)")
     if (!identical(input$numericVars, values$numericVars) &
-      ncol(values$targetValuesCovariates) > 0) {
+        ncol(values$targetValuesCovariates) > 0) {
       updatePickerInput(session, "numericVars", selected = values$numericVars)
     }
   })
-
-
+  
+  
   observeEvent(input$numericVars, {
     logDebug("Entering observeEvent(input$numericVars)")
     if (!identical(input$numericVars, values$numericVars) &
-      ncol(values$targetValuesCovariates) > 0) {
+        ncol(values$targetValuesCovariates) > 0) {
       values$numericVars <- input$numericVars
       potentialCat <-
         colnames(values$targetValuesCovariates)[sapply(
@@ -324,75 +312,75 @@ fruitsTab <- function(input,
             all(!is.na(values$targetValuesCovariates[, x]))
           }
         )]
-
+      
       values$categoricalVars <-
         values$categoricalVars[!(potentialCat %in% values$numericVars)]
     }
   })
-
+  
   baselineModel <- reactive({
     values$modelType %in% c(3, 5)
   })
-
+  
   observeEvent(input$targetValuesShowCovariates, {
     if (input$targetValuesShowCovariates == FALSE) {
       updateCheckboxInput(session, "useSite", value = FALSE)
     }
   })
-
+  
   observeEvent(input$targetValuesShowCovariates, {
     logDebug("Entering observeEvent(input$targetValuesShowCovariates)")
-
+    
     value <- input$modelType
     if (input$targetValuesShowCovariates &
-      !is.null(value) & value == "1") {
+        !is.null(value) & value == "1") {
       selected <- "2"
     } else {
       selected <- value
     }
-
+    
     updateRadioButtons(session, "modelType",
-      selected = selected
+                       selected = selected
     )
   })
-
+  
   observeEvent(values$targetOffset, {
     logDebug("Entering observeEvent(values$targetOffset)")
     updateCheckboxInput(session, "targetOffset",
-      value = values$targetOffset
+                        value = values$targetOffset
     )
   })
-
+  
   observeEvent(input$targetOffset, {
     logDebug("Entering observeEvent(input$targetOffset)")
     if (!identical(input$targetOffset, values$targetOffset)) {
       values$targetOffset <- input$targetOffset
     }
   })
-
+  
   observeEvent(values$includeSourceOffset, {
     logDebug("Entering observeEvent(values$includeSourceOffset)")
     updateCheckboxInput(session,
-      "includeSourceOffset",
-      value = values$includeSourceOffset
+                        "includeSourceOffset",
+                        value = values$includeSourceOffset
     )
   })
-
+  
   observeEvent(input$includeSourceOffset, {
     logDebug("Entering observeEvent(input$includeSourceOffset)")
     if (!identical(input$includeSourceOffset, values$includeSourceOffset)) {
       values$includeSourceOffset <- input$includeSourceOffset
     }
   })
-
+  
   observeEvent(values$targetValuesShowCovariates, {
     logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
     updateCheckboxInput(session,
-      "targetValuesShowCovariates",
-      value = values$targetValuesShowCovariates
+                        "targetValuesShowCovariates",
+                        value = values$targetValuesShowCovariates
     )
   })
-
+  
   observeEvent(input$targetValuesShowCovariates, {
     logDebug("Entering observeEvent(input$targetValuesShowCovariates)")
     if (!identical(
@@ -403,22 +391,22 @@ fruitsTab <- function(input,
         input$targetValuesShowCovariates
     }
     if (input$targetValuesShowCovariates == TRUE &
-      input$modelType == 1) {
+        input$modelType == 1) {
       values$modelType <- 2
     }
   })
-
-
+  
+  
   observeEvent(values$modelWeights, {
     logDebug("Entering observeEvent(values$modelWeights)")
     updateCheckboxInput(session, "modelWeights",
-      value = values$modelWeights
+                        value = values$modelWeights
     )
   })
-
+  
   observeEvent(input$modelWeights, priority = 300, {
     logDebug("Entering observeEvent(input$modelWeights)")
-
+    
     sourceMatrixOld <- sourceMatrixNew <- values$source[[1]][[1]][[1]]
     if (input$modelWeights && !values$modelWeights) {
       values$fractionNames <- paste0("fraction_", 1:ncol(sourceMatrixNew))
@@ -437,7 +425,7 @@ fruitsTab <- function(input,
         )
       )
     }
-
+    
     if (!input$modelWeights && values$modelWeights) {
       # values$fractionNamesCache <- values$fractionNames
       colnames(sourceMatrixNew) <-
@@ -458,23 +446,23 @@ fruitsTab <- function(input,
         )
       )
     }
-
+    
     values$modelWeights <- input$modelWeights
   })
-
+  
   observeEvent(values$modelWeightsContrained, {
     logDebug("Entering observeEvent(values$modelWeightsContrained)")
     updateCheckboxInput(session,
-      "modelWeightsContrained",
-      value = values$modelWeightsContrained
+                        "modelWeightsContrained",
+                        value = values$modelWeightsContrained
     )
   })
-
+  
   observeEvent(input$modelWeightsContrained, {
     logDebug("Entering observeEvent(input$modelWeightsContrained)")
     values$modelWeightsContrained <- input$modelWeightsContrained
   })
-
+  
   observeEvent(values$modelConcentrationsContrained, {
     logDebug("Entering observeEvent(values$modelConcentrationsContrained)")
     updateCheckboxInput(
@@ -483,14 +471,14 @@ fruitsTab <- function(input,
       value = values$modelConcentrationsContrained
     )
   })
-
+  
   observeEvent(input$modelConcentrationsContrained, {
     logDebug("Entering observeEvent(input$modelConcentrationsContrained)")
     values$modelConcentrationsContrained <-
       input$modelConcentrationsContrained
   })
-
-
+  
+  
   observeEvent(values$modelWeights, {
     if (values$modelWeights == TRUE) {
       showTab(
@@ -506,20 +494,20 @@ fruitsTab <- function(input,
       )
     }
   })
-
+  
   observeEvent(values$modelConcentrations, {
     logDebug("Entering observeEvent(values$modelConcentrations)")
     updateCheckboxInput(session,
-      "modelConcentrations",
-      value = values$modelConcentrations
+                        "modelConcentrations",
+                        value = values$modelConcentrations
     )
   })
-
+  
   observeEvent(input$modelConcentrations, {
     logDebug("Entering observeEvent(input$modelConcentrations)")
     values$modelConcentrations <- input$modelConcentrations
   })
-
+  
   observeEvent(values$modelConcentrations, {
     if (values$modelConcentrations == TRUE) {
       showTab(
@@ -535,100 +523,100 @@ fruitsTab <- function(input,
       )
     }
   })
-
-
+  
+  
   observeEvent(values$burnin, {
     logDebug("Entering observeEvent(values$burnin)")
     updateNumericInput(session, "burnin", value = values$burnin)
   })
-
+  
   observeEvent(input$burnin, {
     logDebug("Entering observeEvent(input$burnin)")
     if (!identical(input$burnin, values$burnin)) {
       values$burnin <- input$burnin
     }
   })
-
-
+  
+  
   observeEvent(values$alphaHyper, {
     logDebug("Entering observeEvent(values$alphaHyper)")
     if (!identical(input$alphaHyper, values$alphaHyper)) {
       updateNumericInput(session, "alphaHyper", value = values$alphaHyper)
     }
   })
-
+  
   observeEvent(input$alphaHyper, {
     logDebug("Entering observeEvent(input$alphaHyper)")
     if (!identical(input$alphaHyper, values$alphaHyper)) {
       values$alphaHyper <- input$alphaHyper
     }
   })
-
+  
   observeEvent(values$covariateType, {
     logDebug("Entering observeEvent(input$covariateType)")
     if (!identical(input$covariateType, values$covariateType)) {
       updateRadioButtons(session, "covariateType", selected = values$covariateType)
     }
   })
-
-
+  
+  
   observeEvent(input$covariateType, {
     logDebug("Entering observeEvent(input$covariateType)")
     if (!identical(input$covariateType, values$covariateType)) {
       values$covariateType <- input$covariateType
     }
   })
-
-
+  
+  
   observeEvent(values$inflatedBeta, {
     logDebug("Entering observeEvent(values$inflatedBeta)")
     updateRadioButtons(session, "inflatedBeta", selected = values$inflatedBeta)
   })
-
+  
   observeEvent(input$inflatedBeta, {
     logDebug("Entering observeEvent(input$inflatedBeta)")
     if (!identical(input$inflatedBeta, values$inflatedBeta)) {
       values$inflatedBeta <- input$inflatedBeta
     }
   })
-
-
+  
+  
   observeEvent(values$iterations, {
     logDebug("Entering observeEvent(values$iterations)")
     updateNumericInput(session, "iterations", value = values$iterations)
   })
-
+  
   observeEvent(input$iterations, {
     logDebug("Entering observeEvent(input$iterations)")
     if (!identical(input$iterations, values$iterations)) {
       values$iterations <- input$iterations
     }
   })
-
+  
   observeEvent(values$thinning, {
     logDebug("Entering observeEvent(values$thinning)")
     updateNumericInput(session, "thinning", value = values$thinning)
   })
-
+  
   observeEvent(input$thinning, {
     logDebug("Entering observeEvent(input$thinning)")
     if (!identical(input$thinning, values$thinning)) {
       values$thinning <- input$thinning
     }
   })
-
+  
   observeEvent(values$nchains, {
     logDebug("Entering observeEvent(values$nchains)")
     updateNumericInput(session, "nchains", value = values$nchains)
   })
-
+  
   observeEvent(input$nchains, {
     logDebug("Entering observeEvent(input$nchains)")
     if (!identical(input$nchains, values$nchains)) {
       values$nchains <- input$nchains
     }
   })
-
+  
   termChoices <- reactive({
     c(
       "Default term" = "default",
@@ -637,7 +625,7 @@ fruitsTab <- function(input,
       "Add term 3" = "term3"
     )
   })
-
+  
   ## Target Values
   callModule(
     fruitsMatrix,
@@ -661,16 +649,16 @@ fruitsTab <- function(input,
       )
     )
   )
-
+  
   observeEvent(input$adaptiveNames, {
     events$adaptive <- input$adaptiveNames
   })
-
+  
   ## -- from IsoMemo
   observeEvent(isoMemoData()$event, {
     events$isoMemo <- isoMemoData()$data
   })
-
+  
   callModule(
     fruitsMatrix,
     "targetValuesCovariates",
@@ -681,7 +669,7 @@ fruitsTab <- function(input,
     col = "covariateNames",
     class = "character"
   )
-
+  
   callModule(
     fruitsMatrix,
     "weights",
@@ -693,7 +681,7 @@ fruitsTab <- function(input,
     col = "fractionNames",
     distributionId = "weightDistribution"
   )
-
+  
   ## Hide Input for 0 weights
   observe({
     if (values$modelWeights) {
@@ -713,7 +701,7 @@ fruitsTab <- function(input,
       showAllColumns(ns("source-table"))
     }
   })
-
+  
   ## Weight Offset
   callModule(
     fruitsMatrix,
@@ -726,7 +714,7 @@ fruitsTab <- function(input,
     col = "offsetNames",
     fixedCols = "Offset"
   )
-
+  
   ## Sources
   sourceObsvnFilterChoices <- reactive({
     if (baselineModel()) {
@@ -735,7 +723,7 @@ fruitsTab <- function(input,
       NA
     }
   })
-
+  
   sourceObsvnFilterHide <- reactive({
     if (baselineModel()) {
       FALSE
@@ -743,7 +731,7 @@ fruitsTab <- function(input,
       TRUE
     }
   })
-
+  
   hideTargetFilter <- reactive({
     if (input$modelWeights) {
       FALSE
@@ -751,7 +739,7 @@ fruitsTab <- function(input,
       TRUE
     }
   })
-
+  
   sourceTargetChoices <- reactive({
     if (input$modelWeights) {
       values$targetNames
@@ -759,19 +747,19 @@ fruitsTab <- function(input,
       NA
     }
   })
-
+  
   sourceCovNames <- reactive({
     if (input$modelWeights) {
       apply(expand.grid(values$fractionNames, values$targetNames),
-        1,
-        paste,
-        collapse = "-"
+            1,
+            paste,
+            collapse = "-"
       )
     } else {
       values$targetNames
     }
   })
-
+  
   callModule(
     fruitsMatrix,
     "source",
@@ -814,7 +802,7 @@ fruitsTab <- function(input,
       )
     )
   )
-
+  
   callModule(
     fruitsMatrix,
     "sourceOffset",
@@ -842,7 +830,7 @@ fruitsTab <- function(input,
       )
     )
   )
-
+  
   callModule(
     fruitsMatrix,
     "concentration",
@@ -881,8 +869,9 @@ fruitsTab <- function(input,
       )
     )
   )
-
+  
   ## MySql table contents
+
   # callModule(dbContent, "feeding", table = "feeding")
   # callModule(dbContent, "suess", table = "suess")
   # callModule(dbContent, "diet", table = "diet")
@@ -894,56 +883,56 @@ fruitsTab <- function(input,
     logDebug("Entering observeEvent(input$showAbout)")
     showModal(aboutDialog())
   })
-
+  
   ## File Notes
   observeEvent(input$showFileNotes, {
     logDebug("Entering observeEvent(input$showFileNotes)")
     showModal(fileNotesDialog(id = ns("fileNotes"), value = values$fileNotes))
   })
-
+  
   observeEvent(input$fileNotes, {
     logDebug("Entering observeEvent(input$fileNotes)")
     values$fileNotes <- input$fileNotes
   })
-
+  
   ## Priors
   priorWarning <- reactiveValues(text = NULL)
   output$priorWarning <- renderText({
     priorWarning$text
   })
-
+  
   observeEvent(input$newPrior, {
     logDebug("Entering observeEvent(input$newPrior)")
     priorWarning$text <- NULL
   })
-
+  
   observeEvent(input$minUnc, {
     logDebug("Entering observeEvent(input$minUnc)")
     updateNumericInput(session, "Unc", value = input$minUnc)
     values$minUnc <- input$minUnc
   })
-
+  
   observeEvent(values$minUnc, {
     logDebug("Entering observeEvent(values$minUnc)")
     updateNumericInput(session, "Unc", value = values$minUnc)
   })
-
+  
   observeEvent(input$addPrior, {
     logDebug("Entering observeEvent(input$addPrior)")
     ## validate
     if (validatePrior(input$newPrior)) {
       if (input$addUnc) {
         updatePriorInput(session, "priors",
-          value = c(
-            input$priors,
-            paste0(input$newPrior, "+{", input$Unc, "}")
-          )
+                         value = c(
+                           input$priors,
+                           paste0(input$newPrior, "+{", input$Unc, "}")
+                         )
         )
         updateCheckboxInput(session, "addUnc", value = FALSE)
       } else {
         updatePriorInput(session,
-          "priors",
-          value = c(input$priors, input$newPrior)
+                         "priors",
+                         value = c(input$priors, input$newPrior)
         )
       }
       updateTextInput(session, "newPrior", value = "")
@@ -951,77 +940,77 @@ fruitsTab <- function(input,
       priorWarning$text <- "Prior validation failed"
     }
   })
-
+  
   observeEvent(input$priors, values$priors <- input$priors)
   observe({
     updatePriorInput(session, "priors", value = values$priors)
   })
-
+  
   observe({
     updateSelectInput(session, "priorSource",
-      choices = values$sourceNames
+                      choices = values$sourceNames
     )
-
+    
     updateSelectInput(session,
-      "priorProxies",
-      choices = apply(
-        expand.grid(values$targetNames, values$sourceNames),
-        1,
-        paste,
-        collapse = "-"
-      )
+                      "priorProxies",
+                      choices = apply(
+                        expand.grid(values$targetNames, values$sourceNames),
+                        1,
+                        paste,
+                        collapse = "-"
+                      )
     )
-
+    
     updateSelectInput(session, "priorOffset",
-      choices = values$targetNames
+                      choices = values$targetNames
     )
-
+    
     updateSelectInput(session,
-      "priorConcentration",
-      choices = apply(
-        expand.grid(values$sourceNames, values$fractionNames),
-        1,
-        paste,
-        collapse = "-"
-      )
+                      "priorConcentration",
+                      choices = apply(
+                        expand.grid(values$sourceNames, values$fractionNames),
+                        1,
+                        paste,
+                        collapse = "-"
+                      )
     )
-
+    
     updateSelectInput(session, "priorSourceFractions",
-      choices = values$fractionNames
+                      choices = values$fractionNames
     )
-
+    
     updateSelectInput(session,
-      "priorProxyValues",
-      choices = apply(
-        expand.grid(
-          values$sourceNames,
-          values$fractionNames,
-          values$targetNames
-        ),
-        1,
-        paste,
-        collapse = "-"
-      )
+                      "priorProxyValues",
+                      choices = apply(
+                        expand.grid(
+                          values$sourceNames,
+                          values$fractionNames,
+                          values$targetNames
+                        ),
+                        1,
+                        paste,
+                        collapse = "-"
+                      )
     )
-
+    
     updateSelectInput(session,
-      "priorWeightValues",
-      choices = apply(
-        expand.grid(values$targetNames, values$fractionNames),
-        1,
-        paste,
-        collapse = "-"
-      )
+                      "priorWeightValues",
+                      choices = apply(
+                        expand.grid(values$targetNames, values$fractionNames),
+                        1,
+                        paste,
+                        collapse = "-"
+                      )
     )
-
+    
     updateSelectInput(session,
-      "priorConsumerValues",
-      choices = apply(
-        expand.grid("Consumer", values$targetNames),
-        1,
-        paste,
-        collapse = "-"
-      )
+                      "priorConsumerValues",
+                      choices = apply(
+                        expand.grid("Consumer", values$targetNames),
+                        1,
+                        paste,
+                        collapse = "-"
+                      )
     )
     updateSelectInput(
       session,
@@ -1052,18 +1041,18 @@ fruitsTab <- function(input,
       ) %>% nullToEmptyList()
     )
   })
-
+  
   # User estimates
   userEstimateWarning <- reactiveValues(text = NULL)
   output$userEstimateWarning <- renderText({
     userEstimateWarning$text
   })
-
+  
   observeEvent(input$newUserEstimate, {
     logDebug("Entering observeEvent(input$newUserEstimate)")
     userEstimateWarning$text <- NULL
   })
-
+  
   observeEvent(input$addUserEstimate, {
     logDebug("Entering observeEvent(input$addUserEstimate)")
     newEstimate <-
@@ -1079,18 +1068,18 @@ fruitsTab <- function(input,
         "User estimate name should not start with number"
       ok <- FALSE
     }
-
+    
     if (grepl("_", input$userEstimateName)) {
       userEstimateWarning$text <-
         "User estimate name should not contain underscores: '_'"
       ok <- FALSE
     }
-
+    
     if (ok) {
       if (validateUserEstimate(newEstimate, input$userEstimate)) {
         updatePriorInput(session,
-          "userEstimate",
-          value = c(input$userEstimate, newEstimate)
+                         "userEstimate",
+                         value = c(input$userEstimate, newEstimate)
         )
         updateTextInput(session, "newUserEstimate", value = "")
       } else {
@@ -1099,32 +1088,32 @@ fruitsTab <- function(input,
       }
     }
   })
-
+  
   observeEvent(
     input$userEstimate,
     values$userEstimate <- input$userEstimate
   )
   observe(updatePriorInput(session, "userEstimate", value = values$userEstimate))
-
+  
   observe({
     updateSelectInput(session, "userEstimateSource",
-      choices = values$sourceNames
+                      choices = values$sourceNames
     )
     updateSelectInput(session,
-      "userEstimateProxies",
-      choices = apply(
-        expand.grid(values$targetNames, values$sourceNames),
-        1,
-        paste,
-        collapse = "-"
-      )
+                      "userEstimateProxies",
+                      choices = apply(
+                        expand.grid(values$targetNames, values$sourceNames),
+                        1,
+                        paste,
+                        collapse = "-"
+                      )
     )
-
+    
     updateSelectInput(session,
-      "userEstimateSourceFractions",
-      choices = values$fractionNames
+                      "userEstimateSourceFractions",
+                      choices = values$fractionNames
     )
-
+    
     updateSelectInput(
       session,
       "userEstimateProxyValues",
@@ -1139,11 +1128,11 @@ fruitsTab <- function(input,
         collapse = "-"
       )
     )
-
+    
     updateSelectInput(session, "userEstimateOffset",
-      choices = values$targetNames
+                      choices = values$targetNames
     )
-
+    
     updateSelectInput(
       session,
       "userEstimateConcentration",
@@ -1154,7 +1143,7 @@ fruitsTab <- function(input,
         collapse = "-"
       )
     )
-
+    
     updateSelectInput(
       session,
       "userEstimateWeightValues",
@@ -1165,7 +1154,7 @@ fruitsTab <- function(input,
         collapse = "-"
       )
     )
-
+    
     updateSelectInput(
       session,
       "userEstimateConsumerValues",
@@ -1176,7 +1165,7 @@ fruitsTab <- function(input,
         collapse = "-"
       )
     )
-
+    
     updateSelectInput(
       session,
       "userEstimateHierarchicalValues",
@@ -1206,11 +1195,11 @@ fruitsTab <- function(input,
       ) %>% nullToEmptyList()
     )
   })
-
+  
   userEstimateNames <- reactive({
     gsub("([^=])=.*", "\\1", input$userEstimate)
   })
-
+  
   # User Estimate Groups
   userEstimateGroups <-
     callModule(
@@ -1219,17 +1208,17 @@ fruitsTab <- function(input,
       userEstimates = userEstimateNames,
       groupsInitial = reactive(values$userEstimateGroups)
     )
-
+  
   observeEvent(userEstimateGroups(), {
     values$userEstimateGroups <- userEstimateGroups()
   })
-
+  
   ## Run model
   model <- reactiveVal(NULL)
-
+  
   observeEvent(input$run, {
     values$status <- "RUNNING"
-
+    
     model(NULL)
     modelCharacteristics(NULL)
     valuesList <- reactiveValuesToList(values)
@@ -1240,7 +1229,7 @@ fruitsTab <- function(input,
         as.list(input$userEstimate)
       )
     })
-
+    
     if (inherits(fruitsObj, "try-error")) {
       alert(
         paste0(
@@ -1272,31 +1261,31 @@ fruitsTab <- function(input,
       values$status <- "ERROR"
       return()
     }
-
+    
     if (any(grepl(" ", userEstimatesGroupNames))) {
       alert("User estimate group names contain blank characters.")
       values$status <- "ERROR"
       return()
     }
-
+    
     if (any(!grepl("[^0-9]", substr(userEstimatesGroupNames, 1, 1)))) {
       alert("User estimate group names should not begin with numbers")
       values$status <- "ERROR"
       return()
     }
-
+    
     if (any(grepl("_", userEstimatesGroupNames))) {
       alert("User estimate group names should not contain underscore: '_'")
       values$status <- "ERROR"
       return()
     }
-
+    
     # end check user estimates groups
-
+    
     updateSelectInput(session, "exportUserEstimates",
-      choices = as.vector(sapply(input$userEstimate, function(x) {
-        strsplit(x, "=")[[1]][1]
-      }))
+                      choices = as.vector(sapply(input$userEstimate, function(x) {
+                        strsplit(x, "=")[[1]][1]
+                      }))
     )
     if (length(fruitsObj$userEstimates[[1]]) > 0) {
       updateRadioButtons(
@@ -1322,7 +1311,7 @@ fruitsTab <- function(input,
         )
       )
     }
-
+    
     withProgress(
       {
         modelResults <-
@@ -1353,8 +1342,8 @@ fruitsTab <- function(input,
       withProgress({
         setProgress(message = "Check convergence", value = 0.85)
         if (any(is.nan(modelResults$parameters) |
-          any(is.na(modelResults$parameters)) |
-          any(is.infinite(modelResults$parameters)))) {
+                any(is.na(modelResults$parameters)) |
+                any(is.infinite(modelResults$parameters)))) {
           alert(
             "Model produced NA or Inf values, please check your data. Introducing or increasing uncertainties might help to mitigate the problem."
           )
@@ -1364,8 +1353,8 @@ fruitsTab <- function(input,
           diagnostic <-
             convergenceDiagnostics(modelResults$parameters, fruitsObj)$geweke[[1]]
           if (any(is.nan(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
-            any(is.na(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
-            any(is.infinite(diagnostic[which(grepl("alpha", names(diagnostic)))]))) {
+              any(is.na(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
+              any(is.infinite(diagnostic[which(grepl("alpha", names(diagnostic)))]))) {
             alert(
               "Model produced constant source contribution values, please check your model if this is reasonable,
         otherwise try to rerun the model with more chains or more iterations. If this doesn't help, please check your data.
@@ -1377,7 +1366,7 @@ fruitsTab <- function(input,
           outText <- produceOutText(fruitsObj, diagnostic)
         }
       })
-
+      
       withProgress({
         setProgress(message = "Compute summary statistics", value = 0.95)
         model(list(fruitsObj = fruitsObj, modelResults = modelResults))
@@ -1390,7 +1379,7 @@ fruitsTab <- function(input,
         )
         values$status <- "COMPLETED"
       })
-
+      
       if (values$status == "COMPLETED") {
         showModal(
           modalDialog(
@@ -1403,14 +1392,14 @@ fruitsTab <- function(input,
       }
     }
   })
-
+  
   modelCharacteristics <- reactiveVal(NULL)
-
+  
   observeEvent(input$runModelChar, {
     values$statusSim <- "RUNNING"
-
+    
     modelCharacteristics(NULL)
-
+    
     valuesList <- reactiveValuesToList(values)
     if (valuesList[["modelType"]] == "1") {
       valuesList[["modelType"]] <- "2"
@@ -1425,8 +1414,8 @@ fruitsTab <- function(input,
       },
       silent = TRUE
     )
-
-
+    
+    
     if (inherits(fruitsObj, "try-error")) {
       alert(
         paste0(
@@ -1437,7 +1426,7 @@ fruitsTab <- function(input,
       values$statusSim <- "ERROR"
       return()
     }
-
+    
     withProgress(
       {
         modelResults <- try(
@@ -1467,12 +1456,12 @@ fruitsTab <- function(input,
     )
     values$statusSim <- "COMPLETED"
     if (any(is.nan(modelResults$simSources$simSources[[1]]) |
-      any(is.na(
-        modelResults$simSources$simSources[[1]]
-      )) |
-      any(is.infinite(
-        modelResults$simSources$simSources[[1]]
-      )))) {
+            any(is.na(
+              modelResults$simSources$simSources[[1]]
+            )) |
+            any(is.infinite(
+              modelResults$simSources$simSources[[1]]
+            )))) {
       alert(
         "Simulation produced NA or Inf values, please check your data. Introducing or increasing uncertainties might help to mitigate the problem."
       )
@@ -1483,24 +1472,7 @@ fruitsTab <- function(input,
       modelCharacteristics(list(fruitsObj = fruitsObj, modelResults = modelResults))
     }
   })
-
-
-  observeEvent(values$status, {
-    logDebug("Entering observeEvent(value$status)")
-    switch(values$status,
-      COMPLETED = {
-        showTab("mainTabs", "resultsReport")
-        showTab("mainTabs", "modelDiagnostics")
-        showTab("mainTabs", "Output")
-        showTab("mainTabs", "isomemo")
-      },
-      {
-
-      }
-    )
-  })
-
-
+  
   observe({
     updatePickerInput(
       session,
@@ -1508,72 +1480,72 @@ fruitsTab <- function(input,
       selected = values$targetNames[1],
       choices = values$targetNames
     )
-
+    
     updatePickerInput(
       session,
       inputId = "simSpecSources",
       selected = values$sourceNames[1:min(5, length(values$sourceNames))],
       choices = values$sourceNames
     )
-
+    
     updatePickerInput(
       session,
       inputId = "concentrationsSelect",
       selected = values$fractionNames[1],
       choices = values$fractionNames
     )
-
+    
     updatePickerInput(
       session,
       inputId = "sourceSelect",
       selected = values$targetNames[1],
       choices = values$targetNames
     )
-
+    
     updatePickerInput(
       session,
       inputId = "sourceSelectMix",
       selected = values$targetNames[1],
       choices = values$targetNames
     )
-
+    
     updatePickerInput(
       session,
       inputId = "characteristicsCovariates",
       selected = NULL,
       choices = unique(
         getAllCovariateInteractions(values$targetValuesCovariates,
-          vars = values$categoricalVars
+                                    vars = values$categoricalVars
         )
       )
     )
-
+    
     updatePickerInput(
       session,
       inputId = "characteristicsCovariatesMix",
       selected = NULL,
       choices = unique(
         getAllCovariateInteractions(values$targetValuesCovariates,
-          vars = values$categoricalVars
+                                    vars = values$categoricalVars
         )
       )
     )
-
+    
     updatePickerInput(
       session,
       inputId = "characteristicsCovariatesTarget",
       selected = NULL,
       choices = unique(
         getAllCovariateInteractions(values$targetValuesCovariates,
-          vars = values$categoricalVars
+                                    vars = values$categoricalVars
         )
       )
     )
   })
-
+  
   observe({
     validate(validInput(modelCharacteristics()))
-
+    
     updatePickerInput(
       session,
       inputId = "sourceSelectMix2",
@@ -1581,7 +1553,7 @@ fruitsTab <- function(input,
       choices = modelCharacteristics()$modelResults$simSourceNames
     )
   })
-
+  
   plotFunCharacteristicsTarget <- reactive({
     function() {
       sourceTargetPlot(
@@ -1602,7 +1574,7 @@ fruitsTab <- function(input,
       )
     }
   })
-
+  
   plotFunCharacteristicsConc <- reactive({
     function() {
       sourceTargetPlot(
@@ -1623,8 +1595,8 @@ fruitsTab <- function(input,
       )
     }
   })
-
-
+  
+  
   plotFunCharacteristics <- reactive({
     validate(validInput(modelCharacteristics()))
     function() {
@@ -1646,7 +1618,7 @@ fruitsTab <- function(input,
       )
     }
   })
-
+  
   plotFunCharacteristicsMix <- reactive({
     validate(validInput(modelCharacteristics()))
     function() {
@@ -1673,12 +1645,12 @@ fruitsTab <- function(input,
       )
     }
   })
-
-
+  
+  
   callModule(verbatimText,
-    "modelCode",
-    model = model,
-    class = "modelCode"
+             "modelCode",
+             model = model,
+             class = "modelCode"
   )
   callModule(
     verbatimText,
@@ -1757,9 +1729,9 @@ fruitsTab <- function(input,
     class = "modelDiagnostics",
     type = "gelman"
   )
-
+  
   callModule(OxCalOutput, "oxcal", model = model, values$exportCoordinates)
-
+  
   expChains <- reactive({
     validate(validInput(model()))
     function() {
@@ -1773,12 +1745,12 @@ fruitsTab <- function(input,
     }
   })
   callModule(exportData, "exportDataChainsAll", expChains)
-
+  
   output$pValue <- DT::renderDT({
     validate(validInput(model()))
     model()$modelResults$pValue
   })
-
+  
   output$SummaryResults <- DT::renderDT({
     validate(validInput(model()))
     getResultStatistics(
@@ -1797,52 +1769,52 @@ fruitsTab <- function(input,
       )
     )
   })
-
+  
   output$zScores <- DT::renderDT({
     validate(validInput(modelCharacteristics()))
     getZScores(modelCharacteristics()$modelResults$simSources$simSources)
   })
-
+  
   callModule(exportData, "exportZScores", data = reactive({
     function() {
       getZScoresData(modelCharacteristics()$modelResults$simSources$simSources)
     }
   }))
-
+  
   output$mahaDist <- DT::renderDT({
     validate(validInput(modelCharacteristics()))
     getSourceMahaDist(modelCharacteristics()$modelResults$simSources$simSources)
   })
-
+  
   callModule(verbatimText,
-    "scoreSep",
-    model = modelCharacteristics,
-    class = "scoreSep"
+             "scoreSep",
+             model = modelCharacteristics,
+             class = "scoreSep"
   )
-
+  
   output$scoreSep <- DT::renderDT({
     validate(validInput(modelCharacteristics()))
     getSourceScoreSep(modelCharacteristics()$modelResults$simSources$simSources)
   })
-
+  
   callModule(exportData, "exportSimSources", data = reactive({
     function() {
       simSourcesOutput(modelCharacteristics()$modelResults$simSources)
     }
   }))
-
+  
   callModule(exportData, "exportMahaDist", data = reactive({
     function() {
       getSourceMahaDistData(modelCharacteristics()$modelResults$simSources$simSources)
     }
   }))
-
+  
   callModule(verbatimText, "corrMat", model = modelCharacteristics, class = "corrMat")
-
+  
   output$targetPlot <- renderPlotly({
     plotFunCharacteristicsTarget()()
   })
-
+  
   callModule(
     plotExport,
     "exportTargetPlot",
@@ -1850,11 +1822,11 @@ fruitsTab <- function(input,
     type = "sourceCharacteristics",
     plotly = TRUE
   )
-
+  
   output$concentrationsPlot <- renderPlotly({
     plotFunCharacteristicsConc()()
   })
-
+  
   callModule(
     plotExport,
     "exportConcentrationsPlot",
@@ -1862,13 +1834,13 @@ fruitsTab <- function(input,
     type = "sourceCharacteristics",
     plotly = TRUE
   )
-
-
+  
+  
   output$SourceCharacteristicsPlot <- renderPlotly({
     validate(validInput(modelCharacteristics()))
     plotFunCharacteristics()()
   })
-
+  
   callModule(
     plotExport,
     "exportSourceCharacteristicsPlot",
@@ -1876,14 +1848,14 @@ fruitsTab <- function(input,
     type = "sourceCharacteristics",
     plotly = TRUE
   )
-
+  
   # observeEvent(input$updateMix, {
   output$SourceCharacteristicsPlot2 <- renderPlotly({
     validate(validInput(modelCharacteristics()))
     plotFunCharacteristicsMix()()
   })
   # })
-
+  
   callModule(
     plotExport,
     "exportSourceCharacteristicsPlot2",
@@ -1891,8 +1863,8 @@ fruitsTab <- function(input,
     type = "sourceCharacteristics",
     plotly = TRUE
   )
-
-
+  
+  
   #### Model Diagnostics Plot
   callModule(
     modelDiagnosticsPlot,
@@ -1900,19 +1872,19 @@ fruitsTab <- function(input,
     model = model,
     values = values
   )
-
+  
   #### Model Diagnostics Plot
   callModule(outputPlot,
-    "outputPlot",
-    model = model,
-    values = values
+             "outputPlot",
+             model = model,
+             values = values
   )
-
+  
   output$filtered_row <-
     renderPrint({
       input[["SummaryResults_rows_all"]]
     })
-
+  
   #### Export ----
   expSUMData <- reactive({
     function() {
@@ -1934,57 +1906,57 @@ fruitsTab <- function(input,
       )[input[["SummaryResults_rows_all"]], ]
     }
   })
-
+  
   callModule(exportData, "exportSummaryData", expSUMData)
-
+  
   # Export to Iso Memo App
   observeEvent(values$targetNames, {
     updateSelectInput(session, "exportProxy", choices = values$targetNames)
   })
-
+  
   observeEvent(values$fractionNames, {
     updateSelectInput(session, "exportBeta", choices = values$fractionNames)
   })
-
+  
   observeEvent(values$targetNames, {
     updateSelectInput(session, "exportTheta",
-      choices = applyNames(
-        expand.grid(
-          values$targetNames,
-          values$sourceNames,
-          stringsAsFactors = FALSE
-        )
-      )
+                      choices = applyNames(
+                        expand.grid(
+                          values$targetNames,
+                          values$sourceNames,
+                          stringsAsFactors = FALSE
+                        )
+                      )
     )
   })
-
+  
   observeEvent(values$sourceNames, {
     updateSelectInput(session, "exportSources", choices = values$sourceNames)
   })
-
+  
   observeEvent(values$targetNames, {
     updateSelectInput(session, "exportProxy", choices = values$targetNames)
   })
-
-
+  
+  
   observe({
     if (input$useSite) {
       updateSelectInput(session, "siteExport",
-        choices = c(colnames(
-          model()$fruitsObj$data$covariates
-        ))
+                        choices = c(colnames(
+                          model()$fruitsObj$data$covariates
+                        ))
       )
     }
   })
-
+  
   ## Target Values
   observeEvent(values$targetValuesShowCoordinates, {
     updateCheckboxInput(session,
-      "targetValuesShowCoordinates",
-      value = values$targetValuesShowCoordinates
+                        "targetValuesShowCoordinates",
+                        value = values$targetValuesShowCoordinates
     )
   })
-
+  
   callModule(
     fruitsMatrix,
     "exportCoordinates",
@@ -2000,39 +1972,39 @@ fruitsTab <- function(input,
       "UpperLimit/SD"
     )
   )
-
+  
   exportData <- reactive({
     data <- as.data.frame(values$exportCoordinates)
-
+    
     if (input$useSite) {
       data$site <- values[["targetValuesCovariates"]][, input$siteExport]
     }
-
+    
     if (input$exportType == "proxy") {
       fruitsObj <- model()$fruitsObj
       modelResults <- model()$modelResults
       if (fruitsObj$modelOptions$modelType != "1") {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "mu\\[",
-            colnames(modelResults[[1]])
-          )]][, , drop = FALSE]
+                                  [grep(
+                                    "mu\\[",
+                                    colnames(modelResults[[1]])
+                                  )]][, , drop = FALSE]
         colnames(Data) <-
           rep(
             fruitsObj$valueNames$targets,
             fruitsObj$constants$nTargets
           )
-
+        
         Data <- Data[, colnames(Data) == input$exportProxy]
-
+        
         data$mean <- apply(Data, 2, mean)
         data$sd <- apply(Data, 2, sd)
       } else {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "mu\\[",
-            colnames(modelResults[[1]])
-          )]][, drop = FALSE]
+                                  [grep(
+                                    "mu\\[",
+                                    colnames(modelResults[[1]])
+                                  )]][, drop = FALSE]
         colnames(Data) <- fruitsObj$valueNames$targets
         data$mean <-
           mean(Data[, colnames(Data) == input$exportProxy])
@@ -2044,26 +2016,26 @@ fruitsTab <- function(input,
       modelResults <- model()$modelResults
       if (fruitsObj$modelOptions$modelType != "1") {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "beta",
-            colnames(modelResults[[1]])
-          )]][, , drop = FALSE]
+                                  [grep(
+                                    "beta",
+                                    colnames(modelResults[[1]])
+                                  )]][, , drop = FALSE]
         colnames(Data) <-
           rep(
             fruitsObj$valueNames$fractions,
             fruitsObj$constants$nTargets
           )
-
+        
         Data <- Data[, colnames(Data) == input$exportBeta]
-
+        
         data$mean <- apply(Data, 2, mean)
         data$sd <- apply(Data, 2, sd)
       } else {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "beta",
-            colnames(modelResults[[1]])
-          )]][, drop = FALSE]
+                                  [grep(
+                                    "beta",
+                                    colnames(modelResults[[1]])
+                                  )]][, drop = FALSE]
         colnames(Data) <- fruitsObj$valueNames$fractions
         data$mean <-
           mean(Data[, colnames(Data) == input$exportBeta])
@@ -2075,10 +2047,10 @@ fruitsTab <- function(input,
       modelResults <- model()$modelResults
       if (fruitsObj$modelOptions$modelType != "1") {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "theta",
-            colnames(modelResults[[1]])
-          )]][, , drop = FALSE]
+                                  [grep(
+                                    "theta",
+                                    colnames(modelResults[[1]])
+                                  )]][, , drop = FALSE]
         colnames(Data) <-
           rep(
             applyNames(
@@ -2091,15 +2063,15 @@ fruitsTab <- function(input,
             fruitsObj$constants$nTargets
           )
         Data <- Data[, colnames(Data) == input$exportTheta]
-
+        
         data$mean <- apply(Data, 2, mean)
         data$sd <- apply(Data, 2, sd)
       } else {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "theta",
-            colnames(modelResults[[1]])
-          )]][, drop = FALSE]
+                                  [grep(
+                                    "theta",
+                                    colnames(modelResults[[1]])
+                                  )]][, drop = FALSE]
         colnames(Data) <- applyNames(
           expand.grid(
             values$targetNames,
@@ -2112,32 +2084,32 @@ fruitsTab <- function(input,
         data$sd <- sd(Data[, colnames(Data) == input$exportTheta])
       }
     }
-
+    
     if (input$exportType == "Source contributions") {
       fruitsObj <- model()$fruitsObj
       modelResults <- model()$modelResults
       if (fruitsObj$modelOptions$modelType != "1") {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "alpha",
-            colnames(modelResults[[1]])
-          )]][, , drop = FALSE]
+                                  [grep(
+                                    "alpha",
+                                    colnames(modelResults[[1]])
+                                  )]][, , drop = FALSE]
         colnames(Data) <-
           rep(
             fruitsObj$valueNames$sources,
             fruitsObj$constants$nTargets
           )
-
+        
         Data <- Data[, colnames(Data) == input$exportSources]
-
+        
         data$mean <- apply(Data, 2, mean)
         data$sd <- apply(Data, 2, sd)
       } else {
         Data <- modelResults[[1]][, colnames(modelResults[[1]])
-        [grep(
-            "alpha",
-            colnames(modelResults[[1]])
-          )]][, drop = FALSE]
+                                  [grep(
+                                    "alpha",
+                                    colnames(modelResults[[1]])
+                                  )]][, drop = FALSE]
         colnames(Data) <- fruitsObj$valueNames$sources
         data$mean <-
           mean(Data[, colnames(Data) == input$exportSources])
@@ -2149,42 +2121,42 @@ fruitsTab <- function(input,
       modelResults <- model()$modelResults
       if (fruitsObj$modelOptions$modelType != "1") {
         Data <- modelResults[[2]][, colnames(modelResults[[2]])
-        [grep(
-            paste0(input$exportUserEstimates, "_"),
-            colnames(modelResults[[2]])
-          )]][, , drop = FALSE]
-
+                                  [grep(
+                                    paste0(input$exportUserEstimates, "_"),
+                                    colnames(modelResults[[2]])
+                                  )]][, , drop = FALSE]
+        
         data$mean <- apply(Data, 2, mean)
         data$sd <- apply(Data, 2, sd)
       } else {
         Data <- modelResults[[2]][, colnames(modelResults[[2]])
-        [grep(
-            paste0(input$exportUserEstimates, "_"),
-            colnames(modelResults[[2]])
-          )]][, drop = FALSE]
+                                  [grep(
+                                    paste0(input$exportUserEstimates, "_"),
+                                    colnames(modelResults[[2]])
+                                  )]][, drop = FALSE]
         data$mean <- mean(Data)
         data$sd <- sd(Data)
       }
     }
     data
   })
-
+  
   output$exportPreview <- renderTable(exportData(), bordered = TRUE)
-
+  
   observe({
     if (!isoInstalled()) {
       shinyjs::disable("exportToIsoMemo")
     }
   })
-
+  
   observeEvent(input$exportToIsoMemo, {
     isoDataExport(list(
       data = exportData(),
       event = runif(1)
     ))
   })
-
-
+  
+  
   ## food intakes
   callModule(foodIntakes, "foodIntakes", values = values)
 }
