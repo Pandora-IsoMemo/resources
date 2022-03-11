@@ -23,6 +23,7 @@ Imports:
   ggplot2,
   grDevices,
   htmltools,
+  modules,
   openxlsx,
   plotly,
   RColorBrewer,
