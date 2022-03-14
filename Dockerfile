@@ -2,6 +2,8 @@ FROM ghcr.io/pandora-isomemo/base-image:latest
 
 RUN installPackage MpiIsoApp
 
+RUN Rscript -e "install.packages('nimble', repos = 'https://cloud.r-project.org/')"
+
 ADD . .
 
 RUN installPackage
