@@ -11,12 +11,12 @@ getNimblePrior <- function(priorParameters, prior, replacements, n, individualNa
     if (applyUnc == FALSE) {
       return(paste0(
         "prior", n[2], "_", individualNames[n[1]],
-        " ~ dconstraint(", nimblePrior, ")"
+        " ~ dconstraint(", nimblePrior, "& 10000 > 9999)"
       ))
     } else {
       return(paste0(
         "prior", n[2], "_", individualNames[n[1]],
-        " ~ dconstraint(", nimblePrior, "- 1/2* ", Unc, ")"
+        " ~ dconstraint(", nimblePrior, "- 1/2* ", Unc, "& 10000 > 9999)"
       ))
     }
   }
@@ -25,12 +25,12 @@ getNimblePrior <- function(priorParameters, prior, replacements, n, individualNa
     if (applyUnc == FALSE) {
       return(paste0(
         "prior", n[2], "_", individualNames[n[1]],
-        " ~ dconstraint(", nimblePrior, ")"
+        " ~ dconstraint(", nimblePrior, "& 10000 > 9999)"
       ))
     } else {
       return(paste0(
         "prior", n[2], "_", individualNames[n[1]],
-        " ~ dconstraint(", nimblePrior, "- 1/2* ", Unc, ")"
+        " ~ dconstraint(", nimblePrior, "- 1/2* ", Unc, "& 10000 > 9999)"
       ))
     }
   }
@@ -43,7 +43,7 @@ getNimblePrior <- function(priorParameters, prior, replacements, n, individualNa
       return(c(
         paste0(
           "prior", n[2], "_", paste0(individualNames[n[1]], c("a", "b")),
-          " ~ dconstraint(", nimblePrior, c("*1/2", "*-1/2"), ")"
+          " ~ dconstraint(", nimblePrior, c("*1/2", "*-1/2"), "& 10000 > 9999)"
         ),
         paste0("pUnc_", n[2], " ~ dunif(0,", Unc, ")")
       ))
@@ -52,7 +52,7 @@ getNimblePrior <- function(priorParameters, prior, replacements, n, individualNa
       return(paste0("prior", n[2], "_", paste0(
         individualNames[n[1]],
         c("a", "b")
-      ), " ~ dconstraint(", nimblePrior, c("*1/2", "*-1/2"), ")"))
+      ), " ~ dconstraint(", nimblePrior, c("*1/2", "*-1/2"), "& 10000 > 9999)"))
     }
   }
 }
