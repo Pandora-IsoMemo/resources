@@ -34,13 +34,7 @@ dbContentSelectUI <- function(id, label) {
                 options = list(
                   placeholder = 'Please select a table',
                   onInitialize = I('function() { this.setValue(""); }')
-                )),
-    tags$button(
-      class = "btn btn-default",
-      type = "button",
-      onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-      "IsoMemo"
-    )
+                ))
   )
 }
 

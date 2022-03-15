@@ -51,6 +51,13 @@ fruitsUI <- function(id, title = "FRUITS") {
         # dbContentButton(ns("diet"), table = "diet"),
         # dbContentButton(ns("digest"), table = "digest"),
         dbContentSelectUI(ns("popUpTables"), label = "View data table"),
+        tags$h4("Visit app"),
+        tags$button(
+          class = "btn btn-default",
+          type = "button",
+          onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
+          "IsoMemo"
+        ),
         div(
           style = "display:none;",
           verbatimTextOutput(ns("status")),
