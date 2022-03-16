@@ -92,48 +92,17 @@ fruitsTab <- function(input,
                priority = 500
   )
   
-  ## Save Model in File
-  output$saveModelFile <- downloadHandler(
-    filename = function() {
-      paste0(Sys.Date(), "fruitsModel", ".RData")
-    },
-    content = function(file) {
-      model <- reactiveValuesToList(values)
-      model <- model[allVariables()]
-      model$version <- packageVersion("ReSources")
-      
-      save(model, file = file)
-    }
-  )
-  
-  ## Load Model from file
-  observeEvent(input$modelFile, {
-    logDebug("Entering observe() (Load Model from file)")
-    req(input$modelFile)
-    
-    res <- try({
-      load(input$modelFile$datapath)
-    })
-    
-    if (inherits(res, "try-error")) {
-      shinyjs::alert("Could not load file.")
-      return()
-    }
-    
-    if (!exists("model")) {
-      shinyjs::alert("File format not valid. Model object not found")
-      return()
-    }
-    
-    for (name in names(model)) {
-      values[[name]] <- model[[name]]
-    }
-    
-    values$status <- values$statusSim <- "INITIALIZE"
-    values$reset <- runif(1)
-    values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
-  })
-  
+
+  uploadedNotes <- reactiveVal()
+  callModule(downloadModel, "modelDownload", session = session,
+             values = values, 
+             model = model(),
+             uploadedNotes = uploadedNotes)
+
+  callModule(uploadModel, "modelUpload", session = session,
+             values = values, 
+             model = model,
+             uploadedNotes = uploadedNotes)
   
   ## status
   
@@ -585,6 +554,19 @@ fruitsTab <- function(input,
     }
   })
   
+  observeEvent(values$oxcalCheck, {
+    logDebug("Entering observeEvent(values$oxcalCheck)")
+    
+    updateRadioButtons(session, "oxcalCheck",
+                       selected = values$oxcalCheck
+    )
+  })
+  
+  observeEvent(input$oxcalCheck, {
+    logDebug("Entering observeEvent(input$oxcalCheck)")
+    values$oxcalCheck <- input$oxcalCheck
+  })
+  
   observeEvent(values$covariateType, {
     logDebug("Entering observeEvent(input$covariateType)")
     if (!identical(input$covariateType, values$covariateType)) {
@@ -904,11 +886,13 @@ fruitsTab <- function(input,
   )
   
   ## MySql table contents
-  callModule(dbContent, "feeding", table = "feeding")
-  callModule(dbContent, "suess", table = "suess")
-  callModule(dbContent, "diet", table = "diet")
-  callModule(dbContent, "digest", table = "digest")
-  
+
+  # callModule(dbContent, "feeding", table = "feeding")
+  # callModule(dbContent, "suess", table = "suess")
+  # callModule(dbContent, "diet", table = "diet")
+  # callModule(dbContent, "digest", table = "digest")
+  callModule(dbContentSelect, "popUpTables")
+
   ## About
   observeEvent(input$showAbout, {
     logDebug("Entering observeEvent(input$showAbout)")

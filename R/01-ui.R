@@ -11,19 +11,12 @@ fruitsUI <- function(id, title = "FRUITS") {
     id = id,
     value = id,
     useShinyjs(),
-    sidebarLayout(
+    fluidRow(
       sidebarPanel(
-        width = 3,
-        tags$h4("Model File"),
-        fileInput(
-          ns("modelFile"),
-          "Upload Model File",
-          multiple = FALSE,
-          accept = ".rdata"
-        ),
-        downloadButton(ns("saveModelFile"), "Save Model File"),
-        actionButton(ns("showFileNotes"), "File Notes"),
-        tags$hr(),
+        width = 2,
+        # uploadModelUI(ns("modelUpload"), "Upload Model"),
+        # downloadModelUI(ns("modelDownload"), "Download Model"),
+        # tags$hr(),
         selectInput(
           ns("exampleData"),
           label = "Select example models",
@@ -45,18 +38,26 @@ fruitsUI <- function(id, title = "FRUITS") {
           "This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"
         ),
         tags$hr(),
-        tags$h4("View data table"),
+        # tags$h4("View data table"),
+        # tags$button(
+        #   class = "btn btn-default",
+        #   type = "button",
+        #   onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
+        #   "IsoMemo"
+        # ),
+        # dbContentButton(ns("feeding"), table = "feeding"),
+        # tags$br(),
+        # dbContentButton(ns("suess"), table = "suess"),
+        # dbContentButton(ns("diet"), table = "diet"),
+        # dbContentButton(ns("digest"), table = "digest"),
+        dbContentSelectUI(ns("popUpTables"), label = "View data table"),
+        tags$h4("Visit app"),
         tags$button(
           class = "btn btn-default",
           type = "button",
           onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
           "IsoMemo"
         ),
-        dbContentButton(ns("feeding"), table = "feeding"),
-        tags$br(),
-        dbContentButton(ns("suess"), table = "suess"),
-        dbContentButton(ns("diet"), table = "diet"),
-        dbContentButton(ns("digest"), table = "digest"),
         div(
           style = "display:none;",
           verbatimTextOutput(ns("status")),
@@ -65,6 +66,7 @@ fruitsUI <- function(id, title = "FRUITS") {
       ),
       # Data ----
       mainPanel(
+        width = 8,
         tabsetPanel(
           id = ns("mainTabs"),
           type = "tabs",
@@ -1160,6 +1162,11 @@ fruitsUI <- function(id, title = "FRUITS") {
             )
           )
         )
+      ),
+      sidebarPanel(
+        width = 2,
+        downloadModelUI(ns("modelDownload"), "Download Model"),
+        uploadModelUI(ns("modelUpload"), "Upload Model")
       )
     )
   )

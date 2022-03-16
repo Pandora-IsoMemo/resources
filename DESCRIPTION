@@ -1,6 +1,6 @@
 Package: ReSources
 Title: Food Reconstruction Using Isotopic Transferred Signals
-Version: 22.03.5
+Version: 22.03.6
 Authors@R: c(
     person("Marcus", "Gross", email = "marcus.gross@inwt-statistics.de", role = c("aut", "cre")),
     person("Ricardo", "Fernandes", email = "ldv1452@gmail.com", role = c("aut")),
@@ -23,6 +23,7 @@ Imports:
   ggplot2,
   grDevices,
   htmltools,
+  modules,
   openxlsx,
   plotly,
   RColorBrewer,
@@ -36,7 +37,8 @@ Imports:
   shinyWidgets,
   templates,
   tibble,
-  tidyr
+  tidyr,
+  zip
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
