@@ -127,7 +127,11 @@ uploadModel <- function(input, output, session, values, model, uploadedNotes){
       uploadedNotes(readLines("README.txt"))
     })
     if (inherits(res, "try-error")) {
-      shinyjs::alert("Could not load file.")
+      shinyjs::alert(paste0("Could not load file.\n",
+                            "The file to be uploaded should be a .zip file",
+                            " that contains the following files:",
+                            " \n help.html,\n model.rds,\n README.txt\n",
+                            "If you download a model it will exactly have this format."))
       return()
     }
     
