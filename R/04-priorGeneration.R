@@ -153,7 +153,6 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
       }))
       priors[x] <- replacePriorDists(priors[x], paste0("pDistUserEstimate_", x, "_", 1:length(priorDistributions)), priorDistributions)
     }
-
     valueNames$valProxies <- apply(expand.grid(
       valueNames$sources,
       valueNames$fractions,
@@ -198,6 +197,35 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
         valueNames$sources,
         vars = colnames(covariates)
       )
+      if(modelOptions$modelType %in% c("4", "5")){
+        valueNames$hierValuesConc <- getAllMainInteractions(covariates,
+                                                             valueNames$sources,
+                                                             valueNames$fractions,
+                                                             vars = colnames(covariates)
+        )
+        valueNames$hierValuesCons <- getAllMainInteractions(covariates,
+                                                            valueNames$targets,
+                                                            vars = colnames(covariates)
+        )
+        
+        valueNames$hierValuesWeight <- getAllMainInteractions(covariates,
+                                                            valueNames$targets,
+                                                            valueNames$fractions,
+                                                            vars = colnames(covariates)
+        )
+        valueNames$hierValuescontrProxies <- getAllMainInteractions(covariates,
+                                                              valueNames$targets,
+                                                              valueNames$sources,
+                                                              vars = colnames(covariates)
+        )
+        valueNames$hierValuesValProxies <- getAllMainInteractions(covariates,
+                                                                  valueNames$sources,
+                                                                  valueNames$fractions,
+                                                                  valueNames$targets,
+                                                                  vars = colnames(covariates)
+        )
+        
+      }
     }
 
 
@@ -215,6 +243,13 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
       hierValuesParameters <- priorParameters[which(priorTypes == "hierValues")]
       hierValuesParametersBeta <- priorParameters[which(priorTypes == "hierValuesBeta")]
       hierValuesParametersTheta <- priorParameters[which(priorTypes == "hierValuesTheta")]
+      if(modelOptions$modelType %in% c("4", "5")){
+        hierValuesParametersConc <- priorParameters[which(priorTypes == "hierValuesConc")]
+        hierValuesParametersCons <- priorParameters[which(priorTypes == "hierValuesCons")]
+        hierValuesParametersWeight <- priorParameters[which(priorTypes == "hierValuesWeight")]
+        hierValuesParametersContrProxies <- priorParameters[which(priorTypes == "hierValuescontrProxies")]
+        hierValuesParametersValProxies <- priorParameters[which(priorTypes == "hierValuesValProxies")]
+      }
     }
 
     if (modelOptions$modelType == "1") {
@@ -223,7 +258,6 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
     } else {
       nTargetsAdjusted <- constants$nTargets
     }
-
     priorList <- lapply(1:nTargetsAdjusted, function(j) {
       replacements <- list(
         valProxies = tryCatch(
@@ -562,7 +596,81 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
           error = function(cond) {
             return(c())
           }
+        ),
+        hierValuesConc = tryCatch(
+          {
+          if (modelOptions$modelType %in% c("4","5")) {
+            getHierPriors(
+              hierValuesParameters =
+                hierValuesParametersConc,
+              type = "C_[",
+              covariates = covariates,
+              names1 = valueNames$fractions,
+              names2 = valueNames$sources
+            )
+          } else {
+            c()
+          }},
+          error = function(cond) {
+            return(c())
+          }
+        ),
+        hierValuesCons = tryCatch(
+          {
+            if (modelOptions$modelType %in% c("4","5")) {
+              getHierPriors(
+                hierValuesParameters =
+                  hierValuesParametersCons,
+                type = "mu_[",
+                covariates = covariates,
+                names1 = valueNames$targets
+              )
+            } else {
+              c()
+            }},
+          error = function(cond) {
+            return(c())
+          }
+        ),
+        hierValuesWeight = tryCatch(
+          {
+            if (modelOptions$modelType %in% c("4","5")) {
+              getHierPriors(
+                hierValuesParameters =
+                  hierValuesParametersWeight,
+                type = "W_[",
+                covariates = covariates,
+                names1 = valueNames$fractions,
+                names2 = valueNames$targets
+              )
+            } else {
+              c()
+            }},
+          error = function(cond) {
+            return(c())
+          }
+        ),
+        hierValuesValProxies = tryCatch(
+          {
+            if (modelOptions$modelType %in% c("4","5")) {
+              getHierPriors(
+                hierValuesParameters =
+                  hierValuesParametersValProxies,
+                type = "I_[",
+                covariates = covariates,
+                names1 = valueNames$targets,
+                names2 = valueNames$fractions,
+                names3 = valueNames$sources
+              )
+            } else {
+              c()
+            }},
+          error = function(cond) {
+            return(c())
+          }
         )
+        
+        
       )
       vMatch <- match(unlist(priorTypes), names(replacements))
       mIndex <- sapply(1:length(vMatch), function(x) sum(vMatch[1:x] == vMatch[x]))
@@ -610,10 +718,18 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
     })
 
     if (type == "priors" & length(priorList) > 1) {
-      priorList2 <- lapply(1:length(priorList), function(y) strsplit(priorList[[1]], "~")[[1]][2])
+      priorList2 <- lapply(1:length(priorList), function(y) strsplit(priorList[[y]], "~")[[1]][2])
+      priorListNames <- lapply(1:length(priorList), function(y) strsplit(priorList[[y]], "~")[[1]][1])
+      priorListNames <- unique(lapply(1:length(priorListNames), function(y) strsplit(priorListNames[[y]], "_")[[1]][1]))
+      
       if (length(unique(priorList2)) < length(unique(priorList))) {
-        priorList <- priorList[which(!duplicated(priorList2))]
+        if(length(unique(priorList2)) == 1){
+          priorList <- paste0(priorListNames[[1]], " ~ ",priorList2[[1]])
+        } else {
+          priorList <- priorList[which(!duplicated(priorList2))]
+        }
       }
+      
       if (length(na.omit(priorDistributions)) >= 1) {
         priorDist <- priorDist[which(!duplicated(priorList2))]
         priorList <- c(priorList, priorDist)
@@ -623,6 +739,18 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
         priorList <- c(priorList, priorDistUnc)
       }
     } else {
+      priorList2 <- lapply(1:length(priorList), function(y) strsplit(priorList[[y]], "<-")[[1]][2])
+      priorListNames <- lapply(1:length(priorList), function(y) strsplit(priorList[[y]], "<-")[[1]][1])
+      priorListNames <- unique(lapply(1:length(priorListNames), function(y) strsplit(priorListNames[[y]], "_")[[1]][1]))
+      
+      if (length(unique(priorList2)) < length(unique(priorList))) {
+        if(length(unique(priorList2)) == 1){
+          priorList <- paste0(priorListNames[[1]], " <- ",priorList2[[1]])
+        } else {
+          priorList <- priorList[which(!duplicated(priorList2))]
+        }
+      }
+      
       if (length(na.omit(priorDistributions)) >= 1) {
         priorList <- c(priorList, priorDist)
       }
@@ -635,7 +763,7 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
   })))
 }
 
-getAllMainInteractions <- function(covariates, Names1, Names2 = NULL, vars = NULL) {
+getAllMainInteractions <- function(covariates, Names1, Names2 = NULL, Names3 = NULL, vars = NULL) {
 
   if (is.null(covariates) || is.null(vars) || length(vars) == 0 || all(covariates == "")) {
     return(c())
@@ -675,9 +803,13 @@ getAllMainInteractions <- function(covariates, Names1, Names2 = NULL, vars = NUL
     }
   }
   allInteractions <- c(main, interactionsL1, interactionsL2)
-  if (!is.null(Names2)) {
+  if (!is.null(Names2) & is.null(Names3)) {
     return(unique(interaction(expand.grid(allInteractions, Names1, Names2), sep = "-")))
-  } else {
+  }
+  if (!is.null(Names2) & !is.null(Names3)) {
+      return(unique(interaction(expand.grid(allInteractions, Names1, Names2, Names3), sep = "-")))
+    }
+  if (is.null(Names2)) {
     return(unique(interaction(expand.grid(allInteractions, Names1), sep = "-")))
   }
 }
@@ -690,7 +822,7 @@ nullToEmptyList <- function(val){
   }
 }
 
-getHierPriors <- function(hierValuesParameters, covariates, names1, type = "alpha_[", names2 = NULL) {
+getHierPriors <- function(hierValuesParameters, covariates, names1, type = "alpha_[", names2 = NULL, names3 = NULL) {
   sapply(1:length(hierValuesParameters), function(x) {
     if (is.null(names2)) {
       hiersplits <- strsplit(hierValuesParameters, "-")[[x]][-length(strsplit(hierValuesParameters, "-")[[x]])]
@@ -705,7 +837,8 @@ getHierPriors <- function(hierValuesParameters, covariates, names1, type = "alph
       if (length(hierarchicalReturn) > 1) {
         hierarchicalReturn <- paste0("(", paste0(hierarchicalReturn, collapse = "+"), ")/", length(hierarchicalReturn))
       }
-    } else {
+    } 
+    if (!is.null(names2) & is.null(names3)) {
       hiersplits <- strsplit(hierValuesParameters, "-")[[x]][-c(
         length(strsplit(hierValuesParameters, "-")[[x]]),
         length(strsplit(hierValuesParameters, "-")[[x]]) - 1
@@ -730,6 +863,37 @@ getHierPriors <- function(hierValuesParameters, covariates, names1, type = "alph
         hierarchicalReturn <- paste0("(", paste0(hierarchicalReturn, collapse = "+"), ")/", length(hierarchicalReturn))
       }
     }
+    if (!is.null(names3)) {
+      hiersplits <- strsplit(hierValuesParameters, "-")[[x]][-c(
+        length(strsplit(hierValuesParameters, "-")[[x]]),
+        length(strsplit(hierValuesParameters, "-")[[x]]) - 1,
+        length(strsplit(hierValuesParameters, "-")[[x]]) - 2
+      )]
+      n2Splits <- match(
+        strsplit(hierValuesParameters, "-")[[x]][length(strsplit(hierValuesParameters, "-")[[x]]) - 1],
+        names2
+      )
+      n1Splits <- match(
+        strsplit(hierValuesParameters, "-")[[x]][length(strsplit(hierValuesParameters, "-")[[x]])],
+        names1
+      )
+      n3Splits <- match(
+        strsplit(hierValuesParameters, "-")[[x]][length(strsplit(hierValuesParameters, "-")[[x]]) - 2],
+        names2
+      )
+      
+      hierarchicalReturn <- paste0(
+        type, which(sapply(
+          1:nrow(covariates),
+          function(y) all(hiersplits %in% covariates[y, ])
+        )),
+        ",", n3Splits,",", n2Splits, ",", n1Splits, "]"
+      )
+      if (length(hierarchicalReturn) > 1) {
+        hierarchicalReturn <- paste0("(", paste0(hierarchicalReturn, collapse = "+"), ")/", length(hierarchicalReturn))
+      }
+    }
+    
     return(hierarchicalReturn)
   })
 }

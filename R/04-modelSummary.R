@@ -36,11 +36,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
   }
 
   renamedChains <- translateParameters(parameters, fruitsObj)
+
   if (NROW(userEstimates) > 0) {
-    colnames(userEstimates) <- unlist(lapply(
-      colnames(userEstimates),
-      function(x) strsplit(x, split = "_")[[1]][1]
-    ))
     renamedChains$userEstimates <- userEstimates
   }
   if (agg == FALSE) {
@@ -72,21 +69,32 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             ),
             length(colnames(renamedChains[[x]])) / length(rownames(fruitsObj$data$obsvn))
           )
-          resultMatrix$Target <- rownames(fruitsObj$data$obsvn)[repInd]
+          if((names(renamedChains))[x] == "userEstimates"){
 
-          if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
-            fruitsObj$modelOptions$hierarchical == TRUE) {
-            resultMatrix <- cbind(resultMatrix, fruitsObj$data$covariates[repInd, , drop = FALSE])
-
-            if (NCOL(fruitsObj$data$covariates) > 1) {
-              resultMatrix$covariateInteraction <- interaction(split(
-                t(fruitsObj$data$covariates),
-                colnames(fruitsObj$data$covariates)
-              ),
-              drop = FALSE
-              )[repInd]
-            }
+            indices <- unlist(lapply(
+              resultMatrix$Estimate,
+              function(x) strsplit(x, split = "_")[[1]][2]
+            ))
+            resultMatrix$Estimate <- unlist(lapply(
+              resultMatrix$Estimate,
+              function(x) strsplit(x, split = "_")[[1]][1]
+            ))
+            repInd <- match(indices, rownames(fruitsObj$data$obsvn))
           }
+            resultMatrix$Target <- rownames(fruitsObj$data$obsvn)[repInd]
+            if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
+                fruitsObj$modelOptions$hierarchical == TRUE) {
+              resultMatrix <- cbind(resultMatrix, fruitsObj$data$covariates[repInd, , drop = FALSE])
+              
+              if (NCOL(fruitsObj$data$covariates) > 1) {
+                resultMatrix$covariateInteraction <- interaction(split(
+                  t(fruitsObj$data$covariates),
+                  colnames(fruitsObj$data$covariates)
+                ),
+                drop = FALSE
+                )[repInd]
+              }
+            }
         } else {
           resultMatrix$Target <- "all"
           if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
@@ -102,7 +110,6 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             }
           }
         }
-
         resultMatrix
       }
     }))
