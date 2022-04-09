@@ -56,7 +56,7 @@ validateUserEstimate <- function(x, estimates = character(0)) {
   res <- step(res, x, userEstimateEqualSign)
   res <- step(res, x, userEstimateOpMissing)
   res <- step(res, x, userEstimateOpAbundance)
-  #res <- step(res, x, userEstimateNameValid)
+  res <- step(res, x, userEstimateNameValid)
   res <- step2(res, x, estimates, userEstimateNameNotTaken)
   res
 }
