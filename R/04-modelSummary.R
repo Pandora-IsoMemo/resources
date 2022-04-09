@@ -138,24 +138,42 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
           # resultMatrix <- cbind(fruitsObj$data$covariates[rep(1:nrow(fruitsObj$data$covariates), repTimes),
           #                                                 , drop = FALSE], resultMatrix)
 
+          if((names(renamedChains))[x] == "userEstimates"){
+            
+            indices <- unlist(lapply(
+              rownames(resultMatrix),
+              function(x) strsplit(x, split = "_")[[1]][2]
+            ))
+            userNames <- unlist(lapply(
+              rownames(resultMatrix),
+              function(x) strsplit(x, split = "_")[[1]][1]
+            ))
+            repInd <- match(indices, rownames(fruitsObj$data$obsvn))
+          } else {
+            repInd <- rep(1:length(rownames(fruitsObj$data$obsvn)),
+                          each = repTimes
+            )
+            
+          }
+          
+          
           covariateVectors <- lapply(
             1:ncol(fruitsObj$data$covariates),
             function(x) {
               rep(
-                fruitsObj$data$covariates[, x],
-                repTimes
+                fruitsObj$data$covariates[repInd, x]
               )
             }
           )
           names(covariateVectors) <- colnames(fruitsObj$data$covariates)
 
           if (NCOL(fruitsObj$data$covariates) > 1) {
-            covariateVectors$interactions <- rep(interaction(split(
+            covariateVectors$interactions <- interaction(split(
               t(fruitsObj$data$covariates),
               colnames(fruitsObj$data$covariates)
             ),
             drop = FALSE
-            ), repTimes)
+            )[repInd]
           }
 
           resultMatrix2 <- do.call("rbind", lapply(covariateVectors, function(zz) {
@@ -176,9 +194,10 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             }))
           }))
         }
+        resultMatrix2 <- resultMatrix2[!is.na(resultMatrix2[,2]),,drop = FALSE]
         resultMatrix <- data.frame(
-          Target = rep(rownames(fruitsObj$data$obsvn), repTimes),
-          Type = rep("targets", repTimes), resultMatrix
+          Target = rownames(fruitsObj$data$obsvn)[repInd],
+          Type = rep("targets", length(repInd)), resultMatrix
         )
       } else {
         if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &

@@ -45,4 +45,4 @@ Suggests:
   lintr,
   testthat,
   MpiIsoApp (>= 1.2.5)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
