@@ -117,8 +117,6 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
     }))
     resultMatrix <- resultMatrix[resultMatrix$toDel == FALSE, ]
   } else {
-    browser()
-    
     resultMatrix <- do.call("rbind", lapply(1:length(renamedChains), function(x) {
       resultMatrix <- (do.call("cbind", lapply(statisticsFunctions, function(y) {
         round(apply(renamedChains[[x]], 2, eval(parse(text = y))), 3)
