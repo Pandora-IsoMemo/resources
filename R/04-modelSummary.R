@@ -73,7 +73,7 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
 
             indices <- unlist(lapply(
               resultMatrix$Estimate,
-              function(x) strsplit(x, split = "_")[[1]][2]
+              function(x) paste0(strsplit(x, split = "_")[[1]][-1], collapse = "_")
             ))
             resultMatrix$Estimate <- unlist(lapply(
               resultMatrix$Estimate,
@@ -82,6 +82,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             repInd <- match(indices, rownames(fruitsObj$data$obsvn))
           }
             resultMatrix$Target <- rownames(fruitsObj$data$obsvn)[repInd]
+            resultMatrix$Target[is.na(resultMatrix$Target)] <- "custom"
+            
             if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
                 fruitsObj$modelOptions$hierarchical == TRUE) {
               resultMatrix <- cbind(resultMatrix, fruitsObj$data$covariates[repInd, , drop = FALSE])
@@ -115,6 +117,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
     }))
     resultMatrix <- resultMatrix[resultMatrix$toDel == FALSE, ]
   } else {
+    browser()
+    
     resultMatrix <- do.call("rbind", lapply(1:length(renamedChains), function(x) {
       resultMatrix <- (do.call("cbind", lapply(statisticsFunctions, function(y) {
         round(apply(renamedChains[[x]], 2, eval(parse(text = y))), 3)
@@ -142,13 +146,14 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             
             indices <- unlist(lapply(
               rownames(resultMatrix),
-              function(x) strsplit(x, split = "_")[[1]][2]
+              function(x) paste0(strsplit(x, split = "_")[[1]][-1], collapse = "_")
             ))
             userNames <- unlist(lapply(
               rownames(resultMatrix),
               function(x) strsplit(x, split = "_")[[1]][1]
             ))
             repInd <- match(indices, rownames(fruitsObj$data$obsvn))
+            colnames(renamedChains[[x]]) <- userNames
           } else {
             repInd <- rep(1:length(rownames(fruitsObj$data$obsvn)),
                           repTimes
@@ -200,6 +205,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             Target = rownames(fruitsObj$data$obsvn)[repInd],
             Type = rep("targets", length(repInd)), resultMatrix
           )
+        resultMatrix$Type[is.na(resultMatrix$Target)] <- "custom"
+        resultMatrix$Target[is.na(resultMatrix$Target)] <- "custom"
       } else {
         if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
           fruitsObj$modelOptions$hierarchical == TRUE) {
