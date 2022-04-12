@@ -151,7 +151,7 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             repInd <- match(indices, rownames(fruitsObj$data$obsvn))
           } else {
             repInd <- rep(1:length(rownames(fruitsObj$data$obsvn)),
-                          each = repTimes
+                          repTimes
             )
             
           }
@@ -194,11 +194,12 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             }))
           }))
         }
+
         resultMatrix2 <- resultMatrix2[!is.na(resultMatrix2[,2]),,drop = FALSE]
         resultMatrix <- data.frame(
-          Target = rownames(fruitsObj$data$obsvn)[repInd],
-          Type = rep("targets", length(repInd)), resultMatrix
-        )
+            Target = rownames(fruitsObj$data$obsvn)[repInd],
+            Type = rep("targets", length(repInd)), resultMatrix
+          )
       } else {
         if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
           fruitsObj$modelOptions$hierarchical == TRUE) {
