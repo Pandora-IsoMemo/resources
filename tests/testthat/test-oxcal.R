@@ -36,7 +36,7 @@ test_that("Parse Curve File", {
 })
 
 test_that("Create OxCal Output", {
-  model <- readRDS("test-oxcalData.rds")
+  model <- readRDS("test-oxcalModelData.rds")
   basicCode <-
     c(
       "Plot()",
