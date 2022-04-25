@@ -201,22 +201,26 @@ test_that("Create OxCal Output", {
   expect_equal(oxcalLines1[1], "Plot()")
   expect_equal(oxcalLines1[3], "Curve(\"IntCal20\",\"IntCal20.14c\");\r")
   expect_equal(
-    oxcalLines1[9] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_1,\"terrestrial\",\"Aquatic1\", 0.434,0.294); R_Date(“Individual_1“, NA,NA);"
+    oxcalLines1[11] %>% substr(start = 1, stop = 100),
+    "Mix_Curve(\"Individual_1\",\"terrestrial\",\"Aquatic1\", 0.434,0.294);"
   )
   expect_equal(
-    oxcalLines1[23] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_2,\"Aquatic1\",\"Aquatic2\", 0.083,0.101);"
+    oxcalLines1[13] %>% substr(start = 1, stop = 100),
+    "R_Date(“Individual_1“, 1001,1);"
+  )
+  expect_equal(
+    oxcalLines1[42] %>% substr(start = 1, stop = 100),
+    "Mix_Curve(\"england.male\",\"terrestrial\",\"Aquatic1\", 0.083,0.101);"
   )
 
   expect_equal(oxcalLines2[1], "Plot()")
   expect_equal(oxcalLines2[3], "Curve(\"IntCal20\",\"IntCal20.14c\");\r")
   expect_equal(
-    oxcalLines2[9] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_1,\"terrestrial\",\"Aquatic1\", P(0,100,[0,0, 0, 0, 0, 0.002, 0.003, 0.007, 0.01, 0"
+    oxcalLines2[11] %>% substr(start = 1, stop = 100),
+    "Mix_Curve(\"Individual_1\",\"terrestrial\",\"Aquatic1\", P(0,100,[0,0, 0, 0, 0, 0.002, 0.003, 0.007, 0.01,"
   )
   expect_equal(
-    oxcalLines2[23] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_2,\"Aquatic1\",\"Aquatic2\", P(0,100,[0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+    oxcalLines2[15] %>% substr(start = 1, stop = 100),
+    "Mix_Curve(\"Individual_2\",\"terrestrial\",\"Aquatic1\", P(0,100,[0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,"
   )
 })
