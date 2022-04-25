@@ -36,11 +36,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
   }
 
   renamedChains <- translateParameters(parameters, fruitsObj)
+
   if (NROW(userEstimates) > 0) {
-    colnames(userEstimates) <- unlist(lapply(
-      colnames(userEstimates),
-      function(x) strsplit(x, split = "_")[[1]][1]
-    ))
     renamedChains$userEstimates <- userEstimates
   }
   if (agg == FALSE) {
@@ -72,21 +69,34 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             ),
             length(colnames(renamedChains[[x]])) / length(rownames(fruitsObj$data$obsvn))
           )
-          resultMatrix$Target <- rownames(fruitsObj$data$obsvn)[repInd]
+          if((names(renamedChains))[x] == "userEstimates"){
 
-          if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
-            fruitsObj$modelOptions$hierarchical == TRUE) {
-            resultMatrix <- cbind(resultMatrix, fruitsObj$data$covariates[repInd, , drop = FALSE])
-
-            if (NCOL(fruitsObj$data$covariates) > 1) {
-              resultMatrix$covariateInteraction <- interaction(split(
-                t(fruitsObj$data$covariates),
-                colnames(fruitsObj$data$covariates)
-              ),
-              drop = FALSE
-              )[repInd]
-            }
+            indices <- unlist(lapply(
+              resultMatrix$Estimate,
+              function(x) paste0(strsplit(x, split = "_")[[1]][-1], collapse = "_")
+            ))
+            resultMatrix$Estimate <- unlist(lapply(
+              resultMatrix$Estimate,
+              function(x) strsplit(x, split = "_")[[1]][1]
+            ))
+            repInd <- match(indices, rownames(fruitsObj$data$obsvn))
           }
+            resultMatrix$Target <- rownames(fruitsObj$data$obsvn)[repInd]
+            resultMatrix$Target[is.na(resultMatrix$Target)] <- "all"
+            
+            if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
+                fruitsObj$modelOptions$hierarchical == TRUE) {
+              resultMatrix <- cbind(resultMatrix, fruitsObj$data$covariates[repInd, , drop = FALSE])
+              
+              if (NCOL(fruitsObj$data$covariates) > 1) {
+                resultMatrix$covariateInteraction <- interaction(split(
+                  t(fruitsObj$data$covariates),
+                  colnames(fruitsObj$data$covariates)
+                ),
+                drop = FALSE
+                )[repInd]
+              }
+            }
         } else {
           resultMatrix$Target <- "all"
           if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
@@ -102,7 +112,6 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             }
           }
         }
-
         resultMatrix
       }
     }))
@@ -113,8 +122,9 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
         round(apply(renamedChains[[x]], 2, eval(parse(text = y))), 3)
       })))
       colnames(resultMatrix) <- statisticsNames
-      Parameter_Names <- rownames(resultMatrix)
-
+      if(nrow(resultMatrix)>0){
+        Parameter_Names <- unlist(lapply(1:nrow(resultMatrix), function(x) strsplit(rownames(resultMatrix)[x], split = "_")[[1]][1]))
+      }
       if (fruitsObj$modelOptions$modelType != "1" &
         (names(renamedChains))[x] %in% c(
           "Source contributions", "Component contributions",
@@ -131,24 +141,43 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
           # resultMatrix <- cbind(fruitsObj$data$covariates[rep(1:nrow(fruitsObj$data$covariates), repTimes),
           #                                                 , drop = FALSE], resultMatrix)
 
+          if((names(renamedChains))[x] == "userEstimates"){
+            
+            indices <- unlist(lapply(
+              rownames(resultMatrix),
+              function(x) paste0(strsplit(x, split = "_")[[1]][-1], collapse = "_")
+            ))
+            userNames <- unlist(lapply(
+              rownames(resultMatrix),
+              function(x) strsplit(x, split = "_")[[1]][1]
+            ))
+            repInd <- match(indices, rownames(fruitsObj$data$obsvn))
+            colnames(renamedChains[[x]]) <- userNames
+          } else {
+            repInd <- rep(1:length(rownames(fruitsObj$data$obsvn)),
+                          repTimes
+            )
+            
+          }
+          
+          
           covariateVectors <- lapply(
             1:ncol(fruitsObj$data$covariates),
             function(x) {
               rep(
-                fruitsObj$data$covariates[, x],
-                repTimes
+                fruitsObj$data$covariates[repInd, x]
               )
             }
           )
           names(covariateVectors) <- colnames(fruitsObj$data$covariates)
 
           if (NCOL(fruitsObj$data$covariates) > 1) {
-            covariateVectors$interactions <- rep(interaction(split(
+            covariateVectors$interactions <- interaction(split(
               t(fruitsObj$data$covariates),
               colnames(fruitsObj$data$covariates)
             ),
             drop = FALSE
-            ), repTimes)
+            )[repInd]
           }
 
           resultMatrix2 <- do.call("rbind", lapply(covariateVectors, function(zz) {
@@ -169,10 +198,14 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
             }))
           }))
         }
+
+        resultMatrix2 <- resultMatrix2[!is.na(resultMatrix2[,2]),,drop = FALSE]
         resultMatrix <- data.frame(
-          Target = rep(rownames(fruitsObj$data$obsvn), repTimes),
-          Type = rep("targets", repTimes), resultMatrix
-        )
+            Target = rownames(fruitsObj$data$obsvn)[repInd],
+            Type = rep("targets", length(repInd)), resultMatrix
+          )
+        resultMatrix$Type[is.na(resultMatrix$Target)] <- "all"
+        resultMatrix$Target[is.na(resultMatrix$Target)] <- "all"
       } else {
         if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
           fruitsObj$modelOptions$hierarchical == TRUE) {

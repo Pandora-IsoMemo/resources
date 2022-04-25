@@ -1084,6 +1084,48 @@ fruitsTab <- function(input,
         vars = values$categoricalVars
       ) %>% nullToEmptyList()
     )
+    updateSelectInput(
+      session = session,
+      inputId = "priorProxyHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$sourceNames,
+        values$fractionNames,
+        values$targetNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    updateSelectInput(
+      session = session,
+      inputId = "priorConsumerHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$targetNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    updateSelectInput(
+      session = session,
+      inputId = "priorConcentrationHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$sourceNames,
+        values$fractionNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    updateSelectInput(
+      session = session,
+      inputId = "priorWeightHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$targetNames,
+        values$fractionNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    
+    
   })
 
   # User estimates
@@ -1238,8 +1280,51 @@ fruitsTab <- function(input,
         vars = values$categoricalVars
       ) %>% nullToEmptyList()
     )
+    
+    updateSelectInput(
+      session = session,
+      inputId = "userEstimateProxyHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$sourceNames,
+        values$fractionNames,
+        values$targetNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    updateSelectInput(
+      session = session,
+      inputId = "userEstimateConsumerHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$targetNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    updateSelectInput(
+      session = session,
+      inputId = "userEstimateConcentrationHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$sourceNames,
+        values$fractionNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    updateSelectInput(
+      session = session,
+      inputId = "userEstimateWeightHierarchicalValues",
+      choices = getAllMainInteractions(
+        values$targetValuesCovariates,
+        values$targetNames,
+        values$fractionNames,
+        vars = values$categoricalVars
+      ) %>% nullToEmptyList()
+    )
+    
   })
 
+  
   userEstimateNames <- reactive({
     gsub("([^=])=.*", "\\1", input$userEstimate)
   })

@@ -51,7 +51,6 @@ validateUserEstimate <- function(x, estimates = character(0)) {
   stopifnot(length(x) == 1)
   stopifnot(is.character(x))
   stopifnot(is.null(estimates) | is.character(estimates))
-
   res <- TRUE
   res <- step(res, x, userEstimateNotEmpty)
   res <- step(res, x, userEstimateEqualSign)

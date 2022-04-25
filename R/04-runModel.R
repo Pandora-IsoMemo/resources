@@ -123,6 +123,18 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
       ) %>%
         unlist() %>%
         na.omit()
+      userEstParametersRaw <- lapply(
+        1:length(fruitsObj$userEstimates[[1]]),
+        function(x) {
+          gsub(" ", "",
+            strsplit(
+              fruitsObj$userEstimates[[1]][[x]], "="
+            )[[1]][1]
+          )
+        }
+      ) %>% unlist() %>% na.omit()
+      
+      userEstParameters <- c(userEstParametersRaw, userEstParameters)[which(c(userEstParametersRaw, userEstParameters) %in% model$getVarNames())]
     } else {
       userEstParameters <- lapply(
         1:length(fruitsObj$userEstimates[[1]]),

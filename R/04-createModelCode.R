@@ -265,7 +265,6 @@ createModelCode <- function(priors, userEstimates, valueNames,
   } else {
     userDefinedPriors <- ""
   }
-
   if (length(userEstimates) > 0) {
     firstChar <- sapply(userEstimates, function(x) substr(x, 1, 1))
     if (any(!grepl("[^0-9]", firstChar))) {
@@ -297,8 +296,6 @@ createModelCode <- function(priors, userEstimates, valueNames,
   } else {
     userDefinedEstimates <- ""
   }
-
-
 
   templateFilled <- tmpl(nimbleTemplate,
     likelihood = likelihood,

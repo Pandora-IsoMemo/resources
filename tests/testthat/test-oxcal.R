@@ -36,7 +36,7 @@ test_that("Parse Curve File", {
 })
 
 test_that("Create OxCal Output", {
-  model <- readRDS("test-oxcalData.rds")
+  model <- readRDS("test-oxcalModelData.rds")
   basicCode <-
     c(
       "Plot()",
@@ -277,11 +277,11 @@ test_that("Create OxCal Output", {
   expect_equal(oxcalLines1[7], "Delta_R(\"Aquatic2\",2,0.5);")
   expect_equal(
     oxcalLines1[9] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_1,\"terrestrial\",\"Aquatic1\", 0.511,0.29); R_Date(“Individual_1“, NA,NA);"
+    "Mix_Curve(Individual_1,\"terrestrial\",\"Aquatic1\", 0.434,0.294); R_Date(“Individual_1“, NA,NA);"
   )
   expect_equal(
     oxcalLines1[23] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_2,\"Aquatic1\",\"Aquatic2\", 0.087,0.102);"
+    "Mix_Curve(Individual_2,\"Aquatic1\",\"Aquatic2\", 0.083,0.101);"
   )
 
   expect_equal(oxcalLines2[1], "Plot()")
@@ -292,10 +292,10 @@ test_that("Create OxCal Output", {
   expect_equal(oxcalLines2[7], "Delta_R(\"Aquatic2\",2,0.5);")
   expect_equal(
     oxcalLines2[9] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_1,\"terrestrial\",\"Aquatic1\", P(0,100,[0,0, 0, 0.001, 0.002, 0.007, 0.013, 0.018,"
+    "Mix_Curve(Individual_1,\"terrestrial\",\"Aquatic1\", P(0,100,[0,0, 0, 0, 0, 0.002, 0.003, 0.007, 0.01, 0"
   )
   expect_equal(
     oxcalLines2[23] %>% substr(start = 1, stop = 100),
-    "Mix_Curve(Individual_2,\"Aquatic1\",\"Aquatic2\", P(0,100,[0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, "
+    "Mix_Curve(Individual_2,\"Aquatic1\",\"Aquatic2\", P(0,100,[0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
   )
 })
