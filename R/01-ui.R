@@ -506,7 +506,61 @@ fruitsUI <- function(id, title = "FRUITS") {
                     selectize = FALSE,
                     multiple = TRUE,
                     size = 3
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("priorProxyHierarchicalValues"),
+                      "Component proxies categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("priorConsumerHierarchicalValues"),
+                      "Target proxies categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  
+                  conditionalPanel(
+                    condition = "input.modelConcentrations == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("priorConcentrationHierarchicalValues"),
+                      "Concentrations categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.modelWeights == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("priorWeightHierarchicalValues"),
+                      "Weight categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
                   )
+                  
                 )
               )
             )
@@ -676,6 +730,59 @@ fruitsUI <- function(id, title = "FRUITS") {
                     selectize = FALSE,
                     multiple = TRUE,
                     size = 3
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("userEstimateProxyHierarchicalValues"),
+                      "Component proxies categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("userEstimateConsumerHierarchicalValues"),
+                      "Target proxies categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  
+                  conditionalPanel(
+                    condition = "input.modelConcentrations == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("userEstimateConcentrationHierarchicalValues"),
+                      "Concentrations categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
+                  ),
+                  conditionalPanel(
+                    condition = "input.modelWeights == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    ,
+                    selectInput(
+                      ns("userEstimateWeightHierarchicalValues"),
+                      "Weight categories",
+                      NULL,
+                      selectize = FALSE,
+                      multiple = TRUE,
+                      size = 3
+                    ),
+                    ns = ns
                   )
                 )
               )
