@@ -118,131 +118,11 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
     resultMatrix <- resultMatrix[resultMatrix$toDel == FALSE, ]
   } else {
     resultMatrix <- do.call("rbind", lapply(1:length(renamedChains), function(x) {
-      resultMatrix <- (do.call("cbind", lapply(statisticsFunctions, function(y) {
-        round(apply(renamedChains[[x]], 2, eval(parse(text = y))), 3)
-      })))
-      colnames(resultMatrix) <- statisticsNames
-      if(nrow(resultMatrix)>0){
-        Parameter_Names <- unlist(lapply(1:nrow(resultMatrix), function(x) strsplit(rownames(resultMatrix)[x], split = "_")[[1]][1]))
-      }
-      if (fruitsObj$modelOptions$modelType != "1" &
-        (names(renamedChains))[x] %in% c(
-          "Source contributions", "Component contributions",
-          "Source contributions by proxy", "Target proxies",
-          "userEstimates"
-        ) |
-        (fruitsObj$modelOptions$modelType %in% c("4", "5")) &
-          (names(renamedChains))[x] %in% c("Weights", "Concentrations", "Target-to-source offsets") |
-        (fruitsObj$modelOptions$modelType %in% c("3")) &
-          (names(renamedChains))[x] %in% c("Concentrations")) {
-        repTimes <- nrow(resultMatrix) / length(rownames(fruitsObj$data$obsvn))
-        if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
-          fruitsObj$modelOptions$hierarchical == TRUE) {
-          # resultMatrix <- cbind(fruitsObj$data$covariates[rep(1:nrow(fruitsObj$data$covariates), repTimes),
-          #                                                 , drop = FALSE], resultMatrix)
-
-          if((names(renamedChains))[x] == "userEstimates"){
-            
-            indices <- unlist(lapply(
-              rownames(resultMatrix),
-              function(x) paste0(strsplit(x, split = "_")[[1]][-1], collapse = "_")
-            ))
-            userNames <- unlist(lapply(
-              rownames(resultMatrix),
-              function(x) strsplit(x, split = "_")[[1]][1]
-            ))
-            repInd <- match(indices, rownames(fruitsObj$data$obsvn))
-            colnames(renamedChains[[x]]) <- userNames
-          } else {
-            repInd <- rep(1:length(rownames(fruitsObj$data$obsvn)),
-                          repTimes
-            )
-            
-          }
-          
-          
-          covariateVectors <- lapply(
-            1:ncol(fruitsObj$data$covariates),
-            function(x) {
-              rep(
-                fruitsObj$data$covariates[repInd, x]
-              )
-            }
-          )
-          names(covariateVectors) <- colnames(fruitsObj$data$covariates)
-
-          if (NCOL(fruitsObj$data$covariates) > 1) {
-            covariateVectors$interactions <- interaction(split(
-              t(fruitsObj$data$covariates),
-              colnames(fruitsObj$data$covariates)
-            ),
-            drop = FALSE
-            )[repInd]
-          }
-
-          resultMatrix2 <- do.call("rbind", lapply(covariateVectors, function(zz) {
-            covValues <- unique(zz)
-            do.call("rbind", lapply(unique(colnames(renamedChains[[x]])), function(z) {
-              do.call("rbind", lapply(covValues, function(zzz) {
-                tempDat <- as.vector(renamedChains[[x]][, colnames(renamedChains[[x]]) == z & zz == zzz, drop = FALSE])
-
-                tempDat2 <- data.frame(do.call("cbind", lapply(statisticsFunctions, function(y) {
-                  round(apply(matrix(tempDat, ncol = 1), 2, eval(parse(text = y))), 3)
-                })))
-                colnames(tempDat2) <- statisticsNames
-
-                tempDat2$Target <- zzz
-                tempDat2 <- data.frame(Parameter_Name = z, tempDat2)
-                tempDat2
-              }))
-            }))
-          }))
-        }
-
-        resultMatrix2 <- resultMatrix2[!is.na(resultMatrix2[,2]),,drop = FALSE]
-        resultMatrix <- data.frame(
-            Target = rownames(fruitsObj$data$obsvn)[repInd],
-            Type = rep("targets", length(repInd)), resultMatrix
-          )
-        resultMatrix$Type[is.na(resultMatrix$Target)] <- "all"
-        resultMatrix$Target[is.na(resultMatrix$Target)] <- "all"
-      } else {
-        if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
-          fruitsObj$modelOptions$hierarchical == TRUE) {
-          # covMatrix <- matrix(data = rep("all", ncol(fruitsObj$data$covariates)),
-          #        ncol = ncol(fruitsObj$data$covariates),
-          #        dimnames = list(1, colnames(fruitsObj$data$covariates)))
-          # resultMatrix <- cbind(covMatrix[rep(1, nrow(resultMatrix)), , drop = FALSE], resultMatrix)
-        }
-        resultMatrix <- data.frame(resultMatrix,
-          Target = rep("all", nrow(resultMatrix)),
-          Type = rep("all", nrow(resultMatrix))
-        )
-      }
-      if (nrow(resultMatrix) > 0) {
-        resultMatrix <- data.frame(
-          Parameter_Type = (names(renamedChains))[x],
-          Parameter_Name = Parameter_Names, resultMatrix
-        )
-        colnames(resultMatrix)[1:2] <- c("Group", "Estimate")
-
-        if (exists("resultMatrix2") && nrow(resultMatrix2) > 0) {
-          resultMatrix2 <- data.frame(
-            Parameter_Type = (names(renamedChains))[x], resultMatrix2,
-            Type = rep("covariate", nrow(resultMatrix2))
-          )
-          colnames(resultMatrix2)[1:2] <- c("Group", "Estimate")
-          resultMatrix <- rbind(resultMatrix, resultMatrix2)
-        }
-
-        # names(resultMatrix)[names(resultMatrix) == "Parameter entry"] <- "Group"
-        # names(resultMatrix)[names(resultMatrix) == "Parameter"] <- "Estimate"
-        # names(resultMatrix)[names(resultMatrix) == "Target"] <- "Target/category"
-
-        return(resultMatrix)
-      } else {
-        NULL
-      }
+      extractResultMatrixOfChain(x, 
+                                 renamedChains = renamedChains, 
+                                 statisticsNames = statisticsNames, 
+                                 statisticsFunctions = statisticsFunctions,
+                                 fruitsObj = fruitsObj)
     }))
 
     resultMatrix <- resultMatrix[!(resultMatrix$sd == 0 & resultMatrix$mean == 0), ]
@@ -568,3 +448,131 @@ applyNames <- function(nameCombinations) {
 #   }
 #   x
 # }
+
+extractResultMatrixOfChain <- function(x, renamedChains, statisticsNames, statisticsFunctions, fruitsObj) {
+  resultMatrix <- (do.call("cbind", lapply(statisticsFunctions, function(y) {
+    round(apply(renamedChains[[x]], 2, eval(parse(text = y))), 3)
+  })))
+  colnames(resultMatrix) <- statisticsNames
+  if(nrow(resultMatrix)>0){
+    Parameter_Names <- unlist(lapply(1:nrow(resultMatrix), function(x) strsplit(rownames(resultMatrix)[x], split = "_")[[1]][1]))
+  }
+  if (fruitsObj$modelOptions$modelType != "1" &
+      (names(renamedChains))[x] %in% c(
+        "Source contributions", "Component contributions",
+        "Source contributions by proxy", "Target proxies",
+        "userEstimates"
+      ) |
+      (fruitsObj$modelOptions$modelType %in% c("4", "5")) &
+      (names(renamedChains))[x] %in% c("Weights", "Concentrations", "Target-to-source offsets") |
+      (fruitsObj$modelOptions$modelType %in% c("3")) &
+      (names(renamedChains))[x] %in% c("Concentrations")) {
+    repTimes <- nrow(resultMatrix) / length(rownames(fruitsObj$data$obsvn))
+    if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
+        fruitsObj$modelOptions$hierarchical == TRUE) {
+      # resultMatrix <- cbind(fruitsObj$data$covariates[rep(1:nrow(fruitsObj$data$covariates), repTimes),
+      #                                                 , drop = FALSE], resultMatrix)
+      
+      if((names(renamedChains))[x] == "userEstimates"){
+        
+        indices <- unlist(lapply(
+          rownames(resultMatrix),
+          function(x) paste0(strsplit(x, split = "_")[[1]][-1], collapse = "_")
+        ))
+        userNames <- unlist(lapply(
+          rownames(resultMatrix),
+          function(x) strsplit(x, split = "_")[[1]][1]
+        ))
+        repInd <- match(indices, rownames(fruitsObj$data$obsvn))
+        colnames(renamedChains[[x]]) <- userNames
+      } else {
+        repInd <- rep(1:length(rownames(fruitsObj$data$obsvn)),
+                      repTimes
+        )
+        
+      }
+      
+      
+      covariateVectors <- lapply(
+        1:ncol(fruitsObj$data$covariates),
+        function(x) {
+          rep(
+            fruitsObj$data$covariates[repInd, x]
+          )
+        }
+      )
+      names(covariateVectors) <- colnames(fruitsObj$data$covariates)
+      
+      if (NCOL(fruitsObj$data$covariates) > 1) {
+        covariateVectors$interactions <- interaction(split(
+          t(fruitsObj$data$covariates),
+          colnames(fruitsObj$data$covariates)
+        ),
+        drop = FALSE
+        )[repInd]
+      }
+      
+      resultMatrix2 <- do.call("rbind", lapply(covariateVectors, function(zz) {
+        covValues <- unique(zz)
+        do.call("rbind", lapply(unique(colnames(renamedChains[[x]])), function(z) {
+          do.call("rbind", lapply(covValues, function(zzz) {
+            tempDat <- as.vector(renamedChains[[x]][, colnames(renamedChains[[x]]) == z & zz == zzz, drop = FALSE])
+            
+            tempDat2 <- data.frame(do.call("cbind", lapply(statisticsFunctions, function(y) {
+              round(apply(matrix(tempDat, ncol = 1), 2, eval(parse(text = y))), 3)
+            })))
+            colnames(tempDat2) <- statisticsNames
+            
+            tempDat2$Target <- zzz
+            tempDat2 <- data.frame(Parameter_Name = z, tempDat2)
+            tempDat2
+          }))
+        }))
+      }))
+    }
+    
+    resultMatrix2 <- resultMatrix2[!is.na(resultMatrix2[,2]),,drop = FALSE]
+    resultMatrix <- data.frame(
+      Target = rownames(fruitsObj$data$obsvn)[repInd],
+      Type = rep("targets", length(repInd)), resultMatrix
+    )
+    resultMatrix$Type[is.na(resultMatrix$Target)] <- "all"
+    resultMatrix$Target[is.na(resultMatrix$Target)] <- "all"
+  } else {
+    if (NROW(fruitsObj$data$covariates) > 0 & NCOL(fruitsObj$data$covariates) > 0 &
+        fruitsObj$modelOptions$hierarchical == TRUE) {
+      # covMatrix <- matrix(data = rep("all", ncol(fruitsObj$data$covariates)),
+      #        ncol = ncol(fruitsObj$data$covariates),
+      #        dimnames = list(1, colnames(fruitsObj$data$covariates)))
+      # resultMatrix <- cbind(covMatrix[rep(1, nrow(resultMatrix)), , drop = FALSE], resultMatrix)
+    }
+    resultMatrix <- data.frame(resultMatrix,
+                               Target = rep("all", nrow(resultMatrix)),
+                               Type = rep("all", nrow(resultMatrix))
+    )
+  }
+  if (nrow(resultMatrix) > 0) {
+    resultMatrix <- data.frame(
+      Parameter_Type = (names(renamedChains))[x],
+      Parameter_Name = Parameter_Names, resultMatrix
+    )
+    colnames(resultMatrix)[1:2] <- c("Group", "Estimate")
+    
+    if (exists("resultMatrix2") && nrow(resultMatrix2) > 0) {
+      resultMatrix2 <- data.frame(
+        Parameter_Type = (names(renamedChains))[x], resultMatrix2,
+        Type = rep("covariate", nrow(resultMatrix2))
+      )
+      colnames(resultMatrix2)[1:2] <- c("Group", "Estimate")
+      resultMatrix <- rbind(resultMatrix, resultMatrix2)
+    }
+    
+    # names(resultMatrix)[names(resultMatrix) == "Parameter entry"] <- "Group"
+    # names(resultMatrix)[names(resultMatrix) == "Parameter"] <- "Estimate"
+    # names(resultMatrix)[names(resultMatrix) == "Target"] <- "Target/category"
+    
+    return(resultMatrix)
+  } else {
+    NULL
+  }
+}
