@@ -96,7 +96,7 @@ fruitsTab <- function(input,
   uploadedNotes <- reactiveVal()
   callModule(downloadModel, "modelDownload", session = session,
              values = values, 
-             model = model(),
+             model = model,
              uploadedNotes = uploadedNotes)
 
   callModule(uploadModel, "modelUpload", session = session,

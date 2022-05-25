@@ -14,6 +14,7 @@ downloadModelUI <- function(id, label) {
   tagList(
     tags$h4(label),
     textAreaInput(ns("notes"), "Notes"),
+    checkboxInput(ns("onlyInputs"), "Store only data and model options"),
     downloadButton(ns("downloadModelFile"), "Download"),
     tags$br()
   )
@@ -51,8 +52,14 @@ downloadModel <- function(input, output, session, values, model, uploadedNotes){
       valuesExport <- reactiveValuesToList(values)
       valuesExport <- valuesExport[allVariables()]
       
+      if (input$onlyInputs) { 
+        modelExport <- NULL 
+      } else {
+          modelExport <- model()
+      }
+      
       saveRDS(list(values = valuesExport,
-                   model = model,
+                   model = modelExport,
                    version = packageVersion("ReSources")),
               file = modelfile)
       writeLines(input$notes, notesfile)
@@ -141,23 +148,21 @@ uploadModel <- function(input, output, session, values, model, uploadedNotes){
     }
     
     if (is.null(modelImport$model)) {
-      shinyjs::alert("Model object is empty.")
-      return()
+      shinyjs::alert("Model object is empty. No model output available")
+    } else {
+      model(modelImport$model)
     }
-    
-    model(modelImport$model)
     
     if (is.null(modelImport$values)) {
-      shinyjs::alert("Input values are empty.")
-      return()
-    }
-    
-    for (name in names(modelImport$values)) {
-      values[[name]] <- modelImport$values[[name]]
+      shinyjs::alert("Input values are empty. No inputs will be updated.")
+    } else {
+      for (name in names(modelImport$values)) {
+        values[[name]] <- modelImport$values[[name]]
+      }
     }
     
     rm(modelImport)
-    alert("Model loaded")
+    alert("Upload completed.")
     
     values$status <- values$statusSim <- "COMPLETED"
     
