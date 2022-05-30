@@ -149,7 +149,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
         newResultUsers[grep(x, newResultUsers$Estimate), ]$`Group` <- paste("User estimate", x)
         newResultUsers[grep(x, newResultUsers$Estimate), ]
       }))
-      resultMatrix[resultMatrix$`Group` == "userEstimates", ] <- newResultUsers
+      resultMatrix <- resultMatrix[resultMatrix$`Group` != "userEstimates", ]
+      resultMatrix <- rbind(resultMatrix, newResultUsers)
     }
   }
   resultMatrix$`Group` <- as.factor(resultMatrix$`Group`)
@@ -529,9 +530,28 @@ extractResultMatrixOfChain <- function(x, renamedChains, statisticsNames, statis
           }))
         }))
       }))
-    }
     
-    resultMatrix2 <- resultMatrix2[!is.na(resultMatrix2[,2]),,drop = FALSE]
+      resultMatrix2 <- resultMatrix2[!is.na(resultMatrix2[,2]),,drop = FALSE]
+    } else {
+      if((names(renamedChains))[x] == "userEstimates"){
+        
+        indices <- unlist(lapply(
+          rownames(resultMatrix),
+          function(x) paste0(strsplit(x, split = "_")[[1]][-1], collapse = "_")
+        ))
+        userNames <- unlist(lapply(
+          rownames(resultMatrix),
+          function(x) strsplit(x, split = "_")[[1]][1]
+        ))
+        repInd <- match(indices, rownames(fruitsObj$data$obsvn))
+        colnames(renamedChains[[x]]) <- userNames
+      } else {
+        repInd <- rep(1:length(rownames(fruitsObj$data$obsvn)),
+                      repTimes
+        )
+        
+      }
+    }
     resultMatrix <- data.frame(
       Target = rownames(fruitsObj$data$obsvn)[repInd],
       Type = rep("targets", length(repInd)), resultMatrix
