@@ -209,10 +209,16 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
     fruitsObj$userEstimates[[2]],
     indNames
   )
-  pValue <- lapply(1:100, function(z) computePPValues(parameters, fruitsObj$data$obsvn, fruitsObj$data$obsvnError))
+  if(is.null(fruitsObj$data$obsvnError)){
+    obsvnSds <- sqrt(t(sapply(1:dim(fruitsObj$data$obsvnCov)[3], function(x) diag(fruitsObj$data$obsvnCov[,,x]))))
+  } else {
+    obsvnSds <- fruitsObj$data$obsvnError
+  }
+  
+  pValue <- lapply(1:100, function(z) computePPValues(parameters, fruitsObj$data$obsvn, obsvnSds))
   pValue <- preparePValue(pValue)
   wAIC <- calculateWAIC(FRUITSMCMC)$WAIC
-  BIC <- getBIC(samples, fruitsObj$data$obsvn, fruitsObj$data$obsvnError)
+  BIC <- getBIC(samples, fruitsObj$data$obsvn, obsvnSds)
   return(list(
     parameters = parameters, userEstimateSamples = userEstimateSamples, wAIC = wAIC,
     pValue = pValue, BIC = BIC
