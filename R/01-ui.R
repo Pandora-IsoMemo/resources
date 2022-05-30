@@ -109,7 +109,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               fruitsMatrixFilter(
                 scope = ns("targetValues"),
                 id = "obsvn",
-                label = "Observation"
+                label = "Observation - Target Covariance Matrix"
               ),
               fruitsMatrixInput(
                 scope = ns("targetValues"),
