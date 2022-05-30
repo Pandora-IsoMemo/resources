@@ -149,6 +149,7 @@ uploadModel <- function(input, output, session, values, model, uploadedNotes){
     
     if (is.null(modelImport$model)) {
       shinyjs::alert("Model object is empty. No model output available")
+      model(NULL)
     } else {
       model(modelImport$model)
     }

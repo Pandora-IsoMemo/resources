@@ -153,6 +153,12 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
   })
 
   observe({
+    if (is.null(model())) {
+      updateSelectInput(session, "OxCalA", choices = c(), selected = "")
+      updateSelectInput(session, "OxCalB", choices = c(), selected = "")
+      updateTextAreaInput(session, inputId = "OxCalText", value = "")
+    }
+    
     validate(validInput(model()))
     # parEstimates$Name is always the same for bins = TRUE/FALSE no matter which input$bins we have,
     # but bins == FALSE calculates much faster
