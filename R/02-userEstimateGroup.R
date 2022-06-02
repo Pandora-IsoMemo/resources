@@ -37,7 +37,7 @@ userEstimateGroup <- function(input, output, session, userEstimates, groupsIniti
     groupIds(sapply(groups(), function(group) group$id))
   })
 
-  observeEvent(groupIds(), {
+  observe({
     lapply(groups(), function(group) {
       if (group$id %in% names(observers())) {
         return()
@@ -113,8 +113,11 @@ getGroupIndex <- function(groups, id) {
 
 addEmptyGroup <- function(groups) {
   n <- length(groups) + 1
-
-  id <- paste(sample(letters, 12, replace = TRUE), collapse = "")
+  
+  id <- paste(c(
+    sample(letters, 12, replace = TRUE),  # when app restarts -> same ids, because of set.seed()
+    gsub('[^0123456789]', '', Sys.time()) # use Sys.time for really random id
+    ), collapse = "")
 
   groups[[n]] <- list(
     id = id,
