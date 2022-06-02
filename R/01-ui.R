@@ -825,7 +825,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               ),
               tags$p("Click on simulate for additional characteristics"),
               div(foodIntakesButton(
-                ns("foodIntakes"), "Specify food intakes"
+                ns("foodIntakes"), "Add Source Contributions"
               )),
               div(
                 sliderInput(

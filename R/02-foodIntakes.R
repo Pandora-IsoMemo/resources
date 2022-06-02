@@ -113,19 +113,19 @@ foodIntakes <- function(input, output, session, values) {
 
 foodIntakesPopup <- function(ns, default, choices, selected) {
   modalDialog(
-    title = "Food Intakes",
-    tags$h5("Please specify name of food intake first:"),
+    title = "Source Contributions",
+    tags$h5("Please specify name of source contributions first:"),
     div(
       style = "margin-bottom: 20px;",
-      textInput(ns("newIntake"), "New Food Intake", value = "Food_Intake_1"),
-      actionButton(ns("addIntake"), "Add Food Intake")
+      textInput(ns("newIntake"), "New Source Contribution", value = "Source_Contribution_1"),
+      actionButton(ns("addIntake"), "Add Source Contribution")
     ),
-    tags$h5("Select a food intake and enter food proportion values:"),
+    tags$h5("Select a source contribution and enter source proportion values:"),
     div(
       style = "margin-bottom: 20px;",
       div(
         style = "inline-block;",
-        selectInput(ns("intake"), "Food Intake", choices = choices, selected = selected)
+        selectInput(ns("intake"), "Source Contribution", choices = choices, selected = selected)
       )
     ),
     matrixInput(ns("data"),
@@ -134,7 +134,7 @@ foodIntakesPopup <- function(ns, default, choices, selected) {
     ),
     div(
       style = "inline-block;",
-      actionButton(ns("removeIntake"), "Remove Food Intake")
+      actionButton(ns("removeIntake"), "Remove Source Contribution")
     ),
     footer = tagList(
       actionButton(ns("save"), "Save"),
