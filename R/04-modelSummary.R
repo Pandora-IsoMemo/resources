@@ -146,8 +146,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
       userEstimateNames <- sapply(fruitsObj$userEstimates[[2]], function(x) x$name)
       userEstimateNames <- userEstimateNames[userEstimateNames != ""]
       newResultUsers <- do.call(rbind, lapply(userEstimateNames, function(x) {
-        newResultUsers[grep(x, newResultUsers$Estimate), ]$`Group` <- paste("User estimate", x)
-        newResultUsers[grep(x, newResultUsers$Estimate), ]
+        newResultUsers[sapply(newResultUsers$Estimate, function(y) strsplit(y, "\\.")[[1]][1]) == x, ]$`Group` <- paste("User estimate", x)
+        newResultUsers[sapply(newResultUsers$Estimate, function(y) strsplit(y, "\\.")[[1]][1]) == x, ]
       }))
       resultMatrix <- resultMatrix[resultMatrix$`Group` != "userEstimates", ]
       resultMatrix <- rbind(resultMatrix, newResultUsers)
@@ -456,7 +456,8 @@ extractResultMatrixOfChain <- function(x, renamedChains, statisticsNames, statis
   })))
   colnames(resultMatrix) <- statisticsNames
   if(nrow(resultMatrix)>0){
-    Parameter_Names <- unlist(lapply(1:nrow(resultMatrix), function(x) strsplit(rownames(resultMatrix)[x], split = "_")[[1]][1]))
+    Parameter_Names <- rownames(resultMatrix)
+    #unlist(lapply(1:nrow(resultMatrix), function(x) strsplit(rownames(resultMatrix)[x], split = "_")[[1]][1]))
   }
   if (fruitsObj$modelOptions$modelType != "1" &
       (names(renamedChains))[x] %in% c(

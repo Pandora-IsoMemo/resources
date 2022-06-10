@@ -309,7 +309,6 @@ createModelCode <- function(priors, userEstimates, valueNames,
     userDefinedPriors = userDefinedPriors,
     userDefinedEstimates = userDefinedEstimates
   )
-
   code <- try(
     {
       tmplEval(templateFilled)

@@ -84,6 +84,7 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
     fruitsObj$data$obsvnCovT3 <- matrix(0, ncol = nrow(simGrid), nrow = nrow(simGrid))
     fruitsObj$data$hierMatch <- rep(0, nrow(simGrid))
   }
+
   model <- try(
     {
       nimbleModel(
@@ -259,7 +260,11 @@ normalizeUserEstimates <- function(userEstimateSamples, userEstimatesGroups, ind
         ))
         est <- estNew[, colnames(est)]
       } else {
-        est <- est
+        if(userEstimatesGroups[[x]]$normalize == TRUE){
+          return(est / rowSums(est))
+        } else {
+          est <- est
+        }
       }
       est
     })
