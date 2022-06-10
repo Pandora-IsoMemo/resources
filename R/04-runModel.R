@@ -473,7 +473,7 @@ bugfixFraction1 <- function(data, constant) {
 
 getBIC <- function(samples, obs, obsvar) {
   allsamples <- samples$samples
-  allsamples <- matrix(colMeans(allsamples[, grepl("mu\\[", colnames(allsamples))]), ncol = NCOL(obs), nrow = NROW(obs))
+  allsamples <- matrix(colMeans(allsamples[, grepl("mu\\[", colnames(allsamples)), drop = FALSE]), ncol = NCOL(obs), nrow = NROW(obs))
   logLik <- sum(log(dnorm(as.vector(allsamples), mean = as.vector(obs), sd = as.vector(obsvar))))
   BIC <- -2 * logLik + ncol(samples$samples) * log(length(as.vector(obs)))
   BIC
