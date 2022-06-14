@@ -92,7 +92,7 @@ fruits <- function(data,
     modelOptions$covariateType != "0") {
     stop("Number of individuals or individual names in covariates table and targets table are different. Please check your data.")
   }
-
+  
   data <- replaceValues(data, modelOptions, valueNames)
   if (modelOptions$hierarchical == TRUE && exists("catCols") && length(catCols) > 0) {
     hierarchical <- interaction(as.data.frame(data$covariates[, catCols, drop = FALSE]), sep = "-")

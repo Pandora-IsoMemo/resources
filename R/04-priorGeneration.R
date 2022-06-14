@@ -213,11 +213,11 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
                                                             valueNames$fractions,
                                                             vars = colnames(covariates)
         )
-        valueNames$hierValuescontrProxies <- getAllMainInteractions(covariates,
-                                                              valueNames$targets,
-                                                              valueNames$sources,
-                                                              vars = colnames(covariates)
-        )
+        # valueNames$hierValuescontrProxies <- getAllMainInteractions(covariates,
+        #                                                       valueNames$targets,
+        #                                                       valueNames$sources,
+        #                                                       vars = colnames(covariates)
+        # )
         valueNames$hierValuesValProxies <- getAllMainInteractions(covariates,
                                                                   valueNames$sources,
                                                                   valueNames$fractions,
@@ -247,7 +247,7 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
         hierValuesParametersConc <- priorParameters[which(priorTypes == "hierValuesConc")]
         hierValuesParametersCons <- priorParameters[which(priorTypes == "hierValuesCons")]
         hierValuesParametersWeight <- priorParameters[which(priorTypes == "hierValuesWeight")]
-        hierValuesParametersContrProxies <- priorParameters[which(priorTypes == "hierValuescontrProxies")]
+        #hierValuesParametersContrProxies <- priorParameters[which(priorTypes == "hierValuescontrProxies")]
         hierValuesParametersValProxies <- priorParameters[which(priorTypes == "hierValuesValProxies")]
       }
     }
@@ -600,6 +600,8 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
         hierValuesConc = tryCatch(
           {
           if (modelOptions$modelType %in% c("4","5")) {
+            if(length((hierValuesParametersConc))>0){
+            }
             getHierPriors(
               hierValuesParameters =
                 hierValuesParametersConc,

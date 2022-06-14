@@ -84,6 +84,7 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
     fruitsObj$data$obsvnCovT3 <- matrix(0, ncol = nrow(simGrid), nrow = nrow(simGrid))
     fruitsObj$data$hierMatch <- rep(0, nrow(simGrid))
   }
+
   model <- try(
     {
       nimbleModel(
@@ -259,7 +260,11 @@ normalizeUserEstimates <- function(userEstimateSamples, userEstimatesGroups, ind
         ))
         est <- estNew[, colnames(est)]
       } else {
-        est <- est
+        if(userEstimatesGroups[[x]]$normalize == TRUE){
+          return(est / rowSums(est))
+        } else {
+          est <- est
+        }
       }
       est
     })
@@ -473,7 +478,7 @@ bugfixFraction1 <- function(data, constant) {
 
 getBIC <- function(samples, obs, obsvar) {
   allsamples <- samples$samples
-  allsamples <- matrix(colMeans(allsamples[, grepl("mu\\[", colnames(allsamples))]), ncol = NCOL(obs), nrow = NROW(obs))
+  allsamples <- matrix(colMeans(allsamples[, grepl("mu\\[", colnames(allsamples)), drop = FALSE]), ncol = NCOL(obs), nrow = NROW(obs))
   logLik <- sum(log(dnorm(as.vector(allsamples), mean = as.vector(obs), sd = as.vector(obsvar))))
   BIC <- -2 * logLik + ncol(samples$samples) * log(length(as.vector(obs)))
   BIC
