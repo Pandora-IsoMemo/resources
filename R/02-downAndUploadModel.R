@@ -170,7 +170,7 @@ uploadModel <-
       
       if (is.null(modelImport$model)) {
         warningEmptyModel <-
-          "Model object is empty, no model output available. Only data and model inputs will be uploaded."
+          "Model object is empty, no model output available. Only data and model inputs will be uploaded. "
         model(NULL)
       } else {
         warningEmptyModel <- ""
@@ -179,7 +179,7 @@ uploadModel <-
       
       if (is.null(modelImport$values)) {
         warningEmptyInputs <-
-          "Input values are empty, no inputs are updated. Only the model object will be uploaded."
+          "Input values are empty, no inputs are updated. Only the model object will be uploaded. "
       } else {
         warningEmptyInputs <- ""
         for (name in names(modelImport$values)) {
@@ -188,14 +188,13 @@ uploadModel <-
       }
       
       rm(modelImport)
-      alert(paste(
+      
+      alert(paste0(
         warningEmptyInputs,
         warningEmptyModel,
         "Upload completed."
       ))
       
       values$status <- values$statusSim <- "COMPLETED"
-      
     })
-    
   }
