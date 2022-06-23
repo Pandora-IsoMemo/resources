@@ -232,7 +232,7 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
           )
         }
 
-        TextOxCal <- createOxCalText(
+        TextOxCal <- try(createOxCalText(
           model = model(),
           basicCode = oxCalBasicCode() %>% paste(collapse = "\n"),
           terrestrialCurve = terrestrialCurveCode,
@@ -243,12 +243,16 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
           OxCalB = input$OxCalB,
           coordinates = exportCoordinates
         ) %>%
-          paste(collapse = "\n")
+          paste(collapse = "\n"))
       },
       value = 0,
       message = "Generating OxCal output"
     )
 
+    if (inherits(TextOxCal, "try-error")) {
+      TextOxCal <- as.character(TextOxCal)
+    }
+    
     updateTextAreaInput(session, inputId = "OxCalText", value = TextOxCal)
   })
 
