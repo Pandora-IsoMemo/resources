@@ -191,7 +191,7 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
 
     terrestrialParams(
       switch(input$mixType,
-        "Option point" = c(input$Point, 0),
+        "Option point" = c(input$mixPoint, 0),
         "Option Mean SD" = c(input$mixMean, input$mixSd),
         "Option uniform" = c(input$mixMin, input$mixMax),
         c(NA, NA)
@@ -209,12 +209,13 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
         } else {
           mixOption <- NULL
         }
+        
         terrestrialCurveCode <- getCodeTerrestrial(
           curve = terrestrialCurvesXlsx()[as.numeric(input$terrestrialCurve), ],
           mixOption = mixOption,
           mixParams = terrestrialParams()
         )
-
+        
         aquaticCurve1Code <- getCodeAquatic(
           curve = aquaticCurves1Xlsx()[as.numeric(input$aquaticCurve1), ],
           binOption = input$bins,
@@ -232,7 +233,7 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
           )
         }
 
-        TextOxCal <- createOxCalText(
+        TextOxCal <- try(createOxCalText(
           model = model(),
           basicCode = oxCalBasicCode() %>% paste(collapse = "\n"),
           terrestrialCurve = terrestrialCurveCode,
@@ -243,12 +244,16 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
           OxCalB = input$OxCalB,
           coordinates = exportCoordinates
         ) %>%
-          paste(collapse = "\n")
+          paste(collapse = "\n"))
       },
       value = 0,
       message = "Generating OxCal output"
     )
 
+    if (inherits(TextOxCal, "try-error")) {
+      TextOxCal <- as.character(TextOxCal)
+    }
+    
     updateTextAreaInput(session, inputId = "OxCalText", value = TextOxCal)
   })
 
