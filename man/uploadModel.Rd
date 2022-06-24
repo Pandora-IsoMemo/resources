@@ -5,14 +5,12 @@
 \alias{uploadModel}
 \title{Upload model module}
 \usage{
-uploadModelUI(id, label)
+uploadModelUI(id)
 
 uploadModel(input, output, session, values, model, uploadedNotes)
 }
 \arguments{
 \item{id}{id of module}
-
-\item{label}{label of module}
 
 \item{input}{shiny input}
 
