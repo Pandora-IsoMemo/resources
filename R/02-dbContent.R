@@ -25,8 +25,7 @@ dbContentSelectUI <- function(id, label) {
   ns <- NS(id)
   
   tagList(
-    tags$h4(label),
-    selectizeInput(ns("popup"), label = NULL,
+    selectizeInput(ns("popup"), label = label,
                 choices = list("Feeding experiments" = "feeding",
                                "Suess effect" = "suess",
                                "Diet-to-consumer parameters" = "diet",
