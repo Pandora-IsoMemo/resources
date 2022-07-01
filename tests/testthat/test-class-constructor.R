@@ -110,7 +110,8 @@ test_that("object of class fruits is created", {
 
   modelOptions <- list(
     modelType = "1", modelWeights = TRUE, modelConcentrations = TRUE,
-    alphaHyper = 1, modelWeightsContrained = TRUE, modelConcentrationsContrained = TRUE,
+    alphaHyper = 1, optimalPrior = TRUE,  modelWeightsContrained = TRUE,
+    modelConcentrationsContrained = TRUE,
     targetOffset = TRUE, burnin = 10000, iterations = 10000, thinning = 10, nchains = 2,
     hierarchical = FALSE, includeSourceOffset = FALSE, weightsDist = "normal",
     sourceDist = list(default = "normal"), concentrationDist = "normal",

@@ -480,6 +480,12 @@ fruitsTab <- function(input,
       input$modelConcentrationsContrained
   })
   
+  observeEvent(input$optimalPrior, {
+    logDebug("Entering observeEvent(input$optimalPrior)")
+    values$optimalPrior <-
+      input$optimalPrior
+  })
+  
   
   observeEvent(values$modelWeights, {
     if (values$modelWeights == TRUE) {

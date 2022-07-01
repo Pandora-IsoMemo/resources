@@ -86,6 +86,7 @@ defaultValues <- function() {
     modelWeightsContrained = TRUE,
     modelConcentrationsContrained = TRUE,
     alphaHyper = 1,
+    optimalPrior = TRUE,
     covariateType = 0,
     targetOffset = TRUE,
     burnin = 10000,

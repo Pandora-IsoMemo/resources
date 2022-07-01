@@ -65,6 +65,7 @@ shinyInputToClass <- function(values, priors, userEstimates) {
     obsvnDist = values[["obsvnDistribution"]],
     inflatedBeta = values[["inflatedBeta"]],
     alphaHyper = values[["alphaHyper"]],
+    optimalPrior = values[["optimalPrior"]],
     covariateType = values[["covariateType"]]
   )
 
