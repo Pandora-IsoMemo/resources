@@ -74,6 +74,7 @@ fruitsMatrixInput <- function(scope, row, col, cov = FALSE, fixedCols = FALSE, d
         class = "inline-select",
         selectInput(if (cov) ns("pasteModeCov") else ns("pasteMode"), NULL, choices = c("auto", "comma-separated", "tab-separated", "semicolon"))
       ),
+      # pasteButtonsUI ----
       pasteButton(
         inputId = if (cov) ns("pasteCov") else ns("paste"),
         outputId = if (cov) ns("pastedCov") else ns("pasted"),
@@ -707,27 +708,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
       });
     "))
   })
-
+  # input$pasted ----
   observeEvent(input$pasted, {
-    m <- try(readString(input$pasted$content, input$pasteMode))
-
-    if (inherits(m, "try-error")) {
-      alert(paste0("Could not parse text from clipboard. Error: ", as.character(m)))
-      return()
-    }
-
-    if (ncol(m) > 0) {
-      rownames(m) <- m[, 1]
-      m <- m[, -1, drop = FALSE]
-    }
-
-    storage.mode(m) <- class
-
-    if (length(m) == 0) {
-      alert(paste("Pasted values are empty. Please provide some values."))
-      return()
-    }
-
+    m <- readStringWrapper(content = input$pasted$content, mode = input$pasteMode, class = class)
+    if(is.null(m)) return()
+    
     if (is.null(sdId)) {
       m <- fixMatrixCols(m, colnames(meanData()), fixedCols, rowVar(), colVar())
 
@@ -752,21 +737,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     }
   })
 
-
+# input$pastedCov ----
   observeEvent(input$pastedCov, {
-    m <- try(readString(input$pastedCov$content, input$pasteModeCov))
-
-    if (inherits(m, "try-error")) {
-      alert(paste0("Could not parse text from clipboard. Error: ", as.character(m)))
-      return()
-    }
-    if (length(m) == 0) {
-      alert(paste("Pasted values are empty. Please provide some values."))
-      return()
-    }
-
-    storage.mode(m) <- class
-
+    m <- readStringWrapper(content = input$pastedCov$content, mode = input$pasteModeCov, class = class)
+    if(is.null(m)) return()
+    
     m <- dropEmptyRows(m)
     m <- dropEmptyCols(m)
 

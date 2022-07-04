@@ -12,7 +12,7 @@ downloadModelUI <- function(id, label) {
   ns <- NS(id)
   
   tagList(
-    tags$h4(label),
+    tags$strong(label),
     textAreaInput(ns("notes"), "Notes"),
     checkboxInput(ns("onlyInputs"), "Store only data and model options"),
     downloadButton(ns("downloadModelFile"), "Download"),
@@ -84,26 +84,24 @@ downloadModel <-
 #' UI function to upload a zip file with notes and a list of models
 #'
 #' @param id id of module
-#' @param label label of module
 #'
 #' @rdname uploadModel
 #'
 #' @export
-uploadModelUI <- function(id, label) {
+uploadModelUI <- function(id) {
   ns <- NS(id)
   
   tagList(
-    HTML("<br>"),
-    tags$h4(label),
     fileInput(ns("uploadModel"), label = "Upload local model"),
+    tags$hr(),
     selectInput(
       ns("remoteModel"),
-      label = "Select remote model",
+      label = "Upload remote model",
       choices = dir(file.path(settings$pathToSavedModels)) %>%
         sub(pattern = '\\.zip$', replacement = ''),
       selected = NULL
     ),
-    actionButton(ns("loadRemoteModel"), "Load Remote Model")#,
+    actionButton(ns("loadRemoteModel"), "Load")#,
     #helpText("Remote models are only available on on https://isomemoapp.com")
   )
 }

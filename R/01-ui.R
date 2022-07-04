@@ -12,10 +12,12 @@ fruitsUI <- function(id, title = "FRUITS") {
     value = id,
     useShinyjs(),
     fluidRow(
+      # Left sidebar ----
       sidebarPanel(
+        #style = "position:fixed; width:24%; overflow-y:auto; max-height:800px",
         width = 2,
         # uploadModelUI(ns("modelUpload"), "Upload Model"),
-        # downloadModelUI(ns("modelDownload"), "Download Model"),
+        # downloadModelUI(ns("modelDownload")),
         # tags$hr(),
         selectInput(
           ns("exampleData"),
@@ -38,38 +40,29 @@ fruitsUI <- function(id, title = "FRUITS") {
           "This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"
         ),
         tags$hr(),
-        # tags$h4("View data table"),
-        # tags$button(
-        #   class = "btn btn-default",
-        #   type = "button",
-        #   onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-        #   "IsoMemo"
-        # ),
-        # dbContentButton(ns("feeding"), table = "feeding"),
-        # tags$br(),
-        # dbContentButton(ns("suess"), table = "suess"),
-        # dbContentButton(ns("diet"), table = "diet"),
-        # dbContentButton(ns("digest"), table = "digest"),
         dbContentSelectUI(ns("popUpTables"), label = "View data table"),
-        tags$h4("Visit app"),
         tags$button(
           class = "btn btn-default",
           type = "button",
           onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-          "IsoMemo"
+          "Visit IsoMemo App"
         ),
         div(
           style = "display:none;",
           verbatimTextOutput(ns("status")),
           verbatimTextOutput(ns("statusSim"))
-        )
+        )#,
+        # tags$hr(),
+        # downloadModelUI(ns("modelDownload"), "Download Model"),
+        # uploadModelUI(ns("modelUpload"))
       ),
-      # Data ----
+      # Main panel ----
       mainPanel(
         width = 8,
         tabsetPanel(
           id = ns("mainTabs"),
           type = "tabs",
+          ## Data ----
           navbarMenu(
             "Data",
             tabPanel(
@@ -139,7 +132,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 tags$br()
               )
             ),
-            ## Data/Weights ----
+            ### Data/Weights ----
             tabPanel(
               "Components",
               fruitsMatrixDistribution(
@@ -148,7 +141,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               ),
               fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
             ),
-            ## Data/Sources ----
+            ### Data/Sources ----
             tabPanel(
               "Sources",
               div(
@@ -202,7 +195,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 toggleCov = TRUE
               )
             ),
-            ## Data/Concentrations ----
+            ### Data/Concentrations ----
             tabPanel(
               "Concentrations",
               div(
@@ -223,7 +216,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # Model options ----
+          ## Model options ----
           tabPanel(
             "Model options",
             fluidRow(
@@ -368,7 +361,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # Priors ----
+          ## Priors ----
           tabPanel(
             "Prior Info",
             tags$h4("All Priors"),
@@ -570,7 +563,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # User Estimates ----
+          ## User Estimates ----
           tabPanel(
             "User Estimates",
             tags$h4("Estimates"),
@@ -793,7 +786,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # Model Characteristics ----
+          ## Model Characteristics ----
           tabPanel(
             "Model Characteristics",
             tags$h4("Model Characteristics"),
@@ -1028,7 +1021,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             ))
           ),
-          # Results Report ----
+          ## Results Report ----
           navbarMenu(
             "Results Report",
             menuName = "resultsReport",
@@ -1122,7 +1115,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # Diagnostics ----
+          ## Diagnostics ----
           navbarMenu(
             "Model Diagnostics",
             menuName = "modelDiagnostics",
@@ -1173,7 +1166,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               exportDataUI(ns("exportDataChainsAll"), "Export all chains")
             )
           ),
-          # Output ----
+          ## Output ----
           navbarMenu(
             "Output",
             menuName = "Output",
@@ -1267,7 +1260,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 actionButton(ns("exportToIsoMemo"), "Export to IsoMemo App")
               )
             ),
-            # OxCal ----
+            ### OxCal ----
             tabPanel(
               "Oxcal export",
               OxCalOutputUI(ns("oxcal"))
@@ -1275,10 +1268,12 @@ fruitsUI <- function(id, title = "FRUITS") {
           )
         )
       ),
+      # Right sidebar ----
       sidebarPanel(
         width = 2,
         downloadModelUI(ns("modelDownload"), "Download Model"),
-        uploadModelUI(ns("modelUpload"), "Upload Model")
+        tags$hr(),
+        uploadModelUI(ns("modelUpload"))
       )
     )
   )
