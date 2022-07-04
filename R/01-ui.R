@@ -279,8 +279,13 @@ fruitsUI <- function(id, title = "FRUITS") {
                       ),
                       selected = 0
                     ),
+                    checkboxInput(
+                      ns("optimalPrior"),
+                      "Optimal objective prior",
+                      value = TRUE
+                    ),
                     conditionalPanel(
-                      condition = "input.inflatedBeta == '0'",
+                      condition = "input.optimalPrior == false && input.inflatedBeta == '0'",
                       ns = ns,
                       numericInput(
                         ns("alphaHyper"),

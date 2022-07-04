@@ -1,6 +1,6 @@
 Package: ReSources
 Title: Food Reconstruction Using Isotopic Transferred Signals
-Version: 22.06.5
+Version: 22.07.1
 Authors@R: c(
     person("Marcus", "Gross", email = "marcus.gross@inwt-statistics.de", role = c("aut", "cre")),
     person("Ricardo", "Fernandes", email = "ldv1452@gmail.com", role = c("aut")),
@@ -47,4 +47,4 @@ Suggests:
   lintr,
   testthat,
   MpiIsoApp (>= 1.2.5)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
