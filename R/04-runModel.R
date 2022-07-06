@@ -165,6 +165,9 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
   if (fruitsObj$modelOptions$hierarchical) {
     conf$monitors <- c(conf$monitors, "alpha_", "I_", "mu", "beta_", "theta_")
   }
+  if(fruitsObj$modelOptions$inflatedBeta == "1"){
+    conf$monitors <- c(conf$monitors, "a", "alphaRAW_")
+  }
 
   FRUITSMCMC <- buildMCMC(conf)
   if (progress) setProgress(message = "Compile model", value = 0.4)
@@ -181,6 +184,15 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
     thin = fruitsObj$modelOptions$thinning,
     nchains = fruitsObj$modelOptions$nchains
   )
+  wAIC <- calculateWAIC(FRUITSMCMC)$WAIC
+  
+  if(fruitsObj$modelOptions$inflatedBeta == "1"){
+    samples$samples <- samples$samples[, !grepl(("alphaRAW_\\["), colnames(samples$samples))]
+    samples$samples <- samples$samples[, !grepl(("a\\["), colnames(samples$samples))]
+    
+    }
+  
+  
   if (fruitsObj$modelOptions$nchains > 1 & length(userEstParameters) > 0) {
     parameters <- do.call("rbind", samples$samples)
     userEstimateSamples <- do.call("rbind", samples$samples2)
@@ -218,7 +230,6 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
   
   pValue <- lapply(1:100, function(z) computePPValues(parameters, fruitsObj$data$obsvn, obsvnSds))
   pValue <- preparePValue(pValue)
-  wAIC <- calculateWAIC(FRUITSMCMC)$WAIC
   BIC <- getBIC(samples, fruitsObj$data$obsvn, obsvnSds)
   return(list(
     parameters = parameters, userEstimateSamples = userEstimateSamples, wAIC = wAIC,
