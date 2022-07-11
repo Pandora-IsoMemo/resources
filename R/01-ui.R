@@ -65,6 +65,7 @@ fruitsUI <- function(id, title = "FRUITS") {
           ## Data ----
           navbarMenu(
             "Data",
+            ### Data: Target & target-to-source offsets----
             tabPanel(
               "Target & target-to-source offsets",
               fruitsMatrixFilter(
@@ -132,7 +133,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 tags$br()
               )
             ),
-            ### Data/Weights ----
+            ### Data/Weights: Components ----
             tabPanel(
               "Components",
               fruitsMatrixDistribution(
