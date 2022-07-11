@@ -411,7 +411,7 @@ fruitsTab <- function(input,
     
     sourceMatrixOld <- sourceMatrixNew <- values$source[[1]][[1]][[1]]
     if (input$modelWeights && !values$modelWeights) {
-      values$fractionNames <- paste0("fraction_", 1:ncol(sourceMatrixNew))
+      values$fractionNames <- paste0(fractionLabel(), "_", 1:ncol(sourceMatrixNew))
       colnames(sourceMatrixNew) <- values$fractionNames
       values$weights <-
         emptyMatrix(values$targetNames, values$fractionNames)

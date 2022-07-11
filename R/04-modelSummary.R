@@ -227,7 +227,7 @@ translateParameters <- function(parameters, fruitsObj, addNameTypes = FALSE) {
   # sources
 
   if (length(fruitsObj$valueNames$fractions) == 1) {
-    fruitsObj$valueNames$fractions[2] <- "fraction_2"
+    fruitsObj$valueNames$fractions[2] <- paste0(fractionLabel(), "_2")
   }
 
   sources <- parameters[, grep("alpha", colnames(parameters))]

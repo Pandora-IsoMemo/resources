@@ -37,16 +37,16 @@ defaultValues <- function() {
   list(
     status = "INITIALIZE",
     statusSim = "INITIALIZE",
-    targetNames = "proxy_1",
-    fractionNames = "fraction_1",
+    targetNames = paste0(targetLabel(), "_1"),
+    fractionNames = paste0(fractionLabel(), "_1"),
     sourceNames = "source_1",
     categoricalVars = NULL,
     numericVars = NULL,
     obsvn = list(
-      default = emptyMatrix("Individual_1", "proxy_1")
+      default = emptyMatrix("Individual_1", paste0(targetLabel(), "_1"))
     ),
     obsvnError = list(
-      default = emptyMatrix("Individual_1", "proxy_1")
+      default = emptyMatrix("Individual_1", paste0(targetLabel(), "_1"))
     ),
     targetValuesCovariates = emptyMatrix("Individual_1", "covariate"),
     targetValuesCovariance = list(),
@@ -134,12 +134,12 @@ getDefault <- function(variable) {
 sampleName <- function(variable, suffix = FALSE) {
   n <- try(switch(variable,
     obsvnNames = "Individual",
-    targetNames = "proxy",
+    targetNames = targetLabel(),
     offsetNames = "Offset",
     covariateNames = "Covariate",
     sourceNames = "source",
-    fractionNames = "fraction",
-    targetPlusFractionNames = "proxy-fraction"
+    fractionNames = fractionLabel(),
+    targetPlusFractionNames = paste(targetLabel(), "-", fractionLabel())#"proxy-fraction"
   ))
   if (inherits(n, "try-error")) browser()
   if (suffix) {
@@ -148,3 +148,12 @@ sampleName <- function(variable, suffix = FALSE) {
     n
   }
 }
+
+fractionLabel <- function() {
+  "component"
+}
+
+targetLabel <- function() {
+  "proxy_or_component"
+}
+
