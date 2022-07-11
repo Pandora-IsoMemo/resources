@@ -711,7 +711,7 @@ fruitsTab <- function(input,
       visible <-
         input[["source-target"]] == values$targetNames[zeroTarget]
       showAllColumns(ns("source-table"))
-      if (length(visible) > 0 && !is.na(visible) && any(visible)) {
+      if (length(visible) > 0 && !any(is.na(visible)) && any(visible)) {
         idFrac <-
           which(colnames(values$weights) %in% values$fractionNames[zeroFraction])
         if (length(idFrac) > 0) {
