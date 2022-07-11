@@ -141,7 +141,7 @@ sampleName <- function(variable, suffix = FALSE) {
     fractionNames = "fraction",
     targetPlusFractionNames = "proxy-fraction"
   ))
-  if (inherits(n, "try-error")) 
+  # if (inherits(n, "try-error")) browser()
   if (suffix) {
     paste0(n, "_1")
   } else {
