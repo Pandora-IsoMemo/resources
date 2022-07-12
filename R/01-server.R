@@ -35,6 +35,7 @@ fruitsTab <- function(input,
   
   ## remove names
   observeEvent(input$removeName, {
+    logDebug("Entering observeEvent(input$removeName)")
     events$removeName <- input$removeName
   })
   
@@ -229,6 +230,7 @@ fruitsTab <- function(input,
   })
   
   observe({
+    logDebug("Entering observe() (input$targetValuesShowCovariates)")
     if (input$targetValuesShowCovariates) {
       if (ncol(values$targetValuesCovariates) > 0) {
         potentialNumerics <-
@@ -236,7 +238,7 @@ fruitsTab <- function(input,
             1:ncol(values$targetValuesCovariates),
             function(x) {
               all(!is.na(
-                as.numeric(values$targetValuesCovariates[, x])
+                suppressWarnings(as.numeric(values$targetValuesCovariates[, x]))
               ))
             }
           )]
@@ -707,6 +709,7 @@ fruitsTab <- function(input,
   
   ## Hide Input for 0 weights
   observe({
+    logDebug("Entering observe() (values$modelWeights)")
     if (values$modelWeights) {
       zeroTarget <- row(values$weights)[values$weights == 0]
       zeroFraction <- col(values$weights)[values$weights == 0]
