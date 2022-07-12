@@ -647,7 +647,7 @@ fruitsTab <- function(input,
     )
   })
   
-  ## Target Values
+  ## TargetValues - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "targetValues",
@@ -680,6 +680,7 @@ fruitsTab <- function(input,
     events$isoMemo <- isoMemoData()$data
   })
   
+  ## TargetValuesCovariates - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "targetValuesCovariates",
@@ -691,6 +692,7 @@ fruitsTab <- function(input,
     class = "character"
   )
   
+  ## Weights - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "weights",
@@ -723,7 +725,7 @@ fruitsTab <- function(input,
     }
   })
   
-  ## Weight Offset
+  ## WeightOffset - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "weightOffset",
@@ -781,6 +783,7 @@ fruitsTab <- function(input,
     }
   })
   
+  ## Source - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "source",
@@ -824,6 +827,7 @@ fruitsTab <- function(input,
     )
   )
   
+  ## SourceOffset - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "sourceOffset",
@@ -852,6 +856,7 @@ fruitsTab <- function(input,
     )
   )
   
+  ## Concentration - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "concentration",
@@ -2062,6 +2067,7 @@ fruitsTab <- function(input,
     )
   })
   
+  ## ExportCoordinates - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "exportCoordinates",
