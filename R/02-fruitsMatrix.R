@@ -87,13 +87,16 @@ fruitsMatrixInput <- function(scope, row, col, cov = FALSE, fixedCols = FALSE, d
         if (cov) ns("exportCov") else ns("export"),
         "Export Data"
       ),
+      actionButton(if (cov) ns("reset") else ns("reset"), "Reset"),
       span(
         id = if (cov) ns("batchImportContainerCov") else ns("batchImportContainer"),
         style = "display:none;",
         importDataUI(
           if (cov) ns("batchImportCov") else ns("batchImport"), "Batch Import"
         ),
-        actionButton(if (cov) ns("copyTargetCov") else ns("copyTarget"), "Copy data to other targets")
+        actionButton(if (cov) ns("copyTargetCov") else ns("copyTarget"), "Copy data to other targets"),
+        actionButton(if (cov) ns("reset") else ns("reset"), "Reset")
+        #actionButton(ns("reset"), "Reset")
       )
     ),
     matrixInput(
