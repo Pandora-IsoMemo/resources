@@ -250,7 +250,7 @@ fruitsTab <- function(input,
         updatePickerInput(
           session,
           inputId = "numericVars",
-          choices = extractPotentialNumerics(values$targetValuesCovariates),
+          choices = potentialNumerics,
           selected = selectedNumVars
         )
       }
@@ -272,15 +272,8 @@ fruitsTab <- function(input,
     if (!identical(input$categoricalVars, values$categoricalVars) &
         ncol(values$targetValuesCovariates) > 0) {
       values$categoricalVars <- input$categoricalVars
-      potentialNumerics <-
-        colnames(values$targetValuesCovariates)[sapply(
-          1:ncol(values$targetValuesCovariates),
-          function(x) {
-            all(!is.na(
-              as.numeric(values$targetValuesCovariates[, x])
-            ))
-          }
-        )]
+      potentialNumerics <- extractPotentialNumerics(values$targetValuesCovariates)
+      
       values$numericVars <-
         values$numericVars[!(potentialNumerics %in% values$categoricalVars)]
     }
@@ -300,13 +293,7 @@ fruitsTab <- function(input,
     if (!identical(input$numericVars, values$numericVars) &
         ncol(values$targetValuesCovariates) > 0) {
       values$numericVars <- input$numericVars
-      potentialCat <-
-        colnames(values$targetValuesCovariates)[sapply(
-          1:ncol(values$targetValuesCovariates),
-          function(x) {
-            all(!is.na(values$targetValuesCovariates[, x]))
-          }
-        )]
+      potentialCat <- extractPotentialCat(values$targetValuesCovariates)
       
       values$categoricalVars <-
         values$categoricalVars[!(potentialCat %in% values$numericVars)]
