@@ -489,7 +489,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   # Remove Name (col / row) ----
-  observeEvent(input$tabledelete, {
+  observeEvent(input$tabledelete, priority = 100, {
     logDebug("Remove row or column from (%s)", meanId)
     
     fullMean <- removeLine(matrix = meanData(), 
