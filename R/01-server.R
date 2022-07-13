@@ -234,34 +234,24 @@ fruitsTab <- function(input,
     logDebug("Entering observe() (input$targetValuesShowCovariates)")
     if (input$targetValuesShowCovariates) {
       if (ncol(values$targetValuesCovariates) > 0) {
-        potentialNumerics <-
-          colnames(values$targetValuesCovariates)[sapply(
-            1:ncol(values$targetValuesCovariates),
-            function(x) {
-              all(!is.na(
-                suppressWarnings(as.numeric(values$targetValuesCovariates[, x]))
-              ))
-            }
-          )]
-        potentialCat <-
-          colnames(values$targetValuesCovariates)[sapply(
-            1:ncol(values$targetValuesCovariates),
-            function(x) {
-              all(!is.na(values$targetValuesCovariates[, x]))
-            }
-          )]
+        potentialCat <- extractPotentialCat(values$targetValuesCovariates)
+        selectedCatVars <- intersect(values$categoricalVars, potentialCat)
         
         updatePickerInput(
           session,
           inputId = "categoricalVars",
           choices = potentialCat,
-          selected = values$categoricalVars
+          selected = selectedCatVars
         )
+        
+        potentialNumerics <- extractPotentialNumerics(values$targetValuesCovariates)
+        selectedNumVars <- intersect(values$numericVars, potentialNumerics)
+        
         updatePickerInput(
           session,
           inputId = "numericVars",
-          choices = potentialNumerics,
-          selected = values$numericVars
+          choices = extractPotentialNumerics(values$targetValuesCovariates),
+          selected = selectedNumVars
         )
       }
     }
@@ -2304,4 +2294,36 @@ fruitsTab <- function(input,
   
   ## food intakes
   callModule(foodIntakes, "foodIntakes", values = values)
+}
+
+
+#' Extract Potential Numerics
+#' 
+#' Extract potential numerical covariates.
+#' 
+#' @param targetValuesCovariates table with covariates.
+extractPotentialNumerics <- function(targetValuesCovariates) {
+  colnames(targetValuesCovariates)[sapply(
+      1:ncol(targetValuesCovariates),
+      function(x) {
+        all(!is.na(
+          suppressWarnings(as.numeric(targetValuesCovariates[, x]))
+        ))
+      }
+    )]
+}
+
+
+#' Extract Potential Cat
+#' 
+#' Extract potential categorical covariates.
+#' 
+#' @param targetValuesCovariates table with covariates
+extractPotentialCat <- function(targetValuesCovariates) {
+  colnames(targetValuesCovariates)[sapply(
+      1:ncol(targetValuesCovariates),
+      function(x) {
+        all(!is.na(targetValuesCovariates[, x]))
+      }
+    )]
 }

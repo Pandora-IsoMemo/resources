@@ -504,6 +504,16 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
       setList(values[[sdId]], filterValues(), fullSd)
     }
     
+    if (meanId == "targetValuesCovariates") {
+      categoricalVars <- intersect(values[["categoricalVars"]], 
+                                   extractPotentialCat(values[["targetValuesCovariates"]]))
+      setList(values[["categoricalVars"]], NULL, categoricalVars)
+      
+      numericVars <- intersect(values[["numericVars"]], 
+                               extractPotentialNumerics(values[["targetValuesCovariates"]]))
+      setList(values[["numericVars"]], NULL, numericVars)
+    }
+    
     if (events$adaptive) {
       variable <- if (input$tabledelete$type == "row") {
         rowVar()
@@ -524,7 +534,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     }
   })
   
-  # Process input data -> values
+  # Process input data -> values ----
   observeEvent(inputData(), {
     logDebug("Process input data -> values for mean + sd (%s)", meanId)
 
