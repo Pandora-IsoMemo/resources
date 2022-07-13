@@ -705,6 +705,11 @@ replaceSourceTerms <- function(sourceTerm, sourceUncertTerm, modelOptions, value
       }
     )
     allColumnNames <- unique(unlist(allColumnNames))
+    
+    # order allColumnNames with respect to valueNames$fractions in order to pass the check:
+    # "checkDataNameConsistency()"
+    allColumnNames <- allColumnNames[order(match(allColumnNames, valueNames$fractions))]
+    
     if (!modelOptions$modelWeights) {
       allColumnNames <- valueNames$targets
     }
