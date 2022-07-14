@@ -66,33 +66,33 @@ fruitsTab <- function(input,
   
   
   ## Load Example Model
-  observeEvent(input$exampleModel,
-               {
-                 logDebug("Entering observeEvent(input$exampleModel)")
-                 
-                 values$status <- values$statusSim <- "INITIALIZE"
-                 
-                 if (input$exampleData == "Five Sources Data") {
-                   vars <- readRDS("exampleModels/Five_Sources_Data.rds")
-                 }
-                 if (input$exampleData == "Brown Bear Data") {
-                   vars <- readRDS("exampleModels/bear.rds")
-                 }
-                 if (input$exampleData == "Black Bear Data") {
-                   vars <- readRDS("exampleModels/blackBear.rds")
-                 }
-                 if (input$exampleData == "Roman Data") {
-                   vars <- readRDS("exampleModels/Roman.rds")
-                 }
-                 
-                 for (name in names(vars)) {
-                   values[[name]] <- vars[[name]]
-                 }
-                 
-                 values$reset <- runif(1)
-               },
-               priority = 500
-  )
+  # observeEvent(input$exampleModel,
+  #              {
+  #                logDebug("Entering observeEvent(input$exampleModel)")
+  #                
+  #                values$status <- values$statusSim <- "INITIALIZE"
+  #                
+  #                if (input$exampleData == "Five Sources Data") {
+  #                  vars <- readRDS("exampleModels/Five_Sources_Data.rds")
+  #                }
+  #                if (input$exampleData == "Brown Bear Data") {
+  #                  vars <- readRDS("exampleModels/bear.rds")
+  #                }
+  #                if (input$exampleData == "Black Bear Data") {
+  #                  vars <- readRDS("exampleModels/blackBear.rds")
+  #                }
+  #                if (input$exampleData == "Roman Data") {
+  #                  vars <- readRDS("exampleModels/Roman.rds")
+  #                }
+  #                
+  #                for (name in names(vars)) {
+  #                  values[[name]] <- vars[[name]]
+  #                }
+  #                
+  #                values$reset <- runif(1)
+  #              },
+  #              priority = 500
+  # )
   
 
   uploadedNotes <- reactiveVal()

@@ -15,7 +15,7 @@ downloadModelUI <- function(id, label) {
     tags$strong(label),
     textAreaInput(ns("notes"), "Notes"),
     checkboxInput(ns("onlyInputs"), "Store only data and model options"),
-    downloadButton(ns("downloadModelFile"), "Download"),
+    downloadButton(ns("downloadModelFile"), "Save model"),
     tags$br()
   )
 }
@@ -92,17 +92,16 @@ uploadModelUI <- function(id) {
   ns <- NS(id)
   
   tagList(
-    fileInput(ns("uploadModel"), label = "Upload local model"),
-    tags$hr(),
     selectInput(
       ns("remoteModel"),
-      label = "Upload pre-saved model",
+      label = "Select example model",
       choices = dir(file.path(settings$pathToSavedModels)) %>%
         sub(pattern = '\\.zip$', replacement = ''),
       selected = NULL
     ),
-    actionButton(ns("loadRemoteModel"), "Load")#,
-    #helpText("Remote models are only available on on https://isomemoapp.com")
+    actionButton(ns("loadRemoteModel"), "Load example model"),
+    tags$hr(),
+    fileInput(ns("uploadModel"), label = "Load model")
   )
 }
 

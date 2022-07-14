@@ -16,27 +16,28 @@ fruitsUI <- function(id, title = "FRUITS") {
       sidebarPanel(
         #style = "position:fixed; width:24%; overflow-y:auto; max-height:800px",
         width = 2,
-        # uploadModelUI(ns("modelUpload"), "Upload Model"),
-        # downloadModelUI(ns("modelDownload")),
-        # tags$hr(),
-        selectInput(
-          ns("exampleData"),
-          label = "Select example models",
-          choices = c(
-            "Five Sources Data",
-            "Brown Bear Data",
-            "Black Bear Data",
-            "Roman Data"
-          ),
-          selected = "Five_Sources_Data"
-        ),
-        actionButton(ns("exampleModel"), "Load selected model"),
+        uploadModelUI(ns("modelUpload")),
         tags$hr(),
-        actionButton(ns("run"), "Run"),
+        downloadModelUI(ns("modelDownload"), NULL),
+        # selectInput(
+        #   ns("exampleData"),
+        #   label = "Select example models",
+        #   choices = c(
+        #     "Five Sources Data",
+        #     "Brown Bear Data",
+        #     "Black Bear Data",
+        #     "Roman Data"
+        #   ),
+        #   selected = "Five_Sources_Data"
+        # ),
+        # actionButton(ns("exampleModel"), "Load selected model"),
+        tags$hr(),
         actionButton(ns("reset"), "Reset"),
+        tags$br(), tags$br(),
+        actionButton(ns("run"), "Run"),
         checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
         tags$hr(),
-        dbContentSelectUI(ns("popUpTables"), label = "View data table"),
+        dbContentSelectUI(ns("popUpTables"), label = "Data table"),
         tags$button(
           class = "btn btn-default",
           type = "button",
@@ -54,7 +55,7 @@ fruitsUI <- function(id, title = "FRUITS") {
       ),
       # Main panel ----
       mainPanel(
-        width = 8,
+        width = 10,
         tabsetPanel(
           id = ns("mainTabs"),
           type = "tabs",
@@ -1263,13 +1264,6 @@ fruitsUI <- function(id, title = "FRUITS") {
             )
           )
         )
-      ),
-      # Right sidebar ----
-      sidebarPanel(
-        width = 2,
-        downloadModelUI(ns("modelDownload"), "Download Model"),
-        tags$hr(),
-        uploadModelUI(ns("modelUpload"))
       )
     )
   )
