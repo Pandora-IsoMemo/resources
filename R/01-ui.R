@@ -34,18 +34,14 @@ fruitsUI <- function(id, title = "FRUITS") {
         tags$hr(),
         actionButton(ns("run"), "Run"),
         actionButton(ns("reset"), "Reset"),
-        actionButton(ns("showAbout"), "About"),
         checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
-        helpText(
-          "This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"
-        ),
         tags$hr(),
         dbContentSelectUI(ns("popUpTables"), label = "View data table"),
         tags$button(
           class = "btn btn-default",
           type = "button",
           onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-          "Visit IsoMemo App"
+          "IsoMemo App"
         ),
         div(
           style = "display:none;",

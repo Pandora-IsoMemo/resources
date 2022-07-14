@@ -890,12 +890,6 @@ fruitsTab <- function(input,
   # callModule(dbContent, "digest", table = "digest")
   callModule(dbContentSelect, "popUpTables")
 
-  ## About
-  observeEvent(input$showAbout, {
-    logDebug("Entering observeEvent(input$showAbout)")
-    showModal(aboutDialog())
-  })
-  
   ## File Notes
   observeEvent(input$showFileNotes, {
     logDebug("Entering observeEvent(input$showFileNotes)")
