@@ -34,7 +34,7 @@ fruitsUI <- function(id, title = "FRUITS") {
         actionButton(ns("reset"), "Reset"),
         tags$br(), tags$br(),
         actionButton(ns("run"), "Run"),
-        checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
+        #checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
         tags$hr(),
         dbContentSelectUI(ns("popUpTables"), label = "Data table"),
         tags$button(

@@ -654,10 +654,10 @@ fruitsTab <- function(input,
     )
   )
   
-  observeEvent(input$adaptiveNames, {
-    logDebug("Entering observeEvent(input$adaptiveNames)")
-    events$adaptive <- input$adaptiveNames
-  })
+  # observeEvent(input$adaptiveNames, {
+  #   logDebug("Entering observeEvent(input$adaptiveNames)")
+  #   events$adaptive <- input$adaptiveNames
+  # })
   
   ## -- from IsoMemo
   observeEvent(isoMemoData()$event, {
