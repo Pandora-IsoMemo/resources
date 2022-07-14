@@ -14,7 +14,7 @@ fruitsUI <- function(id, title = "FRUITS") {
     fluidRow(
       # Left sidebar ----
       sidebarPanel(
-        style = "position:fixed; width:16%; overflow-y:auto; max-height:900px",
+        style = "position:fixed; width:15%; overflow-y:auto; max-height:900px",
         width = 2,
         uploadModelUI(ns("modelUpload")),
         downloadModelUI(ns("modelDownload"), NULL),
