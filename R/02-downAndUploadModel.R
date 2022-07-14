@@ -15,8 +15,7 @@ downloadModelUI <- function(id, label) {
     tags$strong(label),
     textAreaInput(ns("notes"), "Notes"),
     checkboxInput(ns("onlyInputs"), "Store only data and model options"),
-    downloadButton(ns("downloadModelFile"), "Save model"),
-    tags$br()
+    downloadButton(ns("downloadModelFile"), "Save model")
   )
 }
 
@@ -100,7 +99,7 @@ uploadModelUI <- function(id) {
       selected = NULL
     ),
     actionButton(ns("loadRemoteModel"), "Load example model"),
-    tags$hr(),
+    tags$br(), tags$br(),
     fileInput(ns("uploadModel"), label = "Load model")
   )
 }
