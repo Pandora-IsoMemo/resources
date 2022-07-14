@@ -35,10 +35,12 @@ fruitsTab <- function(input,
   
   ## remove names
   observeEvent(input$removeName, {
+    logDebug("Entering observeEvent(input$removeName)")
     events$removeName <- input$removeName
   })
   
   observe({
+    logDebug("Entering observe(events)")
     if (events$processed == events$processedCache) {
       events$name <- list()
       logDebug("Resetting events")
@@ -229,36 +231,27 @@ fruitsTab <- function(input,
   })
   
   observe({
+    logDebug("Entering observe() (input$targetValuesShowCovariates)")
     if (input$targetValuesShowCovariates) {
       if (ncol(values$targetValuesCovariates) > 0) {
-        potentialNumerics <-
-          colnames(values$targetValuesCovariates)[sapply(
-            1:ncol(values$targetValuesCovariates),
-            function(x) {
-              all(!is.na(
-                as.numeric(values$targetValuesCovariates[, x])
-              ))
-            }
-          )]
-        potentialCat <-
-          colnames(values$targetValuesCovariates)[sapply(
-            1:ncol(values$targetValuesCovariates),
-            function(x) {
-              all(!is.na(values$targetValuesCovariates[, x]))
-            }
-          )]
+        potentialCat <- extractPotentialCat(values$targetValuesCovariates)
+        selectedCatVars <- intersect(values$categoricalVars, potentialCat)
         
         updatePickerInput(
           session,
           inputId = "categoricalVars",
           choices = potentialCat,
-          selected = values$categoricalVars
+          selected = selectedCatVars
         )
+        
+        potentialNumerics <- extractPotentialNumerics(values$targetValuesCovariates)
+        selectedNumVars <- intersect(values$numericVars, potentialNumerics)
+        
         updatePickerInput(
           session,
           inputId = "numericVars",
           choices = potentialNumerics,
-          selected = values$numericVars
+          selected = selectedNumVars
         )
       }
     }
@@ -279,15 +272,8 @@ fruitsTab <- function(input,
     if (!identical(input$categoricalVars, values$categoricalVars) &
         ncol(values$targetValuesCovariates) > 0) {
       values$categoricalVars <- input$categoricalVars
-      potentialNumerics <-
-        colnames(values$targetValuesCovariates)[sapply(
-          1:ncol(values$targetValuesCovariates),
-          function(x) {
-            all(!is.na(
-              as.numeric(values$targetValuesCovariates[, x])
-            ))
-          }
-        )]
+      potentialNumerics <- extractPotentialNumerics(values$targetValuesCovariates)
+      
       values$numericVars <-
         values$numericVars[!(potentialNumerics %in% values$categoricalVars)]
     }
@@ -307,13 +293,7 @@ fruitsTab <- function(input,
     if (!identical(input$numericVars, values$numericVars) &
         ncol(values$targetValuesCovariates) > 0) {
       values$numericVars <- input$numericVars
-      potentialCat <-
-        colnames(values$targetValuesCovariates)[sapply(
-          1:ncol(values$targetValuesCovariates),
-          function(x) {
-            all(!is.na(values$targetValuesCovariates[, x]))
-          }
-        )]
+      potentialCat <- extractPotentialCat(values$targetValuesCovariates)
       
       values$categoricalVars <-
         values$categoricalVars[!(potentialCat %in% values$numericVars)]
@@ -325,6 +305,7 @@ fruitsTab <- function(input,
   })
   
   observeEvent(input$targetValuesShowCovariates, {
+    logDebug("Entering observeEvent(input$targetValuesShowCovariates)")
     if (input$targetValuesShowCovariates == FALSE) {
       updateCheckboxInput(session, "useSite", value = FALSE)
     }
@@ -488,6 +469,7 @@ fruitsTab <- function(input,
   
   
   observeEvent(values$modelWeights, {
+    logDebug("Entering observeEvent(values$modelWeights)")
     if (values$modelWeights == TRUE) {
       showTab(
         inputId = "mainTabs",
@@ -517,6 +499,7 @@ fruitsTab <- function(input,
   })
   
   observeEvent(values$modelConcentrations, {
+    logDebug("Entering observeEvent(values$modelConcentrations)")
     if (values$modelConcentrations == TRUE) {
       showTab(
         inputId = "mainTabs",
@@ -647,7 +630,7 @@ fruitsTab <- function(input,
     )
   })
   
-  ## Target Values
+  ## TargetValues - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "targetValues",
@@ -672,14 +655,17 @@ fruitsTab <- function(input,
   )
   
   observeEvent(input$adaptiveNames, {
+    logDebug("Entering observeEvent(input$adaptiveNames)")
     events$adaptive <- input$adaptiveNames
   })
   
   ## -- from IsoMemo
   observeEvent(isoMemoData()$event, {
+    logDebug("Entering observeEvent(isoMemoData()$event)")
     events$isoMemo <- isoMemoData()$data
   })
   
+  ## TargetValuesCovariates - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "targetValuesCovariates",
@@ -691,6 +677,7 @@ fruitsTab <- function(input,
     class = "character"
   )
   
+  ## Weights - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "weights",
@@ -705,6 +692,7 @@ fruitsTab <- function(input,
   
   ## Hide Input for 0 weights
   observe({
+    logDebug("Entering observe() (values$modelWeights)")
     if (values$modelWeights) {
       zeroTarget <- row(values$weights)[values$weights == 0]
       zeroFraction <- col(values$weights)[values$weights == 0]
@@ -723,7 +711,7 @@ fruitsTab <- function(input,
     }
   })
   
-  ## Weight Offset
+  ## WeightOffset - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "weightOffset",
@@ -781,6 +769,7 @@ fruitsTab <- function(input,
     }
   })
   
+  ## Source - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "source",
@@ -824,6 +813,7 @@ fruitsTab <- function(input,
     )
   )
   
+  ## SourceOffset - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "sourceOffset",
@@ -852,6 +842,7 @@ fruitsTab <- function(input,
     )
   )
   
+  ## Concentration - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "concentration",
@@ -962,12 +953,18 @@ fruitsTab <- function(input,
     }
   })
   
-  observeEvent(input$priors, values$priors <- input$priors)
+  observeEvent(input$priors, {
+    logDebug("Entering observeEvent(input$priors)")
+    values$priors <- input$priors
+    })
+  
   observe({
+    logDebug("Entering observe(update priors)")
     updatePriorInput(session, "priors", value = values$priors)
   })
   
   observe({
+    logDebug("Entering observe(update priorsSource)")
     updateSelectInput(session, "priorSource",
                       choices = values$sourceNames
     )
@@ -1153,12 +1150,18 @@ fruitsTab <- function(input,
   })
   
   observeEvent(
-    input$userEstimate,
-    values$userEstimate <- input$userEstimate
+    input$userEstimate, {
+      logDebug("Entering observeEvent(input$userEstimate)")
+      values$userEstimate <- input$userEstimate
+    }
   )
-  observe(updatePriorInput(session, "userEstimate", value = values$userEstimate))
+  observe({
+    logDebug("Entering observe(update userEstimates)")
+    updatePriorInput(session, "userEstimate", value = values$userEstimate)
+    })
   
   observe({
+    logDebug("Entering observe(update userEstimateSource)")
     updateSelectInput(session, "userEstimateSource",
                       choices = values$sourceNames
     )
@@ -1315,6 +1318,7 @@ fruitsTab <- function(input,
     )
   
   observeEvent(userEstimateGroups(), {
+    logDebug("Entering observeEvent(userEstimateGroups())")
     values$userEstimateGroups <- userEstimateGroups()
   })
   
@@ -1322,6 +1326,7 @@ fruitsTab <- function(input,
   model <- reactiveVal(NULL)
   
   observeEvent(input$run, {
+    logDebug("Entering observeEvent(input$run)")
     values$status <- "RUNNING"
     
     model(NULL)
@@ -1501,6 +1506,7 @@ fruitsTab <- function(input,
   modelCharacteristics <- reactiveVal(NULL)
   
   observeEvent(input$runModelChar, {
+    logDebug("Entering observeEvent(input$runModelChar)")
     values$statusSim <- "RUNNING"
     
     modelCharacteristics(NULL)
@@ -1579,6 +1585,7 @@ fruitsTab <- function(input,
   })
   
   observe({
+    logDebug("Entering observe(updatePickerInputs)")
     updatePickerInput(
       session,
       inputId = "targetSelect",
@@ -1649,6 +1656,7 @@ fruitsTab <- function(input,
   })
   
   observe({
+    logDebug("Entering observe(sourceSelectMix2)")
     validate(validInput(modelCharacteristics()))
     
     updatePickerInput(
@@ -2016,14 +2024,17 @@ fruitsTab <- function(input,
   
   # Export to Iso Memo App
   observeEvent(values$targetNames, {
+    logDebug("Entering observeEvent(values$targetNames)")
     updateSelectInput(session, "exportProxy", choices = values$targetNames)
   })
   
   observeEvent(values$fractionNames, {
+    logDebug("Entering observeEvent(values$fractionNames)")
     updateSelectInput(session, "exportBeta", choices = values$fractionNames)
   })
   
   observeEvent(values$targetNames, {
+    logDebug("Entering observeEvent(values$targetNames)")
     updateSelectInput(session, "exportTheta",
                       choices = applyNames(
                         expand.grid(
@@ -2036,15 +2047,18 @@ fruitsTab <- function(input,
   })
   
   observeEvent(values$sourceNames, {
+    logDebug("Entering observeEvent(values$sourceNames)")
     updateSelectInput(session, "exportSources", choices = values$sourceNames)
   })
   
   observeEvent(values$targetNames, {
+    logDebug("Entering observeEvent(values$targetNames)")
     updateSelectInput(session, "exportProxy", choices = values$targetNames)
   })
   
   
   observe({
+    logDebug("Entering observe(siteExport)")
     if (input$useSite) {
       updateSelectInput(session, "siteExport",
                         choices = c(colnames(
@@ -2056,12 +2070,14 @@ fruitsTab <- function(input,
   
   ## Target Values
   observeEvent(values$targetValuesShowCoordinates, {
+    logDebug("Entering observeEvent(values$targetValuesShowCoordinates)")
     updateCheckboxInput(session,
                         "targetValuesShowCoordinates",
                         value = values$targetValuesShowCoordinates
     )
   })
   
+  ## ExportCoordinates - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "exportCoordinates",
@@ -2255,6 +2271,7 @@ fruitsTab <- function(input,
   })
   
   observeEvent(input$exportToIsoMemo, {
+    logDebug("Entering observeEvent(input$exportToIsoMemo)")
     isoDataExport(list(
       data = exportData(),
       event = runif(1)
@@ -2264,4 +2281,36 @@ fruitsTab <- function(input,
   
   ## food intakes
   callModule(foodIntakes, "foodIntakes", values = values)
+}
+
+
+#' Extract Potential Numerics
+#' 
+#' Extract potential numerical covariates.
+#' 
+#' @param targetValuesCovariates table with covariates.
+extractPotentialNumerics <- function(targetValuesCovariates) {
+  colnames(targetValuesCovariates)[sapply(
+      1:ncol(targetValuesCovariates),
+      function(x) {
+        all(!is.na(
+          suppressWarnings(as.numeric(targetValuesCovariates[, x]))
+        ))
+      }
+    )]
+}
+
+
+#' Extract Potential Cat
+#' 
+#' Extract potential categorical covariates.
+#' 
+#' @param targetValuesCovariates table with covariates
+extractPotentialCat <- function(targetValuesCovariates) {
+  colnames(targetValuesCovariates)[sapply(
+      1:ncol(targetValuesCovariates),
+      function(x) {
+        all(!is.na(targetValuesCovariates[, x]))
+      }
+    )]
 }

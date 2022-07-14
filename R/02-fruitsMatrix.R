@@ -416,47 +416,6 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     events$processed <- events$processed + 1
   })
 
-  # Remove Name
-  observeEvent(input$tabledelete, {
-    fullMean <- meanData()
-    fullSd <- sdData()
-
-    if (input$tabledelete$type == "row") {
-      i <- rownames(fullMean) == input$tabledelete$name
-      fullMean <- fullMean[!i, , drop = FALSE]
-
-      i <- rownames(fullSd) == input$tabledelete$name
-      fullSd <- fullSd[!i, , drop = FALSE]
-    } else {
-      i <- colnames(fullMean) == input$tabledelete$name
-      fullMean <- fullMean[, !i, drop = FALSE]
-
-      i <- colnames(fullSd) == input$tabledelete$name
-      fullSd <- fullSd[, !i, drop = FALSE]
-    }
-    setList(values[[meanId]], filterValues(), fullMean)
-    setList(values[[sdId]], filterValues(), fullSd)
-
-    if (events$adaptive) {
-      variable <- if (input$tabledelete$type == "row") {
-        rowVar()
-      } else {
-        colVar()
-      }
-
-      event <- list(
-        list(
-          event = "remove",
-          variable = variable,
-          old = input$tabledelete$name,
-          new = NULL
-        )
-      )
-
-      events$name <- c(events$name, event)
-    }
-  })
-
   # # Get input from shiny matrix
   inputData <- eventReactive(input$table, {
     logDebug("Get input from shiny matrix for mean and sd (%s)", meanId)
@@ -508,10 +467,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     setList(values[[sdId]], filterValues, split[[2]])
   })
 
-  # Get data from values
+  # Get data from values ----
   meanData <- reactive({
     logDebug("Get data from values for mean (%s)", meanId)
     stopifnot(indexLength(values[[meanId]]) == length(filterValues()))
+
     as.matrix(getList(values[[meanId]], filterValues()))
   })
 
@@ -528,14 +488,60 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     if (is.null(res)) matrix(NA, 0, 0) else as.matrix(res)
   })
 
-  # Process input data -> values
+  # Remove Name (col / row) ----
+  observeEvent(input$tabledelete, priority = 100, {
+    logDebug("Remove row or column from (%s)", meanId)
+    
+    fullMean <- removeLine(matrix = meanData(), 
+                           type = input$tabledelete$type, 
+                           name = input$tabledelete$name)
+    setList(values[[meanId]], filterValues(), fullMean)
+    
+    if (!is.null(sdId)) {
+      fullSd <- removeLine(matrix = sdData(), 
+                           type = input$tabledelete$type, 
+                           name = input$tabledelete$name)
+      setList(values[[sdId]], filterValues(), fullSd)
+    }
+    
+    if (meanId == "targetValuesCovariates") {
+      categoricalVars <- intersect(values[["categoricalVars"]], 
+                                   extractPotentialCat(values[["targetValuesCovariates"]]))
+      setList(values[["categoricalVars"]], NULL, categoricalVars)
+      
+      numericVars <- intersect(values[["numericVars"]], 
+                               extractPotentialNumerics(values[["targetValuesCovariates"]]))
+      setList(values[["numericVars"]], NULL, numericVars)
+    }
+    
+    if (events$adaptive) {
+      variable <- if (input$tabledelete$type == "row") {
+        rowVar()
+      } else {
+        colVar()
+      }
+      
+      event <- list(
+        list(
+          event = "remove",
+          variable = variable,
+          old = input$tabledelete$name,
+          new = NULL
+        )
+      )
+      
+      events$name <- c(events$name, event)
+    }
+  })
+  
+  # Process input data -> values ----
   observeEvent(inputData(), {
     logDebug("Process input data -> values for mean + sd (%s)", meanId)
 
     if (!is.null(sdId)) {
       inputMean <- inputData()[[1]]
       inputSd <- inputData()[[2]]
-
+      
       fullMean <- meanData()
       fullSd <- sdData()
 
@@ -1175,4 +1181,24 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
 isEmpty <- function(x) {
   is.null(x) | is.na(x) | trimws(x) == ""
+}
+
+
+#' Remove Line
+#' 
+#' Removes the named row or column from matrix
+#' 
+#' @param matrix matrix
+#' @param type character type of the line, either "row" or "column"
+#' @param name character name of row or column
+removeLine <- function(matrix, type, name) {
+  if (type == "row") {
+    i <- rownames(matrix) == name
+    matrix <- matrix[!i, , drop = FALSE]
+  } else {
+    i <- colnames(matrix) == name
+    matrix <- matrix[, !i, drop = FALSE]
+  }
+  
+  return(matrix)
 }

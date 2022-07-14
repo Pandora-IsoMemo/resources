@@ -87,7 +87,7 @@ defaultValues <- function() {
     modelConcentrationsContrained = TRUE,
     alphaHyper = 1,
     optimalPrior = TRUE,
-    covariateType = 0,
+    covariateType = "0",
     targetOffset = TRUE,
     burnin = 10000,
     iterations = 10000,
