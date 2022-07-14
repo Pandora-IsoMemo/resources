@@ -66,7 +66,7 @@ downloadModel <-
         saveRDS(list(
           values = valuesExport,
           model = modelExport,
-          version = packageVersion("ReSources")
+          version = paste("ReSources", packageVersion("ReSources"))
         ),
         file = modelfile)
         writeLines(input$notes, notesfile)
@@ -147,6 +147,7 @@ uploadModel <-
         modelImport <- readRDS("model.rds")
         uploadedNotes(readLines("README.txt"))
       })
+
       if (inherits(res, "try-error")) {
         shinyjs::alert(
           paste0(
@@ -185,12 +186,19 @@ uploadModel <-
         }
       }
       
+      if (!is.null(modelImport$version)) {
+        uploadedVersion <- paste(", saved version", modelImport$version)
+      } else {
+        uploadedVersion <- ""
+      }
+      
+      
       rm(modelImport)
       
       alert(paste0(
         warningEmptyInputs,
         warningEmptyModel,
-        "Upload finished."
+        paste0("Upload finished", uploadedVersion, ".")
       ))
       
       values$status <- values$statusSim <- "COMPLETED"
