@@ -30,30 +30,16 @@ tagList(
   div(
     id = "header-right",
     div(
-      id = "logo-mpi",
-      tags$a(href = "https://www.mpg.de/en",
-             img(src = "ReSources/MPIlogo.png", alt = "Supported by the Max Planck society"),
-             target = "_blank"
-             )
-    ),
-    div(
-      id = "logo-isomemo",
-      tags$a(href = "https://isomemo.com/",
-             img(src = "ReSources/IsoMemoLogo.png", alt = "IsoMemo"),
-             target = "_blank"
-             )
-    ),
-    div(
       id = "further-help",
       tags$button(
         onclick = "window.open('https://isomemo.com','_blank');",
         class = "btn btn-default",
-        "Further Help"
+        "Cite"
       )
     ),
     div(
       id = "help",
-      actionButton("getHelp", "?")
+      actionButton("getHelp", "Help")
     )
   ),
   shinyjs::useShinyjs()

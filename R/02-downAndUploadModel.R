@@ -96,7 +96,7 @@ uploadModelUI <- function(id) {
     tags$hr(),
     selectInput(
       ns("remoteModel"),
-      label = "Upload remote model",
+      label = "Upload pre-saved model",
       choices = dir(file.path(settings$pathToSavedModels)) %>%
         sub(pattern = '\\.zip$', replacement = ''),
       selected = NULL
