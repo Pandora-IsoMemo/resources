@@ -117,6 +117,7 @@ uploadModelUI <- function(id) {
 #' @param values (reactive) list: Shiny input
 #' @param model (reactive) output of the model
 #' @param uploadedNotes (reactive) variable that stores content of README.txt
+#' @param reset (reactive) result of reset button
 #'
 #' @export
 uploadModel <-

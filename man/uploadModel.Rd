@@ -23,6 +23,8 @@ uploadModel(input, output, session, values, model, uploadedNotes, reset)
 \item{model}{(reactive) output of the model}
 
 \item{uploadedNotes}{(reactive) variable that stores content of README.txt}
+
+\item{reset}{(reactive) result of reset button}
 }
 \description{
 UI function to upload a zip file with notes and a list of models
