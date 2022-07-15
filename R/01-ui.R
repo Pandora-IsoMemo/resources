@@ -194,7 +194,7 @@ fruitsUI <- function(id, title = "FRUITS") {
             ### Data/Concentrations ----
             tabPanel(
               "Concentrations",
-              concentrationsUI("concentration")
+              concentrationsUI(ns("concentration"))
               # div(
               #   fruitsMatrixFilter(
               #     scope = ns("concentration"),
