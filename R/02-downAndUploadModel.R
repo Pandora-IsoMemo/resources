@@ -48,6 +48,8 @@ downloadModel <-
         gsub("[ ]", "_", paste0(Sys.time(), "_fruitsModel", ".zip"))
       },
       content = function(file) {
+        logDebug(paste0("Entering ", session$ns(""), "downloadHandler()"))
+        
         zipdir <- tempdir()
         modelfile <- file.path(zipdir, "model.rds")
         notesfile <- file.path(zipdir, "README.txt")
@@ -123,14 +125,27 @@ uploadModel <-
            session,
            values,
            model,
-           uploadedNotes) {
+           uploadedNotes,
+           reset) {
     pathToModel <- reactiveVal(NULL)
     
     observeEvent(input$uploadModel, {
+      logDebug(paste0("Entering ", session$ns(""), "observeEvent(input$uploadModel)"))
+      
       pathToModel(input$uploadModel$datapath)
     })
     
+    observeEvent(reset(), {
+      logDebug(paste0("Entering ", session$ns(""), "observeEvent(reset())"))
+      
+      req(reset())
+      updateSelectInput(session, "remoteModel", selected = list())
+      pathToModel(NULL)
+    })
+    
     observeEvent(input$loadRemoteModel, {
+      logDebug(paste0("Entering ", session$ns(""), "observeEvent(input$loadRemoteModel)"))
+      
       pathToModel(file.path(
         settings$pathToSavedModels,
         paste0(input$remoteModel, ".zip")
@@ -138,7 +153,7 @@ uploadModel <-
     })
     
     observeEvent(pathToModel(), {
-      logDebug("Entering observe() (Load Model from file)")
+      logDebug("Entering ", session$ns(""), "observe() (Load Model)")
       
       res <- try({
         zip::unzip(pathToModel())
@@ -164,21 +179,25 @@ uploadModel <-
         return()
       }
       
-      
       if (is.null(modelImport$model)) {
         warningEmptyModel <-
-          "Model selection and data loaded! The file does not include saved results. "
+          "The file does not include saved results. "
+        
         model(NULL)
+        values$status <- values$statusSim <- "INITIALIZE"
       } else {
-        warningEmptyModel <- ""
+        warningEmptyModel <- "Model results loaded. "
+        
         model(modelImport$model)
+        values$status <- values$statusSim <- "COMPLETED"
       }
       
       if (is.null(modelImport$values)) {
         warningEmptyInputs <-
-          "Model results loaded. The file does not include model selection and input data. "
+          "The file does not include model selection and input data. "
       } else {
-        warningEmptyInputs <- ""
+        warningEmptyInputs <- "Model selection and data loaded. "
+        
         for (name in names(modelImport$values)) {
           values[[name]] <- modelImport$values[[name]]
         }
@@ -199,6 +218,6 @@ uploadModel <-
         paste0("Upload finished", uploadedVersion, ".")
       ))
       
-      values$status <- values$statusSim <- "COMPLETED"
+      
     })
   }

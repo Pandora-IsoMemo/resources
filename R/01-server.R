@@ -50,7 +50,7 @@ fruitsTab <- function(input,
     }
   })
   
-  ## Reset Input
+  ## Reset Input ----
   observeEvent(input$reset, {
     logDebug("Entering observeEvent(input$reset)")
     vars <- defaultValues()
@@ -62,6 +62,8 @@ fruitsTab <- function(input,
     values$status <- values$statusSim <- "INITIALIZE"
     
     values$reset <- runif(1)
+    
+    events$name <- list()
   })
   
   
@@ -104,7 +106,8 @@ fruitsTab <- function(input,
   callModule(uploadModel, "modelUpload", session = session,
              values = values, 
              model = model,
-             uploadedNotes = uploadedNotes)
+             uploadedNotes = uploadedNotes,
+             reset = reactive(input$reset))
   
   ## status
   

@@ -7,7 +7,7 @@
 \usage{
 uploadModelUI(id)
 
-uploadModel(input, output, session, values, model, uploadedNotes)
+uploadModel(input, output, session, values, model, uploadedNotes, reset)
 }
 \arguments{
 \item{id}{id of module}
