@@ -194,22 +194,23 @@ fruitsUI <- function(id, title = "FRUITS") {
             ### Data/Concentrations ----
             tabPanel(
               "Concentrations",
-              div(
-                fruitsMatrixFilter(
-                  scope = ns("concentration"),
-                  id = "obsvn",
-                  label = "Observation"
-                )
-              ),
-              fruitsMatrixDistribution(scope = ns("concentration")),
-              fruitsMatrixInput(ns("concentration"), row = "sourceNames", col = "targetNames"),
-              fruitsMatrixInput(
-                ns("concentration"),
-                row = "targetNames",
-                col = "targetNames",
-                cov = TRUE,
-                toggleCov = TRUE
-              )
+              concentrationsUI("concentration")
+              # div(
+              #   fruitsMatrixFilter(
+              #     scope = ns("concentration"),
+              #     id = "obsvn",
+              #     label = "Observation"
+              #   )
+              # ),
+              # fruitsMatrixDistribution(scope = ns("concentration")),
+              # fruitsMatrixInput(ns("concentration"), row = "sourceNames", col = "targetNames"),
+              # fruitsMatrixInput(
+              #   ns("concentration"),
+              #   row = "targetNames",
+              #   col = "targetNames",
+              #   cov = TRUE,
+              #   toggleCov = TRUE
+              # )
             )
           ),
           ## Model options ----

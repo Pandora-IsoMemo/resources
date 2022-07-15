@@ -845,45 +845,53 @@ fruitsTab <- function(input,
     )
   )
   
-  ## Concentration - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "concentration",
-    values = values,
-    events = events,
-    meanId = "concentration",
-    sdId = "concentrationUncert",
-    row = "sourceNames",
-    col = reactive(if (hideTargetFilter()) {
-      "targetNames"
-    } else {
-      "fractionNames"
-    }),
-    distributionId = "concentrationDistribution",
-    covarianceId = "concentrationCovariance",
-    namesCov = reactive(if (hideTargetFilter()) {
-      values$targetNames
-    } else {
-      values$fractionNames
-    }),
-    filter = list(
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        distribution = FALSE,
-        batch = TRUE
-      )
-    ),
-    filterCov = list(
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        batch = TRUE
-      )
-    )
-  )
+  # ## Concentration - callModule fruitsMatrix ----
+  
+  concentrationsServer("concentration",
+                       values = reactive(values),
+                       events = reactive(events),
+                       hideTargetFilter = reactive(hideTargetFilter()),
+                       sourceObsvnFilterChoices = reactive(sourceObsvnFilterChoices()),
+                       sourceObsvnFilterHide = reactive(sourceObsvnFilterHide()))
+  
+  # callModule(
+  #   fruitsMatrix,
+  #   "concentration",
+  #   values = values,
+  #   events = events,
+  #   meanId = "concentration",
+  #   sdId = "concentrationUncert",
+  #   row = "sourceNames",
+  #   col = reactive(if (hideTargetFilter()) {
+  #     "targetNames"
+  #   } else {
+  #     "fractionNames"
+  #   }),
+  #   distributionId = "concentrationDistribution",
+  #   covarianceId = "concentrationCovariance",
+  #   namesCov = reactive(if (hideTargetFilter()) {
+  #     values$targetNames
+  #   } else {
+  #     values$fractionNames
+  #   }),
+  #   filter = list(
+  #     list(
+  #       id = "obsvn",
+  #       choices = sourceObsvnFilterChoices,
+  #       hide = sourceObsvnFilterHide,
+  #       distribution = FALSE,
+  #       batch = TRUE
+  #     )
+  #   ),
+  #   filterCov = list(
+  #     list(
+  #       id = "obsvn",
+  #       choices = sourceObsvnFilterChoices,
+  #       hide = sourceObsvnFilterHide,
+  #       batch = TRUE
+  #     )
+  #   )
+  # )
   
   ## MySql table contents
 
