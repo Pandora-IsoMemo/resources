@@ -365,54 +365,55 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
   # Process name events for mean + sd
   observeEvent(events$name, priority = 400, {
-    if (!events$adaptive) {
-      events$processed <- events$processed + 1
-      return()
-    }
-
-    logDebug("Process name events for mean and sd (%s)", meanId)
-    if (length(events$name) == 0) {
-      return()
-    }
-
-    indices <- as.matrix(expand.grid(filterChoices()))
-    # set hidden to NA
-    lapply(seq_along(filter), function(i) {
-      if (!is.null(filter[[i]]$hide) && filter[[i]]$hide()) indices[, i] <<- NA
-    })
-
-    # for tables without filter
-    if (ncol(indices) == 0) indices <- matrix(NA, 1, 0)
-
-    for (i in seq_len(nrow(indices))) {
-      processed <- processNameEvents(
-        getList(values[[meanId]], indices[i, ]),
-        events$name,
-        rowVar(),
-        colVar()
-      )
-
-      setList(
-        values[[meanId]],
-        indices[i, ],
-        processed
-      )
-
-      if (!is.null(sdId)) {
-        processed <- processNameEvents(
-          getList(values[[sdId]], indices[i, ]),
-          events$name,
-          rowVar(),
-          colVar()
-        )
-
-        setList(
-          values[[sdId]],
-          indices[i, ],
-          processed
-        )
-      }
-    }
+    # if (!events$adaptive) {
+    #   events$processed <- events$processed + 1
+    #   return()
+    # }
+    #
+    # logDebug("Process name events for mean and sd (%s)", meanId)
+    # if (length(events$name) == 0) {
+    #   return()
+    # }
+    # 
+    # indices <- as.matrix(expand.grid(filterChoices()))
+    # # set hidden to NA
+    # lapply(seq_along(filter), function(i) {
+    #   if (!is.null(filter[[i]]$hide) && filter[[i]]$hide()) indices[, i] <<- NA
+    # })
+    # 
+    # # for tables without filter
+    # if (ncol(indices) == 0) indices <- matrix(NA, 1, 0)
+    # 
+    # for (i in seq_len(nrow(indices))) {
+    #   processed <- processNameEvents(
+    #     getList(values[[meanId]], indices[i, ]),
+    #     events$name,
+    #     rowVar(),
+    #     colVar()
+    #   )
+    # 
+    #   setList(
+    #     values[[meanId]],
+    #     indices[i, ],
+    #     processed
+    #   )
+    # 
+    #   if (!is.null(sdId)) {
+    #     processed <- processNameEvents(
+    #       getList(values[[sdId]], indices[i, ]),
+    #       events$name,
+    #       rowVar(),
+    #       colVar()
+    #     )
+    # 
+    #     setList(
+    #       values[[sdId]],
+    #       indices[i, ],
+    #       processed
+    #     )
+    #   }
+    # }
+    
     events$processed <- events$processed + 1
   })
 
@@ -514,24 +515,24 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
       setList(values[["numericVars"]], NULL, numericVars)
     }
     
-    if (events$adaptive) {
-      variable <- if (input$tabledelete$type == "row") {
-        rowVar()
-      } else {
-        colVar()
-      }
-      
-      event <- list(
-        list(
-          event = "remove",
-          variable = variable,
-          old = input$tabledelete$name,
-          new = NULL
-        )
-      )
-      
-      events$name <- c(events$name, event)
-    }
+    # if (events$adaptive) {
+    #   variable <- if (input$tabledelete$type == "row") {
+    #     rowVar()
+    #   } else {
+    #     colVar()
+    #   }
+    #   
+    #   event <- list(
+    #     list(
+    #       event = "remove",
+    #       variable = variable,
+    #       old = input$tabledelete$name,
+    #       new = NULL
+    #     )
+    #   )
+    #   
+    #   events$name <- c(events$name, event)
+    # }
   })
   
   # Process input data -> values ----

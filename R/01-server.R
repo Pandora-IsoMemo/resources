@@ -50,7 +50,7 @@ fruitsTab <- function(input,
     }
   })
   
-  ## Reset Input
+  ## Reset Input ----
   observeEvent(input$reset, {
     logDebug("Entering observeEvent(input$reset)")
     vars <- defaultValues()
@@ -62,37 +62,39 @@ fruitsTab <- function(input,
     values$status <- values$statusSim <- "INITIALIZE"
     
     values$reset <- runif(1)
+    
+    events$name <- list()
   })
   
   
   ## Load Example Model
-  observeEvent(input$exampleModel,
-               {
-                 logDebug("Entering observeEvent(input$exampleModel)")
-                 
-                 values$status <- values$statusSim <- "INITIALIZE"
-                 
-                 if (input$exampleData == "Five Sources Data") {
-                   vars <- readRDS("exampleModels/Five_Sources_Data.rds")
-                 }
-                 if (input$exampleData == "Brown Bear Data") {
-                   vars <- readRDS("exampleModels/bear.rds")
-                 }
-                 if (input$exampleData == "Black Bear Data") {
-                   vars <- readRDS("exampleModels/blackBear.rds")
-                 }
-                 if (input$exampleData == "Roman Data") {
-                   vars <- readRDS("exampleModels/Roman.rds")
-                 }
-                 
-                 for (name in names(vars)) {
-                   values[[name]] <- vars[[name]]
-                 }
-                 
-                 values$reset <- runif(1)
-               },
-               priority = 500
-  )
+  # observeEvent(input$exampleModel,
+  #              {
+  #                logDebug("Entering observeEvent(input$exampleModel)")
+  #                
+  #                values$status <- values$statusSim <- "INITIALIZE"
+  #                
+  #                if (input$exampleData == "Five Sources Data") {
+  #                  vars <- readRDS("exampleModels/Five_Sources_Data.rds")
+  #                }
+  #                if (input$exampleData == "Brown Bear Data") {
+  #                  vars <- readRDS("exampleModels/bear.rds")
+  #                }
+  #                if (input$exampleData == "Black Bear Data") {
+  #                  vars <- readRDS("exampleModels/blackBear.rds")
+  #                }
+  #                if (input$exampleData == "Roman Data") {
+  #                  vars <- readRDS("exampleModels/Roman.rds")
+  #                }
+  #                
+  #                for (name in names(vars)) {
+  #                  values[[name]] <- vars[[name]]
+  #                }
+  #                
+  #                values$reset <- runif(1)
+  #              },
+  #              priority = 500
+  # )
   
 
   uploadedNotes <- reactiveVal()
@@ -104,7 +106,8 @@ fruitsTab <- function(input,
   callModule(uploadModel, "modelUpload", session = session,
              values = values, 
              model = model,
-             uploadedNotes = uploadedNotes)
+             uploadedNotes = uploadedNotes,
+             reset = reactive(input$reset))
   
   ## status
   
@@ -654,10 +657,10 @@ fruitsTab <- function(input,
     )
   )
   
-  observeEvent(input$adaptiveNames, {
-    logDebug("Entering observeEvent(input$adaptiveNames)")
-    events$adaptive <- input$adaptiveNames
-  })
+  # observeEvent(input$adaptiveNames, {
+  #   logDebug("Entering observeEvent(input$adaptiveNames)")
+  #   events$adaptive <- input$adaptiveNames
+  # })
   
   ## -- from IsoMemo
   observeEvent(isoMemoData()$event, {
@@ -890,12 +893,6 @@ fruitsTab <- function(input,
   # callModule(dbContent, "digest", table = "digest")
   callModule(dbContentSelect, "popUpTables")
 
-  ## About
-  observeEvent(input$showAbout, {
-    logDebug("Entering observeEvent(input$showAbout)")
-    showModal(aboutDialog())
-  })
-  
   ## File Notes
   observeEvent(input$showFileNotes, {
     logDebug("Entering observeEvent(input$showFileNotes)")

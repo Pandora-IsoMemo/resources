@@ -14,38 +14,34 @@ fruitsUI <- function(id, title = "FRUITS") {
     fluidRow(
       # Left sidebar ----
       sidebarPanel(
-        #style = "position:fixed; width:24%; overflow-y:auto; max-height:800px",
+        style = "position:fixed; width:15%; overflow-y:auto; max-height:900px",
         width = 2,
-        # uploadModelUI(ns("modelUpload"), "Upload Model"),
-        # downloadModelUI(ns("modelDownload")),
-        # tags$hr(),
-        selectInput(
-          ns("exampleData"),
-          label = "Select example models",
-          choices = c(
-            "Five Sources Data",
-            "Brown Bear Data",
-            "Black Bear Data",
-            "Roman Data"
-          ),
-          selected = "Five_Sources_Data"
-        ),
-        actionButton(ns("exampleModel"), "Load selected model"),
+        uploadModelUI(ns("modelUpload")),
+        downloadModelUI(ns("modelDownload"), NULL),
+        # selectInput(
+        #   ns("exampleData"),
+        #   label = "Select example models",
+        #   choices = c(
+        #     "Five Sources Data",
+        #     "Brown Bear Data",
+        #     "Black Bear Data",
+        #     "Roman Data"
+        #   ),
+        #   selected = "Five_Sources_Data"
+        # ),
+        # actionButton(ns("exampleModel"), "Load selected model"),
         tags$hr(),
-        actionButton(ns("run"), "Run"),
         actionButton(ns("reset"), "Reset"),
-        actionButton(ns("showAbout"), "About"),
-        checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
-        helpText(
-          "This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"
-        ),
+        tags$br(), tags$br(),
+        actionButton(ns("run"), "Run"),
+        #checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
         tags$hr(),
-        dbContentSelectUI(ns("popUpTables"), label = "View data table"),
+        dbContentSelectUI(ns("popUpTables"), label = "Data table"),
         tags$button(
           class = "btn btn-default",
           type = "button",
           onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-          "Visit IsoMemo App"
+          "IsoMemo App"
         ),
         div(
           style = "display:none;",
@@ -58,7 +54,7 @@ fruitsUI <- function(id, title = "FRUITS") {
       ),
       # Main panel ----
       mainPanel(
-        width = 8,
+        width = 10,
         tabsetPanel(
           id = ns("mainTabs"),
           type = "tabs",
@@ -1267,13 +1263,6 @@ fruitsUI <- function(id, title = "FRUITS") {
             )
           )
         )
-      ),
-      # Right sidebar ----
-      sidebarPanel(
-        width = 2,
-        downloadModelUI(ns("modelDownload"), "Download Model"),
-        tags$hr(),
-        uploadModelUI(ns("modelUpload"))
       )
     )
   )

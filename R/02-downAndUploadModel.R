@@ -15,8 +15,7 @@ downloadModelUI <- function(id, label) {
     tags$strong(label),
     textAreaInput(ns("notes"), "Notes"),
     checkboxInput(ns("onlyInputs"), "Store only data and model options"),
-    downloadButton(ns("downloadModelFile"), "Download"),
-    tags$br()
+    downloadButton(ns("downloadModelFile"), "Save model")
   )
 }
 
@@ -49,6 +48,8 @@ downloadModel <-
         gsub("[ ]", "_", paste0(Sys.time(), "_fruitsModel", ".zip"))
       },
       content = function(file) {
+        logDebug(paste0("Entering ", session$ns(""), "downloadHandler()"))
+        
         zipdir <- tempdir()
         modelfile <- file.path(zipdir, "model.rds")
         notesfile <- file.path(zipdir, "README.txt")
@@ -66,7 +67,7 @@ downloadModel <-
         saveRDS(list(
           values = valuesExport,
           model = modelExport,
-          version = packageVersion("ReSources")
+          version = paste("ReSources", packageVersion("ReSources"))
         ),
         file = modelfile)
         writeLines(input$notes, notesfile)
@@ -92,17 +93,16 @@ uploadModelUI <- function(id) {
   ns <- NS(id)
   
   tagList(
-    fileInput(ns("uploadModel"), label = "Upload local model"),
-    tags$hr(),
     selectInput(
       ns("remoteModel"),
-      label = "Upload remote model",
+      label = "Select example model",
       choices = dir(file.path(settings$pathToSavedModels)) %>%
         sub(pattern = '\\.zip$', replacement = ''),
       selected = NULL
     ),
-    actionButton(ns("loadRemoteModel"), "Load")#,
-    #helpText("Remote models are only available on on https://isomemoapp.com")
+    actionButton(ns("loadRemoteModel"), "Load example model"),
+    tags$br(), tags$br(),
+    fileInput(ns("uploadModel"), label = "Load model")
   )
 }
 
@@ -117,6 +117,7 @@ uploadModelUI <- function(id) {
 #' @param values (reactive) list: Shiny input
 #' @param model (reactive) output of the model
 #' @param uploadedNotes (reactive) variable that stores content of README.txt
+#' @param reset (reactive) result of reset button
 #'
 #' @export
 uploadModel <-
@@ -125,14 +126,27 @@ uploadModel <-
            session,
            values,
            model,
-           uploadedNotes) {
+           uploadedNotes,
+           reset) {
     pathToModel <- reactiveVal(NULL)
     
     observeEvent(input$uploadModel, {
+      logDebug(paste0("Entering ", session$ns(""), "observeEvent(input$uploadModel)"))
+      
       pathToModel(input$uploadModel$datapath)
     })
     
+    observeEvent(reset(), {
+      logDebug(paste0("Entering ", session$ns(""), "observeEvent(reset())"))
+      
+      req(reset())
+      updateSelectInput(session, "remoteModel", selected = list())
+      pathToModel(NULL)
+    })
+    
     observeEvent(input$loadRemoteModel, {
+      logDebug(paste0("Entering ", session$ns(""), "observeEvent(input$loadRemoteModel)"))
+      
       pathToModel(file.path(
         settings$pathToSavedModels,
         paste0(input$remoteModel, ".zip")
@@ -140,13 +154,14 @@ uploadModel <-
     })
     
     observeEvent(pathToModel(), {
-      logDebug("Entering observe() (Load Model from file)")
+      logDebug("Entering ", session$ns(""), "observe() (Load Model)")
       
       res <- try({
         zip::unzip(pathToModel())
         modelImport <- readRDS("model.rds")
         uploadedNotes(readLines("README.txt"))
       })
+
       if (inherits(res, "try-error")) {
         shinyjs::alert(
           paste0(
@@ -165,34 +180,45 @@ uploadModel <-
         return()
       }
       
-      
       if (is.null(modelImport$model)) {
         warningEmptyModel <-
-          "Model selection and data loaded! The file does not include saved results. "
+          "The file does not include saved results. "
+        
         model(NULL)
+        values$status <- values$statusSim <- "INITIALIZE"
       } else {
-        warningEmptyModel <- ""
+        warningEmptyModel <- "Model results loaded. "
+        
         model(modelImport$model)
+        values$status <- values$statusSim <- "COMPLETED"
       }
       
       if (is.null(modelImport$values)) {
         warningEmptyInputs <-
-          "Model results loaded. The file does not include model selection and input data. "
+          "The file does not include model selection and input data. "
       } else {
-        warningEmptyInputs <- ""
+        warningEmptyInputs <- "Model selection and data loaded. "
+        
         for (name in names(modelImport$values)) {
           values[[name]] <- modelImport$values[[name]]
         }
       }
+      
+      if (!is.null(modelImport$version)) {
+        uploadedVersion <- paste(", saved version", modelImport$version)
+      } else {
+        uploadedVersion <- ""
+      }
+      
       
       rm(modelImport)
       
       alert(paste0(
         warningEmptyInputs,
         warningEmptyModel,
-        "Upload finished."
+        paste0("Upload finished", uploadedVersion, ".")
       ))
       
-      values$status <- values$statusSim <- "COMPLETED"
+      
     })
   }
