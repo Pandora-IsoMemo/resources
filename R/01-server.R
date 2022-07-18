@@ -109,7 +109,7 @@ fruitsTab <- function(input,
              uploadedNotes = uploadedNotes,
              reset = reactive(input$reset))
   
-  ## status
+  ## status ----
   
   output$status <- renderText(values$status)
   output$statusSim <- renderText(values$statusSim)
@@ -223,7 +223,7 @@ fruitsTab <- function(input,
       unique(colnames(values$targetValuesCovariates))
   })
   
-  ## Model options
+  ## Model options ----
   observeEvent(values$modelType, {
     logDebug("Entering observeEvent(values$modelType)")
     
@@ -693,27 +693,6 @@ fruitsTab <- function(input,
                    values = values,
                    events = events)
   
-  ## Hide Input for 0 weights
-  observe({
-    logDebug("Entering observe() (values$modelWeights)")
-    if (values$modelWeights) {
-      zeroTarget <- row(values$weights)[values$weights == 0]
-      zeroFraction <- col(values$weights)[values$weights == 0]
-      visible <-
-        input[["source-target"]] == values$targetNames[zeroTarget]
-      showAllColumns(ns("source-table"))
-      if (length(visible) > 0 && !any(is.na(visible)) && any(visible)) {
-        idFrac <-
-          which(colnames(values$weights) %in% values$fractionNames[zeroFraction])
-        if (length(idFrac) > 0) {
-          lapply(idFrac, hideColumn, id = ns("source-table"))
-        }
-      }
-    } else {
-      showAllColumns(ns("source-table"))
-    }
-  })
-  
   # ## WeightOffset ----
   callModule(
     fruitsMatrix,
@@ -727,7 +706,7 @@ fruitsTab <- function(input,
     fixedCols = "Offset"
   )
   
-  ## Sources
+  ## Sources ----
   sourceObsvnFilterChoices <- reactive({
     if (baselineModel()) {
       values$obsvnNames
@@ -736,61 +715,23 @@ fruitsTab <- function(input,
     }
   })
   
-  sourceObsvnFilterHide <- reactive({
-    if (baselineModel()) {
-      FALSE
-    } else {
-      TRUE
-    }
-  })
-  
-  hideTargetFilter <- reactive({
-    if (input$modelWeights) {
-      FALSE
-    } else {
-      TRUE
-    }
-  })
-  
-  sourceTargetChoices <- reactive({
-    if (input$modelWeights) {
-      values$targetNames
-    } else {
-      NA
-    }
-  })
-  
-  sourceCovNames <- reactive({
-    if (input$modelWeights) {
-      apply(expand.grid(values$fractionNames, values$targetNames),
-            1,
-            paste,
-            collapse = "-"
-      )
-    } else {
-      values$targetNames
-    }
-  })
-  
-  # ## Sources ----
-  
   sourcesServer("sources",
                 values = values,
                 events = events,
-                hideTargetFilter = hideTargetFilter,
-                sourceCovNames = sourceCovNames,
+                withComponents = reactive(input$modelWeights),
+                hideTargetFilter = reactive(!input$modelWeights),
                 termChoices = termChoices,
                 sourceObsvnFilterChoices = sourceObsvnFilterChoices,
-                sourceObsvnFilterHide = sourceObsvnFilterHide)
+                sourceObsvnFilterHide = reactive(!baselineModel()))
   
   # ## Concentrations ----
   
   concentrationsServer("concentration",
                        values = values,
                        events = events,
-                       hideTargetFilter = hideTargetFilter,
+                       hideTargetFilter = reactive(!input$modelWeights),
                        sourceObsvnFilterChoices = sourceObsvnFilterChoices,
-                       sourceObsvnFilterHide = sourceObsvnFilterHide)
+                       sourceObsvnFilterHide = reactive(!baselineModel()))
   
   ## MySql table contents
 

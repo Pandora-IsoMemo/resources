@@ -121,8 +121,8 @@ sourcesUI <- function(id, title = NULL) {
 #' @param id id of module
 #' @param values values
 #' @param events events
-#' @param hideTargetFilter hideTargetFilter
-#' @param sourceCovNames sourceCovNames
+#' @param withComponents (reactive) logical, TRUE if include components
+#' @param hideTargetFilter (reactive) logical, hideTargetFilter
 #' @param termChoices termChoices
 #' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
 #' @param sourceObsvnFilterHide sourceObsvnFilterHide
@@ -130,14 +130,28 @@ sourcesServer <-
   function(id,
            values,
            events,
+           withComponents,
            hideTargetFilter,
-           sourceCovNames,
            termChoices,
            sourceObsvnFilterChoices,
            sourceObsvnFilterHide) {
     moduleServer(id,
                  function(input, output, session) {
                    ## Source - callModule fruitsMatrix ----
+                   ns <- session$ns
+                   
+                   sourceCovNames <- reactive({
+                     if (withComponents()) {
+                       apply(expand.grid(values$fractionNames, values$targetNames),
+                             1,
+                             paste,
+                             collapse = "-"
+                       )
+                     } else {
+                       values$targetNames
+                     }
+                   })
+                   
                    callModule(
                      fruitsMatrix,
                      "source",
@@ -180,6 +194,28 @@ sourcesServer <-
                        )
                      )
                    )
+                   
+                   ## Hide Input for 0 weights
+                   observe({
+                     logDebug("Entering observe() (values$modelWeights)")
+                     browser()
+                     if (values$modelWeights) {
+                       zeroTarget <- row(values$weights)[values$weights == 0]
+                       zeroFraction <- col(values$weights)[values$weights == 0]
+                       visible <-
+                         input[["source-target"]] == values$targetNames[zeroTarget]
+                       showAllColumns(ns("source-table"))
+                       if (length(visible) > 0 && !any(is.na(visible)) && any(visible)) {
+                         idFrac <-
+                           which(colnames(values$weights) %in% values$fractionNames[zeroFraction])
+                         if (length(idFrac) > 0) {
+                           lapply(idFrac, hideColumn, id = ns("source-table"))
+                         }
+                       }
+                     } else {
+                       showAllColumns(ns("source-table"))
+                     }
+                   })
                    
                    ## SourceOffset - callModule fruitsMatrix ----
                    callModule(
