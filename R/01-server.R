@@ -187,11 +187,15 @@ fruitsTab <- function(input,
   })
   
   
-  ## Set names
+  ## Set names: targetNames, fractionNames, sourceNames, obsvnNames, offsetNames, targetValuesCovariatesNames ----
   observe(priority = 200, {
     logDebug("Entering observe() (set values$xxxNames)")
+    
     values$targetNames <-
       unique(colnames(values$obsvn[["default"]]))
+    
+    values <- updateSourceNamesIfMismatch(values)
+    
     if (input$modelWeights) {
       if (input$modelConcentrations) {
         values$fractionNames <- unique(colnames(values$concentration[[1]]))
@@ -203,14 +207,18 @@ fruitsTab <- function(input,
     else {
       values$fractionNames <- values$targetNames
     }
+    
     if (input$modelConcentrations) {
       values$sourceNames <- unique(rownames(values$concentration[[1]]))
     } else {
       values$sourceNames <-
         unique(rownames(values$source[[1]][[1]][[1]]))
     }
+    
     values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
+    
     values$offsetNames <- "Offset"
+    
     values$targetValuesCovariatesNames <-
       unique(colnames(values$targetValuesCovariates))
   })
@@ -921,7 +929,7 @@ fruitsTab <- function(input,
   #   values$fileNotes <- input$fileNotes
   # })
   
-  ## Priors
+  ## Priors ----
   priorWarning <- reactiveValues(text = NULL)
   output$priorWarning <- renderText({
     priorWarning$text
@@ -2327,4 +2335,46 @@ extractPotentialCat <- function(targetValuesCovariates) {
         all(!is.na(targetValuesCovariates[, x]))
       }
     )]
+}
+
+#' Update Source Names If Mismatch
+#' 
+#' Update term names of source related entries such that they match to new targetNames
+#' 
+#' @inheritParams updateNamesIfMismatch
+updateSourceNamesIfMismatch <- function(values) {
+  for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
+    values <- updateNamesIfMismatch(values, entryName = entry)
+  }
+  
+  values
+}
+
+
+#' Update Names If Mismatch
+#' 
+#' Update term names of entries such that they match to new targetNames
+#' 
+#' @param values (list) with all data and model options
+#' @param entryName (character) name of values element
+updateNamesIfMismatch <- function(values, entryName) {
+  flattenElem <- function(elem, isFlat) {
+    if (!isFlat) return(elem[[1]]) else return(elem)
+  }
+  
+  isFlat <- !is.null(names(values[[entryName]][[1]]))
+  
+  # check mismatch of targetNames
+  if (!all(sapply(values[[entryName]], function(elem) names(flattenElem(elem, isFlat = isFlat))) == values$targetNames)) {
+    
+    # update names
+    values[[entryName]] <- lapply(values[[entryName]], function(elem) {
+      elem <- flattenElem(elem, isFlat = isFlat)
+      names(elem) <- values$targetNames
+      if (isFlat) return(elem) else return(list(elem))
+    })
+    
+  }
+  
+  values
 }

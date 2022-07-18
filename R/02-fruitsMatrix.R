@@ -131,8 +131,10 @@ fruitsMatrixDistribution <- function(scope, choices = c("constant", "normal", "m
   )
 }
 
-fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = NULL, distributionId = NULL, covarianceId = NULL,
-                         class = "numeric", row, col, namesCov = NULL,
+fruitsMatrix <- function(input, output, session, 
+                         values, events, meanId, sdId = NULL, distributionId = NULL, covarianceId = NULL,
+                         class = "numeric", 
+                         row, col, namesCov = NULL,
                          filter = list(), filterCov = list(), fixedCols = FALSE) {
   ns <- session$ns
 
@@ -212,6 +214,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
   observe({
     logDebug("Updating filter input fields (%s)", meanId)
+    
     lapply(filter, function(f) {
       updateSelectizeInput(session, f$id, choices = f$choices())
       if (!is.null(f$hide) && f$hide()) {
@@ -289,7 +292,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   observe(priority = 100, {
     logDebug("Extend complex objects (%s)", meanId)
     req(length(filterChoices()) > 0)
-
+    
     dummy <- createDummyMatrix(
       names = c(
         filterChoices(),
@@ -420,7 +423,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   # # Get input from shiny matrix ----
   inputData <- eventReactive(input$table, {
     logDebug("Get input from shiny matrix for mean and sd (%s)", meanId)
-
+    
     m <- input$table
     storage.mode(m) <- class
     m <- minimalMatrix(m)
@@ -538,7 +541,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   # Process input data -> values ----
   observeEvent(inputData(), {
     logDebug("Process input data -> values for mean + sd (%s)", meanId)
-
+    
     if (!is.null(sdId)) {
       inputMean <- inputData()[[1]]
       inputSd <- inputData()[[2]]
@@ -665,7 +668,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   # Process data from values -> UI ----
   observe({
     logDebug("Process date from values -> UI for sd and mean (%s)", meanId)
-
+    
     if (is.null(sdId)) {
       updateMatrixInput(session, "table", meanDataPage())
     } else {
