@@ -688,18 +688,21 @@ fruitsTab <- function(input,
     class = "character"
   )
   
-  ## Weights - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "weights",
-    values = values,
-    events = events,
-    meanId = "weights",
-    sdId = "weightsUncert",
-    row = "targetNames",
-    col = "fractionNames",
-    distributionId = "weightDistribution"
-  )
+  # ## Weights - callModule fruitsMatrix ----
+  componentsServer("components",
+                   values = values,
+                   events = events)
+  # callModule(
+  #   fruitsMatrix,
+  #   "weights",
+  #   values = values,
+  #   events = events,
+  #   meanId = "weights",
+  #   sdId = "weightsUncert",
+  #   row = "targetNames",
+  #   col = "fractionNames",
+  #   distributionId = "weightDistribution"
+  # )
   
   ## Hide Input for 0 weights
   observe({
@@ -722,7 +725,7 @@ fruitsTab <- function(input,
     }
   })
   
-  ## WeightOffset - callModule fruitsMatrix ----
+  # ## WeightOffset - callModule fruitsMatrix ----
   callModule(
     fruitsMatrix,
     "weightOffset",

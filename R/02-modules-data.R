@@ -1,3 +1,55 @@
+#' Components UI
+#'
+#' UI of the data - components
+#'
+#' @param id id of module
+#' @param title (character) title of module
+componentsUI <- function(id, title = NULL) {
+  ns <- NS(id)
+  
+  tagList(
+    tags$h4(title),
+    fruitsMatrixDistribution(
+      scope = ns("weights"),
+      choices = c("constant", "normal", "log-normal")
+    ),
+    fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
+  )
+}
+
+
+#' Components Server
+#'
+#' Server function of the data - components
+#' @param id id of module
+#' @param values values
+#' @param events events
+#' @param hideTargetFilter hideTargetFilter
+#' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
+#' @param sourceObsvnFilterHide sourceObsvnFilterHide
+componentsServer <-
+  function(id,
+           values,
+           events) {
+    moduleServer(id,
+                 function(input, output, session) {
+                   ## Weights - callModule fruitsMatrix ----
+                   callModule(
+                     fruitsMatrix,
+                     "weights",
+                     values = values,
+                     events = events,
+                     meanId = "weights",
+                     sdId = "weightsUncert",
+                     row = "targetNames",
+                     col = "fractionNames",
+                     distributionId = "weightDistribution"
+                   )
+                 })
+  }
+
+
+
 #' Sources UI
 #'
 #' UI of the data - sources

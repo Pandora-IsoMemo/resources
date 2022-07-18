@@ -131,11 +131,12 @@ fruitsUI <- function(id, title = "FRUITS") {
             ### Data/Weights ----
             tabPanel(
               "Components",
-              fruitsMatrixDistribution(
-                scope = ns("weights"),
-                choices = c("constant", "normal", "log-normal")
-              ),
-              fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
+              # fruitsMatrixDistribution(
+              #   scope = ns("weights"),
+              #   choices = c("constant", "normal", "log-normal")
+              # ),
+              # fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
+              componentsUI(ns("components"), title = "Components")
             ),
             ### Data/Sources ----
             tabPanel(
