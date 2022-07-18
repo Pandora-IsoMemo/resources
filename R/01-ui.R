@@ -140,61 +140,62 @@ fruitsUI <- function(id, title = "FRUITS") {
             ### Data/Sources ----
             tabPanel(
               "Sources",
-              div(
-                fruitsMatrixFilter(
-                  scope = ns("source"),
-                  id = "obsvn",
-                  label = "Observation"
-                )
-              ),
-              fruitsMatrixFilter(
-                scope = ns("source"),
-                id = "term",
-                label = "Term"
-              ),
-              fruitsMatrixDistribution(scope = ns("source")),
-              div(fruitsMatrixFilter(
-                scope = ns("source"),
-                id = "target",
-                label = "Proxy"
-              )),
-              fruitsMatrixInput(
-                scope = ns("source"),
-                row = "sourceNames",
-                col = "targetNames"
-              ),
-              checkboxInput(
-                ns("includeSourceOffset"),
-                "Include source specific offsets",
-                value = FALSE
-              ),
-              conditionalPanel(
-                condition = "input.includeSourceOffset == true",
-                ns = ns,
-                fruitsMatrixFilter(
-                  scope = ns("sourceOffset"),
-                  id = "obsvn",
-                  label = "Observation"
-                ),
-                fruitsMatrixFilter(
-                  scope = ns("sourceOffset"),
-                  id = "target",
-                  label = "Proxy"
-                ),
-                fruitsMatrixInput(ns("sourceOffset"), row = "sourceNames", col = "targetNames")
-              ),
-              fruitsMatrixInput(
-                ns("source"),
-                row = "sourceNames",
-                col = "sourceNames",
-                cov = TRUE,
-                toggleCov = TRUE
-              )
+              sourcesUI(ns("sources"), title = "Sources")
+              # div(
+              #   fruitsMatrixFilter(
+              #     scope = ns("source"),
+              #     id = "obsvn",
+              #     label = "Observation"
+              #   )
+              # ),
+              # fruitsMatrixFilter(
+              #   scope = ns("source"),
+              #   id = "term",
+              #   label = "Term"
+              # ),
+              # fruitsMatrixDistribution(scope = ns("source")),
+              # div(fruitsMatrixFilter(
+              #   scope = ns("source"),
+              #   id = "target",
+              #   label = "Proxy"
+              # )),
+              # fruitsMatrixInput(
+              #   scope = ns("source"),
+              #   row = "sourceNames",
+              #   col = "targetNames"
+              # ),
+              # checkboxInput(
+              #   ns("includeSourceOffset"),
+              #   "Include source specific offsets",
+              #   value = FALSE
+              # ),
+              # conditionalPanel(
+              #   condition = "input.includeSourceOffset == true",
+              #   ns = ns,
+              #   fruitsMatrixFilter(
+              #     scope = ns("sourceOffset"),
+              #     id = "obsvn",
+              #     label = "Observation"
+              #   ),
+              #   fruitsMatrixFilter(
+              #     scope = ns("sourceOffset"),
+              #     id = "target",
+              #     label = "Proxy"
+              #   ),
+              #   fruitsMatrixInput(ns("sourceOffset"), row = "sourceNames", col = "targetNames")
+              # ),
+              # fruitsMatrixInput(
+              #   ns("source"),
+              #   row = "sourceNames",
+              #   col = "sourceNames",
+              #   cov = TRUE,
+              #   toggleCov = TRUE
+              # )
             ),
             ### Data/Concentrations ----
             tabPanel(
               "Concentrations",
-              concentrationsUI(ns("concentration"))
+              concentrationsUI(ns("concentration"), title = "Concentrations")
               # div(
               #   fruitsMatrixFilter(
               #     scope = ns("concentration"),

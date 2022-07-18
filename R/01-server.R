@@ -772,87 +772,96 @@ fruitsTab <- function(input,
     }
   })
   
-  ## Source - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "source",
-    values = values,
-    events = events,
-    meanId = "source",
-    sdId = "sourceUncert",
-    row = "sourceNames",
-    col = reactive(if (hideTargetFilter()) {
-      "targetNames"
-    } else {
-      "fractionNames"
-    }),
-    namesCov = sourceCovNames,
-    distributionId = "sourceDistribution",
-    covarianceId = "sourceCovariance",
-    filter = list(
-      list(id = "term", choices = termChoices),
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        distribution = FALSE,
-        batch = TRUE
-      ),
-      list(
-        id = "target",
-        choices = reactive(values$targetNames),
-        hide = hideTargetFilter,
-        distribution = FALSE
-      )
-    ),
-    filterCov = list(
-      list(id = "term", choices = termChoices),
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        batch = TRUE
-      )
-    )
-  )
+  # ## Source - callModule fruitsMatrix ----
   
-  ## SourceOffset - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "sourceOffset",
-    values = values,
-    events = events,
-    meanId = "sourceOffset",
-    sdId = "sourceOffsetUncert",
-    row = "sourceNames",
-    col = reactive(if (hideTargetFilter()) {
-      "targetNames"
-    } else {
-      "fractionNames"
-    }),
-    filter = list(
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        batch = TRUE
-      ),
-      list(
-        id = "target",
-        choices = reactive(values$targetNames),
-        hide = hideTargetFilter
-      )
-    )
-  )
+  sourcesServer("sources",
+                values = values,
+                events = events,
+                hideTargetFilter = hideTargetFilter,
+                sourceCovNames = sourceCovNames,
+                termChoices = termChoices,
+                sourceObsvnFilterChoices = sourceObsvnFilterChoices,
+                sourceObsvnFilterHide = sourceObsvnFilterHide)
+  # callModule(
+  #   fruitsMatrix,
+  #   "source",
+  #   values = values,
+  #   events = events,
+  #   meanId = "source",
+  #   sdId = "sourceUncert",
+  #   row = "sourceNames",
+  #   col = reactive(if (hideTargetFilter()) {
+  #     "targetNames"
+  #   } else {
+  #     "fractionNames"
+  #   }),
+  #   namesCov = sourceCovNames,
+  #   distributionId = "sourceDistribution",
+  #   covarianceId = "sourceCovariance",
+  #   filter = list(
+  #     list(id = "term", choices = termChoices),
+  #     list(
+  #       id = "obsvn",
+  #       choices = sourceObsvnFilterChoices,
+  #       hide = sourceObsvnFilterHide,
+  #       distribution = FALSE,
+  #       batch = TRUE
+  #     ),
+  #     list(
+  #       id = "target",
+  #       choices = reactive(values$targetNames),
+  #       hide = hideTargetFilter,
+  #       distribution = FALSE
+  #     )
+  #   ),
+  #   filterCov = list(
+  #     list(id = "term", choices = termChoices),
+  #     list(
+  #       id = "obsvn",
+  #       choices = sourceObsvnFilterChoices,
+  #       hide = sourceObsvnFilterHide,
+  #       batch = TRUE
+  #     )
+  #   )
+  # )
+  # 
+  # ## SourceOffset - callModule fruitsMatrix ----
+  # callModule(
+  #   fruitsMatrix,
+  #   "sourceOffset",
+  #   values = values,
+  #   events = events,
+  #   meanId = "sourceOffset",
+  #   sdId = "sourceOffsetUncert",
+  #   row = "sourceNames",
+  #   col = reactive(if (hideTargetFilter()) {
+  #     "targetNames"
+  #   } else {
+  #     "fractionNames"
+  #   }),
+  #   filter = list(
+  #     list(
+  #       id = "obsvn",
+  #       choices = sourceObsvnFilterChoices,
+  #       hide = sourceObsvnFilterHide,
+  #       batch = TRUE
+  #     ),
+  #     list(
+  #       id = "target",
+  #       choices = reactive(values$targetNames),
+  #       hide = hideTargetFilter
+  #     )
+  #   )
+  # )
   
   # ## Concentration - callModule fruitsMatrix ----
   
   concentrationsServer("concentration",
-                       values = reactive(values),
-                       events = reactive(events),
-                       hideTargetFilter = reactive(hideTargetFilter()),
-                       sourceObsvnFilterChoices = reactive(sourceObsvnFilterChoices()),
-                       sourceObsvnFilterHide = reactive(sourceObsvnFilterHide()))
+                       values = values,
+                       events = events,
+                       hideTargetFilter = hideTargetFilter,
+                       sourceObsvnFilterChoices = sourceObsvnFilterChoices,
+                       sourceObsvnFilterHide = sourceObsvnFilterHide)
   
   # callModule(
   #   fruitsMatrix,
@@ -907,10 +916,10 @@ fruitsTab <- function(input,
     showModal(fileNotesDialog(id = ns("fileNotes"), value = values$fileNotes))
   })
   
-  observeEvent(input$fileNotes, {
-    logDebug("Entering observeEvent(input$fileNotes)")
-    values$fileNotes <- input$fileNotes
-  })
+  # observeEvent(input$fileNotes, {
+  #   logDebug("Entering observeEvent(input$fileNotes)")
+  #   values$fileNotes <- input$fileNotes
+  # })
   
   ## Priors
   priorWarning <- reactiveValues(text = NULL)
