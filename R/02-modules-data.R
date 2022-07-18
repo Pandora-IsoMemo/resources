@@ -145,8 +145,7 @@ sourcesServer <-
                        apply(expand.grid(values$fractionNames, values$targetNames),
                              1,
                              paste,
-                             collapse = "-"
-                       )
+                             collapse = "-")
                      } else {
                        values$targetNames
                      }
@@ -201,11 +200,13 @@ sourcesServer <-
                      browser()
                      if (values$modelWeights) {
                        zeroTarget <- row(values$weights)[values$weights == 0]
-                       zeroFraction <- col(values$weights)[values$weights == 0]
+                       zeroFraction <-
+                         col(values$weights)[values$weights == 0]
                        visible <-
                          input[["source-target"]] == values$targetNames[zeroTarget]
                        showAllColumns(ns("source-table"))
-                       if (length(visible) > 0 && !any(is.na(visible)) && any(visible)) {
+                       if (length(visible) > 0 &&
+                           !any(is.na(visible)) && any(visible)) {
                          idFrac <-
                            which(colnames(values$weights) %in% values$fractionNames[zeroFraction])
                          if (length(idFrac) > 0) {
