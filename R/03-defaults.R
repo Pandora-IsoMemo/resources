@@ -33,6 +33,7 @@ defaultMatrixNames <- function(m, prefixRow, prefixCol, sep = "_") {
 
   m
 }
+
 defaultValues <- function() {
   list(
     status = "INITIALIZE",
