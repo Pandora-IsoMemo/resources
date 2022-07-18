@@ -197,7 +197,7 @@ sourcesServer <-
                    ## Hide Input for 0 weights
                    observe({
                      logDebug("Entering observe() (values$modelWeights)")
-                     browser()
+                     
                      if (values$modelWeights) {
                        zeroTarget <- row(values$weights)[values$weights == 0]
                        zeroFraction <-
