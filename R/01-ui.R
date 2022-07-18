@@ -61,6 +61,7 @@ fruitsUI <- function(id, title = "FRUITS") {
           ## Data ----
           navbarMenu(
             "Data",
+            ### Data/Targets ----
             tabPanel(
               "Target & target-to-source offsets",
               fruitsMatrixFilter(
@@ -131,88 +132,17 @@ fruitsUI <- function(id, title = "FRUITS") {
             ### Data/Weights ----
             tabPanel(
               "Components",
-              # fruitsMatrixDistribution(
-              #   scope = ns("weights"),
-              #   choices = c("constant", "normal", "log-normal")
-              # ),
-              # fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
               componentsUI(ns("components"), title = "Components")
             ),
             ### Data/Sources ----
             tabPanel(
               "Sources",
               sourcesUI(ns("sources"), title = "Sources")
-              # div(
-              #   fruitsMatrixFilter(
-              #     scope = ns("source"),
-              #     id = "obsvn",
-              #     label = "Observation"
-              #   )
-              # ),
-              # fruitsMatrixFilter(
-              #   scope = ns("source"),
-              #   id = "term",
-              #   label = "Term"
-              # ),
-              # fruitsMatrixDistribution(scope = ns("source")),
-              # div(fruitsMatrixFilter(
-              #   scope = ns("source"),
-              #   id = "target",
-              #   label = "Proxy"
-              # )),
-              # fruitsMatrixInput(
-              #   scope = ns("source"),
-              #   row = "sourceNames",
-              #   col = "targetNames"
-              # ),
-              # checkboxInput(
-              #   ns("includeSourceOffset"),
-              #   "Include source specific offsets",
-              #   value = FALSE
-              # ),
-              # conditionalPanel(
-              #   condition = "input.includeSourceOffset == true",
-              #   ns = ns,
-              #   fruitsMatrixFilter(
-              #     scope = ns("sourceOffset"),
-              #     id = "obsvn",
-              #     label = "Observation"
-              #   ),
-              #   fruitsMatrixFilter(
-              #     scope = ns("sourceOffset"),
-              #     id = "target",
-              #     label = "Proxy"
-              #   ),
-              #   fruitsMatrixInput(ns("sourceOffset"), row = "sourceNames", col = "targetNames")
-              # ),
-              # fruitsMatrixInput(
-              #   ns("source"),
-              #   row = "sourceNames",
-              #   col = "sourceNames",
-              #   cov = TRUE,
-              #   toggleCov = TRUE
-              # )
             ),
             ### Data/Concentrations ----
             tabPanel(
               "Concentrations",
               concentrationsUI(ns("concentration"), title = "Concentrations")
-              # div(
-              #   fruitsMatrixFilter(
-              #     scope = ns("concentration"),
-              #     id = "obsvn",
-              #     label = "Observation"
-              #   )
-              # ),
-              # fruitsMatrixDistribution(scope = ns("concentration")),
-              # fruitsMatrixInput(ns("concentration"), row = "sourceNames", col = "targetNames"),
-              # fruitsMatrixInput(
-              #   ns("concentration"),
-              #   row = "targetNames",
-              #   col = "targetNames",
-              #   cov = TRUE,
-              #   toggleCov = TRUE
-              # )
             )
           ),
           ## Model options ----

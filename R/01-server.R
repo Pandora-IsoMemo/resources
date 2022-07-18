@@ -688,21 +688,10 @@ fruitsTab <- function(input,
     class = "character"
   )
   
-  # ## Weights - callModule fruitsMatrix ----
+  # ## Weights ----
   componentsServer("components",
                    values = values,
                    events = events)
-  # callModule(
-  #   fruitsMatrix,
-  #   "weights",
-  #   values = values,
-  #   events = events,
-  #   meanId = "weights",
-  #   sdId = "weightsUncert",
-  #   row = "targetNames",
-  #   col = "fractionNames",
-  #   distributionId = "weightDistribution"
-  # )
   
   ## Hide Input for 0 weights
   observe({
@@ -725,7 +714,7 @@ fruitsTab <- function(input,
     }
   })
   
-  # ## WeightOffset - callModule fruitsMatrix ----
+  # ## WeightOffset ----
   callModule(
     fruitsMatrix,
     "weightOffset",
@@ -783,7 +772,7 @@ fruitsTab <- function(input,
     }
   })
   
-  # ## Source - callModule fruitsMatrix ----
+  # ## Sources ----
   
   sourcesServer("sources",
                 values = values,
@@ -793,79 +782,8 @@ fruitsTab <- function(input,
                 termChoices = termChoices,
                 sourceObsvnFilterChoices = sourceObsvnFilterChoices,
                 sourceObsvnFilterHide = sourceObsvnFilterHide)
-  # callModule(
-  #   fruitsMatrix,
-  #   "source",
-  #   values = values,
-  #   events = events,
-  #   meanId = "source",
-  #   sdId = "sourceUncert",
-  #   row = "sourceNames",
-  #   col = reactive(if (hideTargetFilter()) {
-  #     "targetNames"
-  #   } else {
-  #     "fractionNames"
-  #   }),
-  #   namesCov = sourceCovNames,
-  #   distributionId = "sourceDistribution",
-  #   covarianceId = "sourceCovariance",
-  #   filter = list(
-  #     list(id = "term", choices = termChoices),
-  #     list(
-  #       id = "obsvn",
-  #       choices = sourceObsvnFilterChoices,
-  #       hide = sourceObsvnFilterHide,
-  #       distribution = FALSE,
-  #       batch = TRUE
-  #     ),
-  #     list(
-  #       id = "target",
-  #       choices = reactive(values$targetNames),
-  #       hide = hideTargetFilter,
-  #       distribution = FALSE
-  #     )
-  #   ),
-  #   filterCov = list(
-  #     list(id = "term", choices = termChoices),
-  #     list(
-  #       id = "obsvn",
-  #       choices = sourceObsvnFilterChoices,
-  #       hide = sourceObsvnFilterHide,
-  #       batch = TRUE
-  #     )
-  #   )
-  # )
-  # 
-  # ## SourceOffset - callModule fruitsMatrix ----
-  # callModule(
-  #   fruitsMatrix,
-  #   "sourceOffset",
-  #   values = values,
-  #   events = events,
-  #   meanId = "sourceOffset",
-  #   sdId = "sourceOffsetUncert",
-  #   row = "sourceNames",
-  #   col = reactive(if (hideTargetFilter()) {
-  #     "targetNames"
-  #   } else {
-  #     "fractionNames"
-  #   }),
-  #   filter = list(
-  #     list(
-  #       id = "obsvn",
-  #       choices = sourceObsvnFilterChoices,
-  #       hide = sourceObsvnFilterHide,
-  #       batch = TRUE
-  #     ),
-  #     list(
-  #       id = "target",
-  #       choices = reactive(values$targetNames),
-  #       hide = hideTargetFilter
-  #     )
-  #   )
-  # )
   
-  # ## Concentration - callModule fruitsMatrix ----
+  # ## Concentrations ----
   
   concentrationsServer("concentration",
                        values = values,
@@ -873,45 +791,6 @@ fruitsTab <- function(input,
                        hideTargetFilter = hideTargetFilter,
                        sourceObsvnFilterChoices = sourceObsvnFilterChoices,
                        sourceObsvnFilterHide = sourceObsvnFilterHide)
-  
-  # callModule(
-  #   fruitsMatrix,
-  #   "concentration",
-  #   values = values,
-  #   events = events,
-  #   meanId = "concentration",
-  #   sdId = "concentrationUncert",
-  #   row = "sourceNames",
-  #   col = reactive(if (hideTargetFilter()) {
-  #     "targetNames"
-  #   } else {
-  #     "fractionNames"
-  #   }),
-  #   distributionId = "concentrationDistribution",
-  #   covarianceId = "concentrationCovariance",
-  #   namesCov = reactive(if (hideTargetFilter()) {
-  #     values$targetNames
-  #   } else {
-  #     values$fractionNames
-  #   }),
-  #   filter = list(
-  #     list(
-  #       id = "obsvn",
-  #       choices = sourceObsvnFilterChoices,
-  #       hide = sourceObsvnFilterHide,
-  #       distribution = FALSE,
-  #       batch = TRUE
-  #     )
-  #   ),
-  #   filterCov = list(
-  #     list(
-  #       id = "obsvn",
-  #       choices = sourceObsvnFilterChoices,
-  #       hide = sourceObsvnFilterHide,
-  #       batch = TRUE
-  #     )
-  #   )
-  # )
   
   ## MySql table contents
 
