@@ -82,6 +82,7 @@ targetValuesUI <- function(id, title = NULL) {
 #' @param values values
 #' @param events events
 #' @param termChoices termChoices
+#' @param modelType (reactive) character id, e.g. "1"
 targetValuesServer <-
   function(id,
            values,
@@ -114,7 +115,7 @@ targetValuesServer <-
                      )
                    )
                    
-                   ## WeightOffset ----
+                   ## WeightOffset - callModule fruitsMatrix ----
                    callModule(
                      fruitsMatrix,
                      "weightOffset",
@@ -128,6 +129,17 @@ targetValuesServer <-
                    )
                    
                    ## TargetValuesCovariates - callModule fruitsMatrix ----
+                   callModule(
+                     fruitsMatrix,
+                     "targetValuesCovariates",
+                     values = values,
+                     events = events,
+                     meanId = "targetValuesCovariates",
+                     row = "obsvnNames",
+                     col = "covariateNames",
+                     class = "character"
+                   )
+                   
                    observeEvent(modelType(), {
                      logDebug("Entering observeEvent(modelType())")
                      values$modelType <- modelType()
@@ -159,17 +171,6 @@ targetValuesServer <-
                        values$modelType <- "2"
                      }
                    })
-                   
-                   callModule(
-                     fruitsMatrix,
-                     "targetValuesCovariates",
-                     values = values,
-                     events = events,
-                     meanId = "targetValuesCovariates",
-                     row = "obsvnNames",
-                     col = "covariateNames",
-                     class = "character"
-                   )
                  })
   }
 

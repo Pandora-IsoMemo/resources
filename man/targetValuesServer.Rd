@@ -14,6 +14,8 @@ targetValuesServer(id, values, events, termChoices, modelType)
 \item{events}{events}
 
 \item{termChoices}{termChoices}
+
+\item{modelType}{(reactive) character id, e.g. "1"}
 }
 \description{
 Server function of the data - target values
