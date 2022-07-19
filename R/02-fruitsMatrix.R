@@ -779,6 +779,14 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
     setList(values[[covarianceId]], filterValuesCov(), m)
   })
+  
+  observeEvent(input$reset, {
+    logDebug("Entering observeEvent(input$reset)")
+    browser()
+    #updateMatrixInput(session = session, inputId = "table",value = ,)
+    #vars <- defaultValues()
+  })
+  
 
   ## -- Import
 
