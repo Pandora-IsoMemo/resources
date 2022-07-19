@@ -61,85 +61,18 @@ fruitsUI <- function(id, title = "FRUITS") {
           ## Data ----
           navbarMenu(
             "Data",
-            ### Data/Targets ----
             tabPanel(
               "Target & target-to-source offsets",
-              fruitsMatrixFilter(
-                scope = ns("targetValues"),
-                id = "term",
-                label = "Term"
-              ),
-              fruitsMatrixDistribution(scope = ns("targetValues")),
-              fruitsMatrixInput(ns("targetValues"), "obsvnNames", "targetNames"),
-              checkboxInput(ns("targetOffset"), "Include target offset",
-                            value = TRUE
-              ),
-              conditionalPanel(
-                condition = "input.targetOffset == true",
-                fruitsMatrixInput(
-                  ns("weightOffset"),
-                  "targetNames",
-                  "offsetNames",
-                  fixedCols = "Offset"
-                ),
-                ns = ns
-              ),
-              checkboxInput(ns("targetValuesShowCovariates"), "Enter Covariates"),
-              conditionalPanel(
-                condition = "input.targetValuesShowCovariates == true",
-                ns = ns,
-                fruitsMatrixInput(
-                  ns("targetValuesCovariates"),
-                  "obsvnNames",
-                  "covariateNames",
-                  double = FALSE,
-                  class = "character"
-                )
-              ),
-              fruitsMatrixFilter(
-                scope = ns("targetValues"),
-                id = "obsvn",
-                label = "Observation - Target Covariance Matrix"
-              ),
-              fruitsMatrixInput(
-                scope = ns("targetValues"),
-                row = "targetNames",
-                col = "targetNames",
-                cov = TRUE
-              ),
-              checkboxInput(
-                ns("targetValuesShowCoordinates"),
-                "Coordinates & chronology"
-              ),
-              conditionalPanel(
-                condition = "input.targetValuesShowCoordinates == true",
-                ns = ns,
-                fruitsMatrixInput(
-                  ns("exportCoordinates"),
-                  "obsvnNames",
-                  "coordinateNames",
-                  double = FALSE,
-                  fixedCols = c(
-                    "longitude",
-                    "latitude",
-                    "LowerLimit/Mean/Point",
-                    "UpperLimit/SD"
-                  )
-                ),
-                tags$br()
-              )
+              targetValuesUI(ns("targetVals"), title = "Target & target-to-source offsets")
             ),
-            ### Data/Weights ----
             tabPanel(
               "Components",
               componentsUI(ns("components"), title = "Components")
             ),
-            ### Data/Sources ----
             tabPanel(
               "Sources",
               sourcesUI(ns("sources"), title = "Sources")
             ),
-            ### Data/Concentrations ----
             tabPanel(
               "Concentrations",
               concentrationsUI(ns("concentration"), title = "Concentrations")
@@ -1200,26 +1133,3 @@ fruitsUI <- function(id, title = "FRUITS") {
     )
   )
 }
-
-emptyMatrix <-
-  function(rownames = NULL,
-           colnames = NULL,
-           nrow = length(rownames),
-           ncol = length(colnames)) {
-    m <- matrix(NA, nrow, ncol)
-    rownames(m) <- rownames
-    colnames(m) <- colnames
-    m
-  }
-
-emptyMatrix2 <-
-  function(rownames = NULL,
-           colnames = NULL,
-           nrow = length(rownames),
-           ncol = 2 * length(colnames)) {
-    m <- matrix(NA, nrow, ncol)
-    rownames(m) <- rownames
-    colnames(m) <-
-      paste(rep(colnames, each = 2), "||", c("mean", "uncert"), sep = "")
-    m
-  }

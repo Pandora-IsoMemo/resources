@@ -1,3 +1,179 @@
+#' Target Values UI
+#'
+#' UI of the data - target values
+#'
+#' @param id id of module
+#' @param title (character) title of module
+targetValuesUI <- function(id, title = NULL) {
+  ns <- NS(id)
+  
+  tagList(
+    tags$h4(title),
+    fruitsMatrixFilter(
+      scope = ns("targetValues"),
+      id = "term",
+      label = "Term"
+    ),
+    fruitsMatrixDistribution(scope = ns("targetValues")),
+    fruitsMatrixInput(ns("targetValues"), "obsvnNames", "targetNames"),
+    checkboxInput(ns("targetOffset"), "Include target offset",
+                  value = TRUE),
+    conditionalPanel(
+      condition = "input.targetOffset == true",
+      fruitsMatrixInput(
+        ns("weightOffset"),
+        "targetNames",
+        "offsetNames",
+        fixedCols = "Offset"
+      ),
+      ns = ns
+    ),
+    checkboxInput(ns("targetValuesShowCovariates"), "Enter Covariates"),
+    conditionalPanel(
+      condition = "input.targetValuesShowCovariates == true",
+      ns = ns,
+      fruitsMatrixInput(
+        ns("targetValuesCovariates"),
+        "obsvnNames",
+        "covariateNames",
+        double = FALSE,
+        class = "character"
+      )
+    ),
+    fruitsMatrixFilter(
+      scope = ns("targetValues"),
+      id = "obsvn",
+      label = "Observation - Target Covariance Matrix"
+    ),
+    fruitsMatrixInput(
+      scope = ns("targetValues"),
+      row = "targetNames",
+      col = "targetNames",
+      cov = TRUE
+    ),
+    checkboxInput(
+      ns("targetValuesShowCoordinates"),
+      "Coordinates & chronology"
+    ),
+    conditionalPanel(
+      condition = "input.targetValuesShowCoordinates == true",
+      ns = ns,
+      fruitsMatrixInput(
+        ns("exportCoordinates"),
+        "obsvnNames",
+        "coordinateNames",
+        double = FALSE,
+        fixedCols = c(
+          "longitude",
+          "latitude",
+          "LowerLimit/Mean/Point",
+          "UpperLimit/SD"
+        )
+      )
+    )
+  )
+}
+
+
+#' Target Values Server
+#'
+#' Server function of the data - target values
+#' @param id id of module
+#' @param values values
+#' @param events events
+#' @param termChoices termChoices
+targetValuesServer <-
+  function(id,
+           values,
+           events,
+           termChoices,
+           modelType) {
+    moduleServer(id,
+                 function(input, output, session) {
+                   ## TargetValues - callModule fruitsMatrix ----
+                   callModule(
+                     fruitsMatrix,
+                     "targetValues",
+                     values = values,
+                     events = events,
+                     meanId = "obsvn",
+                     sdId = "obsvnError",
+                     distributionId = "obsvnDistribution",
+                     covarianceId = "targetValuesCovariance",
+                     row = "obsvnNames",
+                     col = "targetNames",
+                     namesCov = reactive(values$targetNames),
+                     filter = list(list(id = "term", choices = termChoices)),
+                     filterCov = list(
+                       list(id = "term", choices = termChoices),
+                       list(
+                         id = "obsvn",
+                         choices = reactive(values$obsvnNames),
+                         batch = TRUE
+                       )
+                     )
+                   )
+                   
+                   ## WeightOffset ----
+                   callModule(
+                     fruitsMatrix,
+                     "weightOffset",
+                     values = values,
+                     events = events,
+                     meanId = "weightOffset",
+                     sdId = "weightOffsetUncert",
+                     row = "targetNames",
+                     col = "offsetNames",
+                     fixedCols = "Offset"
+                   )
+                   
+                   ## TargetValuesCovariates - callModule fruitsMatrix ----
+                   observeEvent(modelType(), {
+                     logDebug("Entering observeEvent(modelType())")
+                     values$modelType <- modelType()
+                     
+                     if (modelType() == "1" & input$targetValuesShowCovariates) {
+                       updateCheckboxInput(session, "targetValuesShowCovariates", value = FALSE)
+                     }
+                   })
+                   
+                   observeEvent(values$targetValuesShowCovariates, {
+                     logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
+                     updateCheckboxInput(session,
+                                         "targetValuesShowCovariates",
+                                         value = values$targetValuesShowCovariates
+                     )
+                   })
+                   
+                   observeEvent(input$targetValuesShowCovariates, {
+                     logDebug("Entering observeEvent(input$targetValuesShowCovariates)")
+                     if (!identical(
+                       input$targetValuesShowCovariates,
+                       values$targetValuesShowCovariates
+                     )) {
+                       values$targetValuesShowCovariates <-
+                         input$targetValuesShowCovariates
+                     }
+                     if (input$targetValuesShowCovariates == TRUE &
+                         modelType() == "1") {
+                       values$modelType <- "2"
+                     }
+                   })
+                   
+                   callModule(
+                     fruitsMatrix,
+                     "targetValuesCovariates",
+                     values = values,
+                     events = events,
+                     meanId = "targetValuesCovariates",
+                     row = "obsvnNames",
+                     col = "covariateNames",
+                     class = "character"
+                   )
+                 })
+  }
+
+
 #' Components UI
 #'
 #' UI of the data - components
@@ -24,9 +200,6 @@ componentsUI <- function(id, title = NULL) {
 #' @param id id of module
 #' @param values values
 #' @param events events
-#' @param hideTargetFilter hideTargetFilter
-#' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
-#' @param sourceObsvnFilterHide sourceObsvnFilterHide
 componentsServer <-
   function(id,
            values,
@@ -47,7 +220,6 @@ componentsServer <-
                    )
                  })
   }
-
 
 
 #' Sources UI

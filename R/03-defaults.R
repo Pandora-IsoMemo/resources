@@ -49,6 +49,7 @@ defaultValues <- function() {
     obsvnError = list(
       default = emptyMatrix("Individual_1", "proxy_1")
     ),
+    targetValuesShowCovariates = TRUE,
     targetValuesCovariates = emptyMatrix("Individual_1", "covariate"),
     targetValuesCovariance = list(),
     obsvnNames = "Individual_1",

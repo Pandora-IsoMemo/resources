@@ -12,12 +12,6 @@ componentsServer(id, values, events)
 \item{values}{values}
 
 \item{events}{events}
-
-\item{hideTargetFilter}{hideTargetFilter}
-
-\item{sourceObsvnFilterChoices}{sourceObsvnFilterChoices}
-
-\item{sourceObsvnFilterHide}{sourceObsvnFilterHide}
 }
 \description{
 Server function of the data - components

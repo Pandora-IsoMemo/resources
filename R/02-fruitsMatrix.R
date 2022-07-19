@@ -1184,6 +1184,31 @@ fruitsMatrix <- function(input, output, session,
   })
 }
 
+
+emptyMatrix <-
+  function(rownames = NULL,
+           colnames = NULL,
+           nrow = length(rownames),
+           ncol = length(colnames)) {
+    m <- matrix(NA, nrow, ncol)
+    rownames(m) <- rownames
+    colnames(m) <- colnames
+    m
+  }
+
+emptyMatrix2 <-
+  function(rownames = NULL,
+           colnames = NULL,
+           nrow = length(rownames),
+           ncol = 2 * length(colnames)) {
+    m <- matrix(NA, nrow, ncol)
+    rownames(m) <- rownames
+    colnames(m) <-
+      paste(rep(colnames, each = 2), "||", c("mean", "uncert"), sep = "")
+    m
+  }
+
+
 isEmpty <- function(x) {
   is.null(x) | is.na(x) | trimws(x) == ""
 }

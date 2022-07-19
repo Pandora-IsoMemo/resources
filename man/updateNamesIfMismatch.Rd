@@ -4,12 +4,14 @@
 \alias{updateNamesIfMismatch}
 \title{Update Names If Mismatch}
 \usage{
-updateNamesIfMismatch(values, entryName)
+updateNamesIfMismatch(values, entryName, targetNames)
 }
 \arguments{
 \item{values}{(list) with all data and model options}
 
 \item{entryName}{(character) name of values element}
+
+\item{targetNames}{(reactive) character vector of targetNames}
 }
 \description{
 Update term names of entries such that they match to new targetNames
