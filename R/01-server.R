@@ -224,26 +224,14 @@ fruitsTab <- function(input,
   })
   
   ## Data options ----
-  targetValuesServer("targetVals",
-                     values = values,
-                     events = events,
-                     termChoices = termChoices,
-                     modelType = reactive(input$modelType))
-  
-  # observeEvent(input$adaptiveNames, {
-  #   logDebug("Entering observeEvent(input$adaptiveNames)")
-  #   events$adaptive <- input$adaptiveNames
-  # })
-  
-  ## -- from IsoMemo
-  observeEvent(isoMemoData()$event, {
-    logDebug("Entering observeEvent(isoMemoData()$event)")
-    events$isoMemo <- isoMemoData()$data
+  termChoices <- reactive({
+    c(
+      "Default term" = "default",
+      "Add term 1" = "term1",
+      "Add term 2" = "term2",
+      "Add term 3" = "term3"
+    )
   })
-  
-  componentsServer("components",
-                   values = values,
-                   events = events)
   
   sourceObsvnFilterChoices <- reactive({
     if (baselineModel()) {
@@ -252,6 +240,23 @@ fruitsTab <- function(input,
       NA
     }
   })
+  
+  # observeEvent(input$adaptiveNames, {
+  #   logDebug("Entering observeEvent(input$adaptiveNames)")
+  #   events$adaptive <- input$adaptiveNames
+  # })
+  
+  targetValuesServer("targetVals",
+                     values = values,
+                     events = events,
+                     termChoices = termChoices,
+                     modelType = reactive(input$modelType))
+  
+  componentsServer("components",
+                   values = values,
+                   events = events)
+  
+  
   
   sourcesServer("sources",
                 values = values,
@@ -268,6 +273,12 @@ fruitsTab <- function(input,
                        hideTargetFilter = reactive(!input$modelWeights),
                        sourceObsvnFilterChoices = sourceObsvnFilterChoices,
                        sourceObsvnFilterHide = reactive(!baselineModel()))
+  
+  ## -- from IsoMemo
+  observeEvent(isoMemoData()$event, {
+    logDebug("Entering observeEvent(isoMemoData()$event)")
+    events$isoMemo <- isoMemoData()$data
+  })
   
   ## MySql table contents ----
   callModule(dbContentSelect, "popUpTables")
@@ -645,15 +656,6 @@ fruitsTab <- function(input,
     if (!identical(input$nchains, values$nchains)) {
       values$nchains <- input$nchains
     }
-  })
-  
-  termChoices <- reactive({
-    c(
-      "Default term" = "default",
-      "Add term 1" = "term1",
-      "Add term 2" = "term2",
-      "Add term 3" = "term3"
-    )
   })
 
   ## File Notes
