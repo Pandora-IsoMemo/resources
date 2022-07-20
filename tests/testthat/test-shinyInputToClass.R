@@ -1,4 +1,4 @@
-test_that("test blackBearData with default inputs", {
+test_that("test shinyInputToClass - blackBearData with default inputs", {
   testData <-
     readRDS(testthat::test_path("blackBearData_default.rds"))
   
@@ -74,7 +74,7 @@ test_that("test blackBearData with default inputs", {
   
 })
 
-test_that("test brownBearData with default inputs", {
+test_that("test shinyInputToClass - brownBearData with default inputs", {
   testData <-
     readRDS(testthat::test_path("brownBearData_default.rds"))
   
