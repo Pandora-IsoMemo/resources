@@ -3,6 +3,9 @@
 compileTestModels <- function(testData, testModelTypes, priors = NULL, userEstimates = NULL) {
   testResultsVec <- list()
   
+  # new column added: values[["optimalPrior"]], default value == TRUE
+  testData$optimalPrior <- TRUE
+  
   for (i in 1:length(testModelTypes)) {
     typeName <- names(testModelTypes)[i]
     

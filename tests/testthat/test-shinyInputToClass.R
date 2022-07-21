@@ -2,6 +2,9 @@ test_that("test shinyInputToClass - blackBearData with default inputs", {
   testData <-
     readRDS(testthat::test_path("blackBearData_default.rds"))
   
+  # new column added: values[["optimalPrior"]], default value == TRUE
+  testData$optimalPrior <- TRUE
+  
   resObject <- shinyInputToClass(testData,
                                  as.list(NULL),
                                  as.list(NULL))
@@ -14,8 +17,14 @@ test_that("test shinyInputToClass - blackBearData with default inputs", {
   expect_identical(resObject$data[["concentrationUncert"]][1:3], c(4.2, 2.6, 4.4))
   expect_identical(resObject$data[["source"]][1:3], c(-21.939, -16.943, -21.939))
   expect_identical(resObject$data[["sourceUncert"]][1:3], c(0.94608, 0.78144, 0.94608))
-  expect_identical(resObject$data[["covariates"]][1:3], c("", NA, NA))
-  expect_identical(resObject$data[["sourceDirichPrior"]][1:3], c(1L, 1L, NA))
+  expect_identical(resObject$data[["covariates"]],
+                   structure(
+                     "",
+                     dim = c(1L, 1L),
+                     dimnames = list("Individual_1",
+                                     "Covariate_1")
+                   ))
+  expect_identical(resObject$data[["sourceDirichPrior"]], c(0.4, 0.4)) # if optimalPrior == TRUE
   
   expect_identical(resObject$priors, list())
   
@@ -78,20 +87,43 @@ test_that("test shinyInputToClass - brownBearData with default inputs", {
   testData <-
     readRDS(testthat::test_path("brownBearData_default.rds"))
   
+  # new column added: values[["optimalPrior"]], default value == TRUE
+  testData$optimalPrior <- TRUE
+  
   resObject <- shinyInputToClass(testData,
                                  as.list(NULL),
                                  as.list(NULL))
   
   expect_identical(resObject$data[["obsvn"]][1:3], c(-22.3, -23.1, -21.5))
   expect_identical(resObject$data[["obsvnError"]][1:3], c(1, 1, 1))
-  expect_identical(resObject$data[["weights"]][1:3], c(100, NA, NA))
-  expect_identical(resObject$data[["weightsUncert"]][1:3], c(0, NA, NA))
-  expect_identical(resObject$data[["concentration"]][1:3], NULL)
-  expect_identical(resObject$data[["concentrationUncert"]][1:3], NULL)
-  expect_identical(resObject$data[["source"]][1:3], c(-25.798, -10.714, NA))
-  expect_identical(resObject$data[["sourceUncert"]][1:3], c(2.2247, 1.0367, NA))
+  expect_identical(resObject$data[["weights"]],
+                   structure(
+                     100,
+                     dim = c(1L, 1L),
+                     dimnames = list("d13C", "d13C")
+                   ))
+  expect_identical(resObject$data[["weightsUncert"]],
+                   structure(
+                     0,
+                     dim = c(1L, 1L),
+                     dimnames = list("d13C", "d13C")
+                   ))
+  expect_identical(resObject$data[["concentration"]], NULL)
+  expect_identical(resObject$data[["concentrationUncert"]], NULL)
+  expect_identical(resObject$data[["source"]],
+                   structure(
+                     c(-25.798, -10.714),
+                     dim = c(2L, 1L, 1L),
+                     dimnames = list(c("C3", "Corn"), "d13C", "d13C")
+                   ))
+  expect_identical(resObject$data[["sourceUncert"]],
+                   structure(
+                     c(2.2247, 1.0367),
+                     dim = c(2L, 1L, 1L),
+                     dimnames = list(c("C3", "Corn"), "d13C", "d13C")
+                   ))
   expect_identical(resObject$data[["covariates"]][1:3], c("f", "f", "f"))
-  expect_identical(resObject$data[["sourceDirichPrior"]][1:3], c(1, 1, NA))
+  expect_identical(resObject$data[["sourceDirichPrior"]], c(0.4, 0.4)) # if optimalPrior == TRUE
   
   expect_identical(resObject$priors, list())
   
