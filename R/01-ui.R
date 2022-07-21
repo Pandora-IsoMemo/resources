@@ -14,7 +14,7 @@ fruitsUI <- function(id, title = "FRUITS") {
     fluidRow(
       # Left sidebar ----
       sidebarPanel(
-        style = "position:fixed; width:15%; overflow-y:auto; max-height:900px",
+        style = "position:fixed; width:15%; overflow-y:scroll; max-height:700px",
         width = 2,
         uploadModelUI(ns("modelUpload")),
         downloadModelUI(ns("modelDownload"), NULL),
@@ -63,153 +63,19 @@ fruitsUI <- function(id, title = "FRUITS") {
             "Data",
             tabPanel(
               "Target & target-to-source offsets",
-              fruitsMatrixFilter(
-                scope = ns("targetValues"),
-                id = "term",
-                label = "Term"
-              ),
-              fruitsMatrixDistribution(scope = ns("targetValues")),
-              fruitsMatrixInput(ns("targetValues"), "obsvnNames", "targetNames"),
-              checkboxInput(ns("targetOffset"), "Include target offset",
-                            value = TRUE
-              ),
-              conditionalPanel(
-                condition = "input.targetOffset == true",
-                fruitsMatrixInput(
-                  ns("weightOffset"),
-                  "targetNames",
-                  "offsetNames",
-                  fixedCols = "Offset"
-                ),
-                ns = ns
-              ),
-              checkboxInput(ns("targetValuesShowCovariates"), "Enter Covariates"),
-              conditionalPanel(
-                condition = "input.targetValuesShowCovariates == true",
-                ns = ns,
-                fruitsMatrixInput(
-                  ns("targetValuesCovariates"),
-                  "obsvnNames",
-                  "covariateNames",
-                  double = FALSE,
-                  class = "character"
-                )
-              ),
-              fruitsMatrixFilter(
-                scope = ns("targetValues"),
-                id = "obsvn",
-                label = "Observation - Target Covariance Matrix"
-              ),
-              fruitsMatrixInput(
-                scope = ns("targetValues"),
-                row = "targetNames",
-                col = "targetNames",
-                cov = TRUE
-              ),
-              checkboxInput(
-                ns("targetValuesShowCoordinates"),
-                "Coordinates & chronology"
-              ),
-              conditionalPanel(
-                condition = "input.targetValuesShowCoordinates == true",
-                ns = ns,
-                fruitsMatrixInput(
-                  ns("exportCoordinates"),
-                  "obsvnNames",
-                  "coordinateNames",
-                  double = FALSE,
-                  fixedCols = c(
-                    "longitude",
-                    "latitude",
-                    "LowerLimit/Mean/Point",
-                    "UpperLimit/SD"
-                  )
-                ),
-                tags$br()
-              )
+              targetValuesUI(ns("targetVals"), title = "Target & target-to-source offsets")
             ),
-            ### Data/Weights ----
             tabPanel(
               "Components",
-              fruitsMatrixDistribution(
-                scope = ns("weights"),
-                choices = c("constant", "normal", "log-normal")
-              ),
-              fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
+              componentsUI(ns("components"), title = "Components")
             ),
-            ### Data/Sources ----
             tabPanel(
               "Sources",
-              div(
-                fruitsMatrixFilter(
-                  scope = ns("source"),
-                  id = "obsvn",
-                  label = "Observation"
-                )
-              ),
-              fruitsMatrixFilter(
-                scope = ns("source"),
-                id = "term",
-                label = "Term"
-              ),
-              fruitsMatrixDistribution(scope = ns("source")),
-              div(fruitsMatrixFilter(
-                scope = ns("source"),
-                id = "target",
-                label = "Proxy"
-              )),
-              fruitsMatrixInput(
-                scope = ns("source"),
-                row = "sourceNames",
-                col = "targetNames"
-              ),
-              checkboxInput(
-                ns("includeSourceOffset"),
-                "Include source specific offsets",
-                value = FALSE
-              ),
-              conditionalPanel(
-                condition = "input.includeSourceOffset == true",
-                ns = ns,
-                fruitsMatrixFilter(
-                  scope = ns("sourceOffset"),
-                  id = "obsvn",
-                  label = "Observation"
-                ),
-                fruitsMatrixFilter(
-                  scope = ns("sourceOffset"),
-                  id = "target",
-                  label = "Proxy"
-                ),
-                fruitsMatrixInput(ns("sourceOffset"), row = "sourceNames", col = "targetNames")
-              ),
-              fruitsMatrixInput(
-                ns("source"),
-                row = "sourceNames",
-                col = "sourceNames",
-                cov = TRUE,
-                toggleCov = TRUE
-              )
+              sourcesUI(ns("sources"), title = "Sources")
             ),
-            ### Data/Concentrations ----
             tabPanel(
               "Concentrations",
-              div(
-                fruitsMatrixFilter(
-                  scope = ns("concentration"),
-                  id = "obsvn",
-                  label = "Observation"
-                )
-              ),
-              fruitsMatrixDistribution(scope = ns("concentration")),
-              fruitsMatrixInput(ns("concentration"), row = "sourceNames", col = "targetNames"),
-              fruitsMatrixInput(
-                ns("concentration"),
-                row = "targetNames",
-                col = "targetNames",
-                cov = TRUE,
-                toggleCov = TRUE
-              )
+              concentrationsUI(ns("concentration"), title = "Concentrations")
             )
           ),
           ## Model options ----
@@ -1267,26 +1133,3 @@ fruitsUI <- function(id, title = "FRUITS") {
     )
   )
 }
-
-emptyMatrix <-
-  function(rownames = NULL,
-           colnames = NULL,
-           nrow = length(rownames),
-           ncol = length(colnames)) {
-    m <- matrix(NA, nrow, ncol)
-    rownames(m) <- rownames
-    colnames(m) <- colnames
-    m
-  }
-
-emptyMatrix2 <-
-  function(rownames = NULL,
-           colnames = NULL,
-           nrow = length(rownames),
-           ncol = 2 * length(colnames)) {
-    m <- matrix(NA, nrow, ncol)
-    rownames(m) <- rownames
-    colnames(m) <-
-      paste(rep(colnames, each = 2), "||", c("mean", "uncert"), sep = "")
-    m
-  }

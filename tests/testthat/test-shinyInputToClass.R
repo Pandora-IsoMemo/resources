@@ -25,7 +25,7 @@ test_that("test shinyInputToClass - blackBearData with default inputs", {
                                      "Covariate_1")
                    ))
   expect_identical(resObject$data[["sourceDirichPrior"]], c(0.4, 0.4)) # if optimalPrior == TRUE
-  
+
   expect_identical(resObject$priors, list())
   
   expect_identical(resObject$modelOptions[["modelType"]], "2")
@@ -124,7 +124,7 @@ test_that("test shinyInputToClass - brownBearData with default inputs", {
                    ))
   expect_identical(resObject$data[["covariates"]][1:3], c("f", "f", "f"))
   expect_identical(resObject$data[["sourceDirichPrior"]], c(0.4, 0.4)) # if optimalPrior == TRUE
-  
+
   expect_identical(resObject$priors, list())
   
   expect_identical(resObject$modelOptions[["modelType"]], "2")
