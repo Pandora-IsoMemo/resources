@@ -12,5 +12,5 @@ targetValuesUI(id, title = NULL)
 \item{title}{(character) title of module}
 }
 \description{
-UI of the data - target values
+UI of the data - target values tab
 }

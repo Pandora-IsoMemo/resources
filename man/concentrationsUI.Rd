@@ -12,5 +12,5 @@ concentrationsUI(id, title = NULL)
 \item{title}{(character) title of module}
 }
 \description{
-UI of the data - concentrations
+UI of the data - concentrations tab
 }

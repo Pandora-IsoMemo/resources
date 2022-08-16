@@ -1,6 +1,6 @@
 #' Target Values UI
 #'
-#' UI of the data - target values
+#' UI of the data - target values tab
 #'
 #' @param id id of module
 #' @param title (character) title of module
@@ -128,27 +128,6 @@ targetValuesServer <-
                      fixedCols = "Offset"
                    )
                    
-                   ## TargetValuesCovariates - callModule fruitsMatrix ----
-                   callModule(
-                     fruitsMatrix,
-                     "targetValuesCovariates",
-                     values = values,
-                     events = events,
-                     meanId = "targetValuesCovariates",
-                     row = "obsvnNames",
-                     col = "covariateNames",
-                     class = "character"
-                   )
-                   
-                   observeEvent(modelType(), {
-                     logDebug("Entering observeEvent(modelType())")
-                     values$modelType <- modelType()
-                     
-                     if (modelType() == "1" & (input$targetValuesShowCovariates == TRUE)) {
-                       updateCheckboxInput(session, "targetValuesShowCovariates", value = FALSE)
-                     }
-                   })
-                   
                    observeEvent(values$targetValuesShowCovariates, {
                      logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
                      updateCheckboxInput(session,
@@ -171,13 +150,36 @@ targetValuesServer <-
                        values$modelType <- "2"
                      }
                    })
+                   
+                   ## TargetValuesCovariates - callModule fruitsMatrix ----
+                   callModule(
+                     fruitsMatrix,
+                     "targetValuesCovariates",
+                     values = values,
+                     events = events,
+                     meanId = "targetValuesCovariates",
+                     row = "obsvnNames",
+                     col = "covariateNames",
+                     class = "character"
+                   )
+                   
+                   observeEvent(modelType(), {
+                     logDebug("Entering observeEvent(modelType())")
+                     values$modelType <- modelType()
+                     
+                     if (modelType() == "1" & (input$targetValuesShowCovariates == TRUE)) {
+                       updateCheckboxInput(session, "targetValuesShowCovariates", value = FALSE)
+                     }
+                   })
+                   
+                   
                  })
   }
 
 
 #' Components UI
 #'
-#' UI of the data - components
+#' UI of the data - components tab
 #'
 #' @param id id of module
 #' @param title (character) title of module
@@ -225,7 +227,7 @@ componentsServer <-
 
 #' Sources UI
 #'
-#' UI of the data - sources
+#' UI of the data - sources tab
 #'
 #' @param id id of module
 #' @param title (character) title of module
@@ -423,7 +425,7 @@ sourcesServer <-
 
 #' Concentrations UI
 #'
-#' UI of the data - concentrations
+#' UI of the data - concentrations tab
 #'
 #' @param id id of module
 #' @param title (character) title of module

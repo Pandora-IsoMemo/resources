@@ -12,5 +12,5 @@ sourcesUI(id, title = NULL)
 \item{title}{(character) title of module}
 }
 \description{
-UI of the data - sources
+UI of the data - sources tab
 }

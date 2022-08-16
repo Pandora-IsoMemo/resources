@@ -12,5 +12,5 @@ componentsUI(id, title = NULL)
 \item{title}{(character) title of module}
 }
 \description{
-UI of the data - components
+UI of the data - components tab
 }

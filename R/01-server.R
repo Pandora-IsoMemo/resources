@@ -252,11 +252,13 @@ fruitsTab <- function(input,
                      termChoices = termChoices,
                      modelType = reactive(input$modelType))
   
+  output$targetValuesShowCovariates <- eventReactive(values$targetValuesShowCovariates,
+                                                     values$targetValuesShowCovariates)
+  outputOptions(output, "targetValuesShowCovariates", suspendWhenHidden = FALSE)
+  
   componentsServer("components",
                    values = values,
                    events = events)
-  
-  
   
   sourcesServer("sources",
                 values = values,

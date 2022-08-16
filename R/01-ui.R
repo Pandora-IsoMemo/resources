@@ -301,7 +301,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     )
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true & input.covariateType !== '0'",
+                    condition = "output.targetValuesShowCovariates == true & input.covariateType !== '0'",
                     ns = ns,
                     selectInput(
                       ns("priorHierarchicalValues"),
@@ -368,7 +368,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorProxyHierarchicalValues"),
@@ -381,7 +381,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorConsumerHierarchicalValues"),
@@ -395,7 +395,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                   ),
                   
                   conditionalPanel(
-                    condition = "input.modelConcentrations == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelConcentrations == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorConcentrationHierarchicalValues"),
@@ -408,7 +408,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.modelWeights == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelWeights == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorWeightHierarchicalValues"),
@@ -536,7 +536,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     selectInput(
                       ns("userEstimateHierarchicalValues"),
                       "Source contribution categories",
@@ -592,7 +592,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateProxyHierarchicalValues"),
@@ -605,7 +605,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateConsumerHierarchicalValues"),
@@ -619,7 +619,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                   ),
                   
                   conditionalPanel(
-                    condition = "input.modelConcentrations == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelConcentrations == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateConcentrationHierarchicalValues"),
@@ -632,7 +632,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.modelWeights == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelWeights == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateWeightHierarchicalValues"),
@@ -725,7 +725,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     multiple = TRUE
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     ns = ns,
                     pickerInput(
                       ns("characteristicsCovariatesTarget"),
@@ -774,7 +774,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     checkboxInput(ns("showTargetNames"), label = "Show target names", value = TRUE)
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     ns = ns,
                     pickerInput(
                       ns("characteristicsCovariates"),
@@ -822,7 +822,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     )
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     ns = ns,
                     pickerInput(
                       ns("characteristicsCovariatesMix"),
@@ -1091,7 +1091,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                   selectInput(ns("exportUserEstimates"), "UserEstimates", choices = NULL)
                 ),
                 conditionalPanel(
-                  condition = "input.targetValuesShowCovariates == true",
+                  condition = "output.targetValuesShowCovariates == true",
                   ns = ns,
                   checkboxInput(
                     inputId = ns("useSite"),
