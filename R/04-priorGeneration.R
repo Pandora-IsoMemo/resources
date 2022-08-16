@@ -734,11 +734,11 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
       
       if (length(na.omit(priorDistributions)) >= 1) {
         priorDist <- priorDist[which(!duplicated(priorList2))]
-        priorList <- c(priorList, priorDist)
+        priorList <- c(priorList, na.omit(priorDist))
       }
       if (length(na.omit(priorUncertainties)) == 1) {
         priorDistUnc <- priorDistUnc[which(!duplicated(priorList2))]
-        priorList <- c(priorList, priorDistUnc)
+        priorList <- c(priorList, na.omit(priorDistUnc))
       }
     } else {
       priorList2 <- lapply(1:length(priorList), function(y) strsplit(priorList[[y]], "<-")[[1]][2])

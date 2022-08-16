@@ -56,7 +56,7 @@ outputPlotUI <- function(id) {
         label = "Select plot type:",
         choices = c(
           "BoxPlot", "KernelDensity",
-          "Histogram"
+          "Histogram", "Line"
         )
       ),
       checkboxInput(
@@ -197,6 +197,11 @@ outputPlot <- function(input, output, session, model, values) {
         input$`exportData-bins` == TRUE) {
       binSize <- input$`exportData-binSize`
     }
+    if(input$groupType %in% colnames(model()$fruitsObj$data$covariatesNum)){
+      numCov <- TRUE
+    } else {
+      numCov <- FALSE
+    }
     list(
       fruitsObj = model()$fruitsObj$data,
       modelResults = values$modelResultSummary,
@@ -223,7 +228,8 @@ outputPlot <- function(input, output, session, model, values) {
       pointDat = na.omit(pointDat()),
       fontFamily = input$fontFamily,
       boxQuantile = input$boxQuantile,
-      whiskerMultiplier = input$whiskerMultiplier
+      whiskerMultiplier = input$whiskerMultiplier,
+      numCov = numCov
     )
   }) %>% debounce(100)
   
@@ -266,7 +272,6 @@ outputPlot <- function(input, output, session, model, values) {
   
   observe({
     groupTypChoices <- c("Estimate")
-    
     if (!is.null(model()) &&
         model()$fruitsObj$modelOptions$modelType != "1") {
       groupTypChoices <- c(groupTypChoices, "Target")
@@ -276,6 +281,12 @@ outputPlot <- function(input, output, session, model, values) {
             groupTypChoices,
             colnames(model()$fruitsObj$data$covariates)
           )
+        groupTypChoices <-
+          c(
+            groupTypChoices,
+            colnames(model()$fruitsObj$data$covariatesNum)
+          )
+        
         if (NCOL(model()$fruitsObj$data$covariates) > 1) {
           groupTypChoices <- c(groupTypChoices, "covariateInteraction")
         }

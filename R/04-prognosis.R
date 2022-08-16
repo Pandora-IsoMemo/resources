@@ -116,8 +116,8 @@ getSourceCorr <- function(simSources, corr = FALSE) {
 
   means <- signif(t(bind_rows(lapply(simSources, colMeans))), 3)
   sds <- signif(t(bind_rows(lapply(simSources, function(x) apply(x, 2, sd)))), 3)
-  colnames(means) <- colnames(simSources[[1]])
-  colnames(sds) <- colnames(simSources[[1]])
+  colnames(means) <- names(simSources)
+  colnames(sds) <- names(simSources)
   output$mean <- means
   output$sd <- sds
   return(output)
