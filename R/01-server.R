@@ -256,6 +256,10 @@ fruitsTab <- function(input,
                                                      values$targetValuesShowCovariates)
   outputOptions(output, "targetValuesShowCovariates", suspendWhenHidden = FALSE)
   
+  output$targetValuesShowCoordinates <- eventReactive(values$targetValuesShowCoordinates,
+                                                     values$targetValuesShowCoordinates)
+  outputOptions(output, "targetValuesShowCoordinates", suspendWhenHidden = FALSE)
+  
   componentsServer("components",
                    values = values,
                    events = events)
@@ -1831,31 +1835,7 @@ fruitsTab <- function(input,
     }
   })
   
-  ## Target Values
-  observeEvent(values$targetValuesShowCoordinates, {
-    logDebug("Entering observeEvent(values$targetValuesShowCoordinates)")
-    updateCheckboxInput(session,
-                        "targetValuesShowCoordinates",
-                        value = values$targetValuesShowCoordinates
-    )
-  })
   
-  ## ExportCoordinates - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "exportCoordinates",
-    values = values,
-    events = events,
-    meanId = "exportCoordinates",
-    row = "obsvnNames",
-    col = "coordinatesNames",
-    fixedCols = c(
-      "longitude",
-      "latitude",
-      "LowerLimit/Mean/Point",
-      "UpperLimit/SD"
-    )
-  )
   
   exportData <- reactive({
     data <- as.data.frame(values$exportCoordinates)

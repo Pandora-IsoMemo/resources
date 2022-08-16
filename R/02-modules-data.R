@@ -172,6 +172,41 @@ targetValuesServer <-
                      }
                    })
                    
+                   observeEvent(values$targetValuesShowCoordinates, {
+                     logDebug("Entering observeEvent(values$targetValuesShowCoordinates)")
+                     updateCheckboxInput(session,
+                                         "targetValuesShowCoordinates",
+                                         value = values$targetValuesShowCoordinates
+                     )
+                   })
+                   
+                   observeEvent(input$targetValuesShowCoordinates, {
+                     logDebug("Entering observeEvent(input$targetValuesShowCoordinates)")
+                     if (!identical(
+                       input$targetValuesShowCoordinates,
+                       values$targetValuesShowCoordinates
+                     )) {
+                       values$targetValuesShowCoordinates <-
+                         input$targetValuesShowCoordinates
+                     }
+                   })
+                   
+                   ## ExportCoordinates - callModule fruitsMatrix ----
+                   callModule(
+                     fruitsMatrix,
+                     "exportCoordinates",
+                     values = values,
+                     events = events,
+                     meanId = "exportCoordinates",
+                     row = "obsvnNames",
+                     col = "coordinatesNames",
+                     fixedCols = c(
+                       "longitude",
+                       "latitude",
+                       "LowerLimit/Mean/Point",
+                       "UpperLimit/SD"
+                     )
+                   )
                    
                  })
   }

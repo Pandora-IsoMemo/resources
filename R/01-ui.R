@@ -1045,14 +1045,14 @@ fruitsUI <- function(id, title = "FRUITS") {
               "Export Output to IsoMemo-App",
               value = "isomemo",
               conditionalPanel(
-                condition = "input.targetValuesShowCoordinates == false",
+                condition = "output.targetValuesShowCoordinates == false",
                 ns = ns,
                 tags$h5(
                   "Please add coordinates in the data - Target Values tab to export results to the IsoMemo App"
                 )
               ),
               conditionalPanel(
-                condition = "input.targetValuesShowCoordinates == true",
+                condition = "output.targetValuesShowCoordinates == true",
                 ns = ns,
                 radioButtons(
                   ns("exportType"),
