@@ -8,8 +8,12 @@ fruitsTab(
   input,
   output,
   session,
-  isoMemoData = function() {     list(data = NULL, event = NULL) },
-  isoDataExport = function() {     list(data = NULL, event = NULL) }
+  isoMemoData = function() {
+     list(data = NULL, event = NULL)
+ },
+  isoDataExport = function() {
+     list(data = NULL, event = NULL)
+ }
 )
 }
 \arguments{

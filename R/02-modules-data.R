@@ -144,7 +144,7 @@ targetValuesServer <-
                      logDebug("Entering observeEvent(modelType())")
                      values$modelType <- modelType()
                      
-                     if (modelType() == "1" & input$targetValuesShowCovariates) {
+                     if (modelType() == "1" & (input$targetValuesShowCovariates == TRUE)) {
                        updateCheckboxInput(session, "targetValuesShowCovariates", value = FALSE)
                      }
                    })
@@ -294,7 +294,6 @@ sourcesUI <- function(id, title = NULL) {
 #' @param id id of module
 #' @param values values
 #' @param events events
-#' @param withComponents (reactive) logical, TRUE if include components
 #' @param hideTargetFilter (reactive) logical, hideTargetFilter
 #' @param termChoices termChoices
 #' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
@@ -303,7 +302,6 @@ sourcesServer <-
   function(id,
            values,
            events,
-           withComponents,
            hideTargetFilter,
            termChoices,
            sourceObsvnFilterChoices,
@@ -314,7 +312,7 @@ sourcesServer <-
                    ns <- session$ns
                    
                    sourceCovNames <- reactive({
-                     if (withComponents()) {
+                     if (!hideTargetFilter()) {
                        apply(expand.grid(values$fractionNames, values$targetNames),
                              1,
                              paste,

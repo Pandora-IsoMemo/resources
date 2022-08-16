@@ -30,6 +30,7 @@
 #'  renderCachedPlot renderPlot renderPrint renderTable renderUI 
 #'  req runApp selectInput selectizeInput setProgress showModal showTab sidebarLayout sidebarPanel 
 #'  singleton sliderInput span tableOutput tabPanel tabsetPanel tagAppendAttributes tagList tags 
+#'  testServer
 #'  textAreaInput textInput textOutput uiOutput updateCheckboxInput updateNumericInput
 #'  updateRadioButtons updateSelectInput updateSelectizeInput updateTextAreaInput updateTextInput
 #'  validate withProgress

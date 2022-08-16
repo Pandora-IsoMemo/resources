@@ -8,7 +8,6 @@ sourcesServer(
   id,
   values,
   events,
-  withComponents,
   hideTargetFilter,
   termChoices,
   sourceObsvnFilterChoices,
@@ -21,8 +20,6 @@ sourcesServer(
 \item{values}{values}
 
 \item{events}{events}
-
-\item{withComponents}{(reactive) logical, TRUE if include components}
 
 \item{hideTargetFilter}{(reactive) logical, hideTargetFilter}
 
