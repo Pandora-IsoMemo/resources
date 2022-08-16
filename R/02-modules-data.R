@@ -115,6 +115,20 @@ targetValuesServer <-
                      )
                    )
                    
+                   observeEvent(values$targetOffset, {
+                     logDebug("Entering observeEvent(values$targetOffset)")
+                     updateCheckboxInput(session, "targetOffset",
+                                         value = values$targetOffset
+                     )
+                   })
+                   
+                   observeEvent(input$targetOffset, {
+                     logDebug("Entering observeEvent(input$targetOffset)")
+                     if (!identical(input$targetOffset, values$targetOffset)) {
+                       values$targetOffset <- input$targetOffset
+                     }
+                   })
+                   
                    ## WeightOffset - callModule fruitsMatrix ----
                    callModule(
                      fruitsMatrix,

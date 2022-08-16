@@ -252,12 +252,16 @@ fruitsTab <- function(input,
                      termChoices = termChoices,
                      modelType = reactive(input$modelType))
   
+  output$targetOffset <- eventReactive(values$targetOffset,
+                                       values$targetOffset)
+  outputOptions(output, "targetOffset", suspendWhenHidden = FALSE)
+  
   output$targetValuesShowCovariates <- eventReactive(values$targetValuesShowCovariates,
                                                      values$targetValuesShowCovariates)
   outputOptions(output, "targetValuesShowCovariates", suspendWhenHidden = FALSE)
   
   output$targetValuesShowCoordinates <- eventReactive(values$targetValuesShowCoordinates,
-                                                     values$targetValuesShowCoordinates)
+                                                      values$targetValuesShowCoordinates)
   outputOptions(output, "targetValuesShowCoordinates", suspendWhenHidden = FALSE)
   
   componentsServer("components",
@@ -391,20 +395,6 @@ fruitsTab <- function(input,
     updateRadioButtons(session, "modelType",
                        selected = selected
     )
-  })
-  
-  observeEvent(values$targetOffset, {
-    logDebug("Entering observeEvent(values$targetOffset)")
-    updateCheckboxInput(session, "targetOffset",
-                        value = values$targetOffset
-    )
-  })
-  
-  observeEvent(input$targetOffset, {
-    logDebug("Entering observeEvent(input$targetOffset)")
-    if (!identical(input$targetOffset, values$targetOffset)) {
-      values$targetOffset <- input$targetOffset
-    }
   })
   
   observeEvent(values$includeSourceOffset, {

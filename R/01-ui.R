@@ -277,7 +277,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetOffset == true",
+                    condition = "output.targetOffset == true",
                     selectInput(
                       ns("priorOffset"),
                       "Target-to-source offsets",
@@ -512,7 +512,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetOffset == true",
+                    condition = "output.targetOffset == true",
                     selectInput(
                       ns("userEstimateOffset"),
                       "Target-to-source offsets",
