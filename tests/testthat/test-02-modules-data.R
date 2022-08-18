@@ -23,7 +23,7 @@ test_that("Test module targetValuesServer", {
   # test targetValuesServer ----
   testServer(targetValuesServer,
              args = list(
-               values = do.call(reactiveValues, testValues),
+               values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
                termChoices = reactive(c(
                  `Default term` = "default",
@@ -42,8 +42,8 @@ test_that("Test module targetValuesServer", {
                  targetValuesShowCovariates = FALSE,
                  targetValuesShowCoordinates = FALSE
                )
-               expect_true(setequal(names(reactiveValuesToList(values)), names(testValues)))
-               expect_identical(reactiveValuesToList(values), testValues[names(reactiveValuesToList(values))])
+               expect_true(setequal(names(reactiveValuesToList(values)), names(testData)))
+               expect_identical(reactiveValuesToList(values), testData[names(reactiveValuesToList(values))])
              })
   
   
