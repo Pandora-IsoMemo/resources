@@ -385,8 +385,8 @@ fruitsTab <- function(input,
   observeEvent(values$targetValuesShowCovariates, {
     logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
     
-    if (values$targetValuesShowCovariates &
-        !is.null(input$modelType) & input$modelType == "1") {
+    if (values$targetValuesShowCovariates &&
+        !is.null(input$modelType) && input$modelType == "1") {
       selected <- "2"
     } else {
       selected <- input$modelType
@@ -677,7 +677,6 @@ fruitsTab <- function(input,
   
   observeEvent(input$minUnc, {
     logDebug("Entering observeEvent(input$minUnc)")
-    updateNumericInput(session, "Unc", value = input$minUnc)
     values$minUnc <- input$minUnc
   })
   

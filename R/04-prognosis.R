@@ -288,9 +288,9 @@ sourceTargetPlot <- function(simSources = NULL,
                              showPoints = FALSE,
                              hull = "convex hull",
                              alpha = 0.1) {
-  if ((is.null(simSources) | all(is.na(simSources))) &
-    (is.null(targetValues) | all(is.na(targetValues))) &
-    (is.null(concentrationValues) | all(is.na(concentrationValues)))) {
+  if ((is.null(simSources) || all(is.na(simSources))) &
+    (is.null(targetValues) || all(is.na(targetValues))) &
+    (is.null(concentrationValues) || all(is.na(concentrationValues)))) {
     return(NULL)
   }
   if (!is.null(simSources)) {
@@ -337,7 +337,7 @@ sourceTargetPlot <- function(simSources = NULL,
   }
 
   if (!is.null(simSources)) {
-    if (!is.null(targets) & length(targets) > 0) {
+    if (!is.null(targets) && length(targets) > 0) {
       simSources <- lapply(simSources, function(m) {
         m[, targets, drop = FALSE]
       })
