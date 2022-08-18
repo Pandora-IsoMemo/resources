@@ -131,14 +131,17 @@ fruitsMatrixDistribution <- function(scope, choices = c("constant", "normal", "m
   )
 }
 
-fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = NULL, distributionId = NULL, covarianceId = NULL,
-                         class = "numeric", row, col, namesCov = NULL,
+fruitsMatrix <- function(input, output, session, 
+                         values, events, meanId, sdId = NULL, distributionId = NULL, covarianceId = NULL,
+                         class = "numeric", 
+                         row, col, namesCov = NULL,
                          filter = list(), filterCov = list(), fixedCols = FALSE) {
   ns <- session$ns
 
   colsFixed <- !is.logical(fixedCols)
 
   rowVar <- reactive({
+    logDebug("Updating rowVar")
     if (is.reactive(row)) {
       row()
     } else {
@@ -147,6 +150,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   colVar <- reactive({
+    logDebug("Updating colVar")
     if (is.reactive(col)) {
       col()
     } else {
@@ -155,6 +159,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   namesCovVar <- reactive({
+    logDebug("Updating namesCovVar")
     if (is.reactive(namesCov)) {
       namesCov()
     } else {
@@ -162,13 +167,14 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     }
   })
 
-  # Update Filter
+  # Update Filter ----
   filterValues <- reactive({
     logDebug("Updating filterValues (%s)", meanId)
+    
     unlist(lapply(filter, function(f) {
       if (!is.null(f$hide) && f$hide()) {
         NA
-      } else if (isEmpty(input[[f$id]]) | !(input[[f$id]] %in% f$choices())) {
+      } else if (isEmpty(input[[f$id]]) || !(input[[f$id]] %in% f$choices())) {
         f$choices()[1]
       } else {
         input[[f$id]]
@@ -183,7 +189,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
         NULL
       } else if (!is.null(f$hide) && f$hide()) {
         NA
-      } else if (isEmpty(input[[f$id]]) | !(input[[f$id]] %in% f$choices())) {
+      } else if (isEmpty(input[[f$id]]) || !(input[[f$id]] %in% f$choices())) {
         f$choices()[1]
       } else {
         input[[f$id]]
@@ -212,6 +218,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
   observe({
     logDebug("Updating filter input fields (%s)", meanId)
+    
     lapply(filter, function(f) {
       updateSelectizeInput(session, f$id, choices = f$choices())
       if (!is.null(f$hide) && f$hide()) {
@@ -224,10 +231,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
   filterValuesCov <- reactive({
     logDebug("Updating filterValuesCov (%s)", meanId)
+    
     unlist(lapply(filterCov, function(f) {
       if (!is.null(f$hide) && f$hide()) {
         NA
-      } else if (isEmpty(input[[f$id]]) | !(input[[f$id]] %in% f$choices())) {
+      } else if (isEmpty(input[[f$id]]) || !(input[[f$id]] %in% f$choices())) {
         f$choices()[1]
       } else {
         input[[f$id]]
@@ -249,8 +257,9 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     })
   })
 
-  # toggle for covariance
+  # toggle for covariance ----
   observeEvent(input$showCov, {
+    logDebug("ObserveEvent input$showCov")
     if (meanId == "source") {
       values$sourceDistCovRep[[input$term]] <- input$showCov == "TRUE"
     }
@@ -271,7 +280,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     }
   })
 
-  # Show / Hide batch upload button
+  # Show / Hide batch upload button ----
   observe({
     logDebug("Updating batch button for %s", meanId)
     showBatchButton <- lapply(filter, function(f) {
@@ -285,11 +294,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     }
   })
 
-  # Extend complex objects
+  # Extend complex objects ----
   observe(priority = 100, {
     logDebug("Extend complex objects (%s)", meanId)
     req(length(filterChoices()) > 0)
-
+    
     dummy <- createDummyMatrix(
       names = c(
         filterChoices(),
@@ -363,8 +372,9 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     }
   })
 
-  # Process name events for mean + sd
+  # Process name events for mean + sd ----
   observeEvent(events$name, priority = 400, {
+    logDebug("ObserveEvent events$name")
     # if (!events$adaptive) {
     #   events$processed <- events$processed + 1
     #   return()
@@ -417,10 +427,10 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     events$processed <- events$processed + 1
   })
 
-  # # Get input from shiny matrix
+  # # Get input from shiny matrix ----
   inputData <- eventReactive(input$table, {
     logDebug("Get input from shiny matrix for mean and sd (%s)", meanId)
-
+    
     m <- input$table
     storage.mode(m) <- class
     m <- minimalMatrix(m)
@@ -453,6 +463,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
   # Get data from IsoMemo (only for targetValues)
   observeEvent(events$isoMemo, {
+    logDebug("ObserveEvent events$isoMemo")
     req(meanId == "obsvn")
 
     data <- events$isoMemo
@@ -486,7 +497,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     req(covarianceId)
     logDebug("Get data from values for covariance (%s)", meanId)
     res <- getList(values[[covarianceId]], filterValuesCov())
-    if (is.null(res)) matrix(NA, 0, 0) else as.matrix(res)
+    if (is.null(res)) {
+      matrix(NA, 0, 0)
+    } else {
+      as.matrix(res)
+    }
   })
 
   # Remove Name (col / row) ----
@@ -538,7 +553,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   # Process input data -> values ----
   observeEvent(inputData(), {
     logDebug("Process input data -> values for mean + sd (%s)", meanId)
-
+    
     if (!is.null(sdId)) {
       inputMean <- inputData()[[1]]
       inputSd <- inputData()[[2]]
@@ -592,11 +607,10 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
   observeEvent(covarianceInputData(), {
     logDebug("Process input data -> values covariance (%s)", meanId)
-
     setList(values[[covarianceId]], filterValuesCov(), covarianceInputData())
   })
 
-  ## pagination
+  ## pagination ----
   currentPage <- reactiveVal(1)
   itemsPerPage <- 10
 
@@ -606,6 +620,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   nPages <- reactive({
+    logDebug("Updating nPages")
     ceiling(nrow(meanData()) / itemsPerPage)
   })
 
@@ -649,6 +664,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   meanDataPage <- reactive({
+    logDebug("Updating meanDataPage")
     i <- pmin((currentPage() - 1) * itemsPerPage + 1, nrow(meanData()))
     j <- pmin(i + itemsPerPage - 1, nrow(meanData()))
     meanData()[i:j, , drop = FALSE]
@@ -656,16 +672,16 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
   sdDataPage <- reactive({
     req(sdId)
+    logDebug("Updating sdDataPage")
     i <- pmin((currentPage() - 1) * itemsPerPage + 1, nrow(meanData()))
     j <- pmin(i + itemsPerPage - 1, nrow(sdData()))
     meanData()[i:j, , drop = FALSE]
     sdData()[i:j, , drop = FALSE]
   })
 
-  # Process data from values -> UI
+  # Process data from values -> UI ----
   observe({
     logDebug("Process date from values -> UI for sd and mean (%s)", meanId)
-
     if (is.null(sdId)) {
       updateMatrixInput(session, "table", meanDataPage())
     } else {
@@ -680,6 +696,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   observeEvent(input$copy, {
+    logDebug("ObserveEvent input$copy")
     if (is.null(sdId)) {
       data <- meanData()
     } else {
@@ -700,6 +717,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   observeEvent(input$copyCov, {
+    logDebug("ObserveEvent input$copyCov")
     data <- covarianceData()
 
     data <- rbind(colnames(data), data)
@@ -715,8 +733,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
       });
     "))
   })
+  
   # input$pasted ----
   observeEvent(input$pasted, {
+    logDebug("ObserveEvent input$pasted")
+    
     m <- readStringWrapper(content = input$pasted$content, mode = input$pasteMode, class = class)
     if(is.null(m)) return()
     
@@ -746,20 +767,21 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
 # input$pastedCov ----
   observeEvent(input$pastedCov, {
+    logDebug("ObserveEvent input$pastedCov")
     m <- readStringWrapper(content = input$pastedCov$content, mode = input$pasteModeCov, class = class)
     if(is.null(m)) return()
     
     m <- dropEmptyRows(m)
     m <- dropEmptyCols(m)
-
+    
     oldNames <- colnames(covarianceData())
     length(oldNames) <- ncol(m)
     colnames(m) <- oldNames
-
+    
     setList(values[[covarianceId]], filterValuesCov(), m)
   })
 
-  ## -- Import
+  ## -- Import ----
 
   # Get imported data
   dataImported <- callModule(
@@ -838,11 +860,11 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
     m <- dropEmptyRows(m)
     m <- dropEmptyCols(m)
-
     setList(values[[covarianceId]], filterValuesCov(), m)
   })
 
   checkColNames <- reactive({
+    logDebug("Updating checkColNames")
     function(data) {
       batchFilter <- unlist(lapply(filter, function(x) isTRUE(x$batch)))
       choices <- filter[batchFilter][[1]]$choices()
@@ -860,6 +882,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   checkEmptyValues <- reactive({
+    logDebug("Updating checkEmptyValues")
     function(data) {
       vals <- data[, -1, drop = FALSE]
       mode(vals) <- "numeric"
@@ -945,6 +968,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   checkColNamesCov <- reactive({
+    logDebug("Updating checkColNamesCov")
     function(data) {
       batchFilter <- unlist(lapply(filterCov, function(x) isTRUE(x$batch)))
       choices <- filterCov[batchFilter][[1]]$choices()
@@ -962,6 +986,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   checkRowNamesCov <- reactive({
+    logDebug("Updating checkRowNamesCov")
     function(data) {
       if (attr(data, "includeRownames")) {
         names <- data[, 1]
@@ -978,6 +1003,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   checkColsCov <- reactive({
+    logDebug("Updating checkColsCov")
     function(data) {
       includeRownames <- isTRUE(attr(data, "includeRownames"))
       expectedLength <- length(namesCovVar()) + 1
@@ -992,6 +1018,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   checkRowsCov <- reactive({
+    logDebug("Updating checkRowsCov")
     function(data) {
       batchNames <- if (attr(data, "includeRownames")) rownames(data) else unique(data[, 1])
 
@@ -1061,6 +1088,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
   observeEvent(input$copyTarget, {
+    logDebug("ObserveEvent input$copyTarget")
     batchFilter <- unlist(lapply(filter, function(x) isTRUE(x$batch)))
     indices <- as.matrix(expand.grid(filterChoices()))
     templateIndices <- indices[indices[, batchFilter] == filterValues()[batchFilter], , drop = FALSE]
@@ -1081,6 +1109,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
 
 
   observeEvent(input$copyTargetCov, {
+    logDebug("ObserveEvent input$copyTargetCov")
     batchFilter <- unlist(lapply(filterCov, function(x) isTRUE(x$batch)))
     indices <- as.matrix(expand.grid(filterChoicesCov()))
     templateIndices <- indices[indices[, batchFilter] == filterValuesCov()[batchFilter], , drop = FALSE]
@@ -1096,8 +1125,9 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 
 
-  ## -- Export
+  ## -- Export ----
   tableData <- reactive({
+    logDebug("Updating tableData")
     function() {
       if (is.null(sdId)) {
         meanId()
@@ -1111,6 +1141,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   callModule(exportData, "export", tableData)
 
   tableDataCov <- reactive({
+    logDebug("Update tableDataCov")
     function() {
       covarianceData()
     }
@@ -1155,7 +1186,7 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
     lapply(ff, fun)
   })
 
-  # batch button
+  # batch button ----
   observe({
     visible <- (input$distribution == "multivariate-normal" && (is.null(input$showCov) || input$showCov == TRUE))
 
@@ -1180,8 +1211,33 @@ fruitsMatrix <- function(input, output, session, values, events, meanId, sdId = 
   })
 }
 
+
+emptyMatrix <-
+  function(rownames = NULL,
+           colnames = NULL,
+           nrow = length(rownames),
+           ncol = length(colnames)) {
+    m <- matrix(NA, nrow, ncol)
+    rownames(m) <- rownames
+    colnames(m) <- colnames
+    m
+  }
+
+emptyMatrix2 <-
+  function(rownames = NULL,
+           colnames = NULL,
+           nrow = length(rownames),
+           ncol = 2 * length(colnames)) {
+    m <- matrix(NA, nrow, ncol)
+    rownames(m) <- rownames
+    colnames(m) <-
+      paste(rep(colnames, each = 2), "||", c("mean", "uncert"), sep = "")
+    m
+  }
+
+
 isEmpty <- function(x) {
-  is.null(x) | is.na(x) | trimws(x) == ""
+  is.null(x) || is.na(x) || trimws(x) == ""
 }
 
 

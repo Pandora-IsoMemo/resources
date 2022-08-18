@@ -45,7 +45,7 @@ createModelCode <- function(priors, userEstimates, valueNames,
       priorAlpha <- readSystemFile("nimbleCode/priorAlphaAllInflatedBeta")
     }
   }
-  if (modelOptions$hierarchical | !is.null(covariatesNum)) {
+  if (modelOptions$hierarchical || !is.null(covariatesNum)) {
     if (modelOptions$inflatedBeta == "0") {
       if (modelOptions$covariateType != "0") {
         if (is.null(covariatesNum)) {

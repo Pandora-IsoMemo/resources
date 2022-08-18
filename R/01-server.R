@@ -109,7 +109,7 @@ fruitsTab <- function(input,
              uploadedNotes = uploadedNotes,
              reset = reactive(input$reset))
   
-  ## status
+  ## status ----
   
   output$status <- renderText(values$status)
   output$statusSim <- renderText(values$statusSim)
@@ -187,11 +187,15 @@ fruitsTab <- function(input,
   })
   
   
-  ## Set names
+  ## Set names: targetNames, fractionNames, sourceNames, obsvnNames, offsetNames, targetValuesCovariatesNames ----
   observe(priority = 200, {
     logDebug("Entering observe() (set values$xxxNames)")
+    
     values$targetNames <-
       unique(colnames(values$obsvn[["default"]]))
+    
+    values <- updateSourceNamesIfMismatch(values)
+    
     if (input$modelWeights) {
       if (input$modelConcentrations) {
         values$fractionNames <- unique(colnames(values$concentration[[1]]))
@@ -203,19 +207,92 @@ fruitsTab <- function(input,
     else {
       values$fractionNames <- values$targetNames
     }
+    
     if (input$modelConcentrations) {
       values$sourceNames <- unique(rownames(values$concentration[[1]]))
     } else {
       values$sourceNames <-
         unique(rownames(values$source[[1]][[1]][[1]]))
     }
+    
     values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
+    
     values$offsetNames <- "Offset"
+    
     values$targetValuesCovariatesNames <-
       unique(colnames(values$targetValuesCovariates))
   })
   
-  ## Model options
+  ## Data options ----
+  termChoices <- reactive({
+    c(
+      "Default term" = "default",
+      "Add term 1" = "term1",
+      "Add term 2" = "term2",
+      "Add term 3" = "term3"
+    )
+  })
+  
+  sourceObsvnFilterChoices <- reactive({
+    if (baselineModel()) {
+      values$obsvnNames
+    } else {
+      NA
+    }
+  })
+  
+  # observeEvent(input$adaptiveNames, {
+  #   logDebug("Entering observeEvent(input$adaptiveNames)")
+  #   events$adaptive <- input$adaptiveNames
+  # })
+  
+  targetValuesServer("targetVals",
+                     values = values,
+                     events = events,
+                     termChoices = termChoices,
+                     modelType = reactive(input$modelType))
+  
+  output$targetOffset <- eventReactive(values$targetOffset,
+                                       values$targetOffset)
+  outputOptions(output, "targetOffset", suspendWhenHidden = FALSE)
+  
+  output$targetValuesShowCovariates <- eventReactive(values$targetValuesShowCovariates,
+                                                     values$targetValuesShowCovariates)
+  outputOptions(output, "targetValuesShowCovariates", suspendWhenHidden = FALSE)
+  
+  output$targetValuesShowCoordinates <- eventReactive(values$targetValuesShowCoordinates,
+                                                      values$targetValuesShowCoordinates)
+  outputOptions(output, "targetValuesShowCoordinates", suspendWhenHidden = FALSE)
+  
+  componentsServer("components",
+                   values = values,
+                   events = events)
+  
+  sourcesServer("sources",
+                values = values,
+                events = events,
+                hideTargetFilter = reactive(!input$modelWeights),
+                termChoices = termChoices,
+                sourceObsvnFilterChoices = sourceObsvnFilterChoices,
+                sourceObsvnFilterHide = reactive(!baselineModel()))
+  
+  concentrationsServer("concentration",
+                       values = values,
+                       events = events,
+                       hideTargetFilter = reactive(!input$modelWeights),
+                       sourceObsvnFilterChoices = sourceObsvnFilterChoices,
+                       sourceObsvnFilterHide = reactive(!baselineModel()))
+  
+  ## -- from IsoMemo
+  observeEvent(isoMemoData()$event, {
+    logDebug("Entering observeEvent(isoMemoData()$event)")
+    events$isoMemo <- isoMemoData()$data
+  })
+  
+  ## MySql table contents ----
+  callModule(dbContentSelect, "popUpTables")
+  
+  ## Model options ----
   observeEvent(values$modelType, {
     logDebug("Entering observeEvent(values$modelType)")
     
@@ -224,18 +301,9 @@ fruitsTab <- function(input,
     )
   })
   
-  observeEvent(input$modelType, {
-    logDebug("Entering observeEvent(input$modelType)")
-    values$modelType <- input$modelType
-    
-    if (input$modelType == "1" & input$targetValuesShowCovariates) {
-      updateCheckboxInput(session, "targetValuesShowCovariates", value = FALSE)
-    }
-  })
-  
   observe({
-    logDebug("Entering observe() (input$targetValuesShowCovariates)")
-    if (input$targetValuesShowCovariates) {
+    logDebug("Entering observe() (updatePickerInput(categoricalVars, numericVars))")
+    if (values$targetValuesShowCovariates) {
       if (ncol(values$targetValuesCovariates) > 0) {
         potentialCat <- extractPotentialCat(values$targetValuesCovariates)
         selectedCatVars <- intersect(values$categoricalVars, potentialCat)
@@ -307,41 +375,26 @@ fruitsTab <- function(input,
     values$modelType %in% c(3, 5)
   })
   
-  observeEvent(input$targetValuesShowCovariates, {
-    logDebug("Entering observeEvent(input$targetValuesShowCovariates)")
-    if (input$targetValuesShowCovariates == FALSE) {
+  observeEvent(values$targetValuesShowCovariates, {
+    logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
+    if (values$targetValuesShowCovariates == FALSE) {
       updateCheckboxInput(session, "useSite", value = FALSE)
     }
   })
   
-  observeEvent(input$targetValuesShowCovariates, {
-    logDebug("Entering observeEvent(input$targetValuesShowCovariates)")
+  observeEvent(values$targetValuesShowCovariates, {
+    logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
     
-    value <- input$modelType
-    if (input$targetValuesShowCovariates &
-        !is.null(value) & value == "1") {
+    if (values$targetValuesShowCovariates &&
+        !is.null(input$modelType) && input$modelType == "1") {
       selected <- "2"
     } else {
-      selected <- value
+      selected <- input$modelType
     }
     
     updateRadioButtons(session, "modelType",
                        selected = selected
     )
-  })
-  
-  observeEvent(values$targetOffset, {
-    logDebug("Entering observeEvent(values$targetOffset)")
-    updateCheckboxInput(session, "targetOffset",
-                        value = values$targetOffset
-    )
-  })
-  
-  observeEvent(input$targetOffset, {
-    logDebug("Entering observeEvent(input$targetOffset)")
-    if (!identical(input$targetOffset, values$targetOffset)) {
-      values$targetOffset <- input$targetOffset
-    }
   })
   
   observeEvent(values$includeSourceOffset, {
@@ -358,30 +411,6 @@ fruitsTab <- function(input,
       values$includeSourceOffset <- input$includeSourceOffset
     }
   })
-  
-  observeEvent(values$targetValuesShowCovariates, {
-    logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
-    updateCheckboxInput(session,
-                        "targetValuesShowCovariates",
-                        value = values$targetValuesShowCovariates
-    )
-  })
-  
-  observeEvent(input$targetValuesShowCovariates, {
-    logDebug("Entering observeEvent(input$targetValuesShowCovariates)")
-    if (!identical(
-      input$targetValuesShowCovariates,
-      values$targetValuesShowCovariates
-    )) {
-      values$targetValuesShowCovariates <-
-        input$targetValuesShowCovariates
-    }
-    if (input$targetValuesShowCovariates == TRUE &
-        input$modelType == 1) {
-      values$modelType <- 2
-    }
-  })
-  
   
   observeEvent(values$modelWeights, {
     logDebug("Entering observeEvent(values$modelWeights)")
@@ -623,288 +652,19 @@ fruitsTab <- function(input,
       values$nchains <- input$nchains
     }
   })
-  
-  termChoices <- reactive({
-    c(
-      "Default term" = "default",
-      "Add term 1" = "term1",
-      "Add term 2" = "term2",
-      "Add term 3" = "term3"
-    )
-  })
-  
-  ## TargetValues - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "targetValues",
-    values = values,
-    events = events,
-    meanId = "obsvn",
-    sdId = "obsvnError",
-    distributionId = "obsvnDistribution",
-    covarianceId = "targetValuesCovariance",
-    row = "obsvnNames",
-    col = "targetNames",
-    namesCov = reactive(values$targetNames),
-    filter = list(list(id = "term", choices = termChoices)),
-    filterCov = list(
-      list(id = "term", choices = termChoices),
-      list(
-        id = "obsvn",
-        choices = reactive(values$obsvnNames),
-        batch = TRUE
-      )
-    )
-  )
-  
-  # observeEvent(input$adaptiveNames, {
-  #   logDebug("Entering observeEvent(input$adaptiveNames)")
-  #   events$adaptive <- input$adaptiveNames
-  # })
-  
-  ## -- from IsoMemo
-  observeEvent(isoMemoData()$event, {
-    logDebug("Entering observeEvent(isoMemoData()$event)")
-    events$isoMemo <- isoMemoData()$data
-  })
-  
-  ## TargetValuesCovariates - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "targetValuesCovariates",
-    values = values,
-    events = events,
-    meanId = "targetValuesCovariates",
-    row = "obsvnNames",
-    col = "covariateNames",
-    class = "character"
-  )
-  
-  ## Weights - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "weights",
-    values = values,
-    events = events,
-    meanId = "weights",
-    sdId = "weightsUncert",
-    row = "targetNames",
-    col = "fractionNames",
-    distributionId = "weightDistribution"
-  )
-  
-  ## Hide Input for 0 weights
-  observe({
-    logDebug("Entering observe() (values$modelWeights)")
-    if (values$modelWeights) {
-      zeroTarget <- row(values$weights)[values$weights == 0]
-      zeroFraction <- col(values$weights)[values$weights == 0]
-      visible <-
-        input[["source-target"]] == values$targetNames[zeroTarget]
-      showAllColumns(ns("source-table"))
-      if (length(visible) > 0 && !any(is.na(visible)) && any(visible)) {
-        idFrac <-
-          which(colnames(values$weights) %in% values$fractionNames[zeroFraction])
-        if (length(idFrac) > 0) {
-          lapply(idFrac, hideColumn, id = ns("source-table"))
-        }
-      }
-    } else {
-      showAllColumns(ns("source-table"))
-    }
-  })
-  
-  ## WeightOffset - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "weightOffset",
-    values = values,
-    events = events,
-    meanId = "weightOffset",
-    sdId = "weightOffsetUncert",
-    row = "targetNames",
-    col = "offsetNames",
-    fixedCols = "Offset"
-  )
-  
-  ## Sources
-  sourceObsvnFilterChoices <- reactive({
-    if (baselineModel()) {
-      values$obsvnNames
-    } else {
-      NA
-    }
-  })
-  
-  sourceObsvnFilterHide <- reactive({
-    if (baselineModel()) {
-      FALSE
-    } else {
-      TRUE
-    }
-  })
-  
-  hideTargetFilter <- reactive({
-    if (input$modelWeights) {
-      FALSE
-    } else {
-      TRUE
-    }
-  })
-  
-  sourceTargetChoices <- reactive({
-    if (input$modelWeights) {
-      values$targetNames
-    } else {
-      NA
-    }
-  })
-  
-  sourceCovNames <- reactive({
-    if (input$modelWeights) {
-      apply(expand.grid(values$fractionNames, values$targetNames),
-            1,
-            paste,
-            collapse = "-"
-      )
-    } else {
-      values$targetNames
-    }
-  })
-  
-  ## Source - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "source",
-    values = values,
-    events = events,
-    meanId = "source",
-    sdId = "sourceUncert",
-    row = "sourceNames",
-    col = reactive(if (hideTargetFilter()) {
-      "targetNames"
-    } else {
-      "fractionNames"
-    }),
-    namesCov = sourceCovNames,
-    distributionId = "sourceDistribution",
-    covarianceId = "sourceCovariance",
-    filter = list(
-      list(id = "term", choices = termChoices),
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        distribution = FALSE,
-        batch = TRUE
-      ),
-      list(
-        id = "target",
-        choices = reactive(values$targetNames),
-        hide = hideTargetFilter,
-        distribution = FALSE
-      )
-    ),
-    filterCov = list(
-      list(id = "term", choices = termChoices),
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        batch = TRUE
-      )
-    )
-  )
-  
-  ## SourceOffset - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "sourceOffset",
-    values = values,
-    events = events,
-    meanId = "sourceOffset",
-    sdId = "sourceOffsetUncert",
-    row = "sourceNames",
-    col = reactive(if (hideTargetFilter()) {
-      "targetNames"
-    } else {
-      "fractionNames"
-    }),
-    filter = list(
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        batch = TRUE
-      ),
-      list(
-        id = "target",
-        choices = reactive(values$targetNames),
-        hide = hideTargetFilter
-      )
-    )
-  )
-  
-  ## Concentration - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "concentration",
-    values = values,
-    events = events,
-    meanId = "concentration",
-    sdId = "concentrationUncert",
-    row = "sourceNames",
-    col = reactive(if (hideTargetFilter()) {
-      "targetNames"
-    } else {
-      "fractionNames"
-    }),
-    distributionId = "concentrationDistribution",
-    covarianceId = "concentrationCovariance",
-    namesCov = reactive(if (hideTargetFilter()) {
-      values$targetNames
-    } else {
-      values$fractionNames
-    }),
-    filter = list(
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        distribution = FALSE,
-        batch = TRUE
-      )
-    ),
-    filterCov = list(
-      list(
-        id = "obsvn",
-        choices = sourceObsvnFilterChoices,
-        hide = sourceObsvnFilterHide,
-        batch = TRUE
-      )
-    )
-  )
-  
-  ## MySql table contents
-
-  # callModule(dbContent, "feeding", table = "feeding")
-  # callModule(dbContent, "suess", table = "suess")
-  # callModule(dbContent, "diet", table = "diet")
-  # callModule(dbContent, "digest", table = "digest")
-  callModule(dbContentSelect, "popUpTables")
 
   ## File Notes
-  observeEvent(input$showFileNotes, {
-    logDebug("Entering observeEvent(input$showFileNotes)")
-    showModal(fileNotesDialog(id = ns("fileNotes"), value = values$fileNotes))
-  })
+  # observeEvent(input$showFileNotes, {
+  #   logDebug("Entering observeEvent(input$showFileNotes)")
+  #   showModal(fileNotesDialog(id = ns("fileNotes"), value = values$fileNotes))
+  # })
   
-  observeEvent(input$fileNotes, {
-    logDebug("Entering observeEvent(input$fileNotes)")
-    values$fileNotes <- input$fileNotes
-  })
+  # observeEvent(input$fileNotes, {
+  #   logDebug("Entering observeEvent(input$fileNotes)")
+  #   values$fileNotes <- input$fileNotes
+  # })
   
-  ## Priors
+  ## Priors ----
   priorWarning <- reactiveValues(text = NULL)
   output$priorWarning <- renderText({
     priorWarning$text
@@ -917,7 +677,6 @@ fruitsTab <- function(input,
   
   observeEvent(input$minUnc, {
     logDebug("Entering observeEvent(input$minUnc)")
-    updateNumericInput(session, "Unc", value = input$minUnc)
     values$minUnc <- input$minUnc
   })
   
@@ -2065,31 +1824,7 @@ fruitsTab <- function(input,
     }
   })
   
-  ## Target Values
-  observeEvent(values$targetValuesShowCoordinates, {
-    logDebug("Entering observeEvent(values$targetValuesShowCoordinates)")
-    updateCheckboxInput(session,
-                        "targetValuesShowCoordinates",
-                        value = values$targetValuesShowCoordinates
-    )
-  })
   
-  ## ExportCoordinates - callModule fruitsMatrix ----
-  callModule(
-    fruitsMatrix,
-    "exportCoordinates",
-    values = values,
-    events = events,
-    meanId = "exportCoordinates",
-    row = "obsvnNames",
-    col = "coordinatesNames",
-    fixedCols = c(
-      "longitude",
-      "latitude",
-      "LowerLimit/Mean/Point",
-      "UpperLimit/SD"
-    )
-  )
   
   exportData <- reactive({
     data <- as.data.frame(values$exportCoordinates)
@@ -2310,4 +2045,60 @@ extractPotentialCat <- function(targetValuesCovariates) {
         all(!is.na(targetValuesCovariates[, x]))
       }
     )]
+}
+
+#' Update Source Names If Mismatch
+#' 
+#' Update term names of source related entries such that they match to new targetNames
+#' 
+#' @inheritParams updateNamesIfMismatch
+updateSourceNamesIfMismatch <- function(values) {
+  for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
+    values <- updateNamesIfMismatch(values, entry, targetNames = values$targetNames)
+  }
+  
+  values
+}
+
+
+#' Update Names If Mismatch
+#' 
+#' Update term names of entries such that they match to new targetNames
+#' 
+#' @param values (list) with all data and model options
+#' @param entryName (character) name of values element
+#' @param targetNames (reactive) character vector of targetNames
+updateNamesIfMismatch <- function(values, entryName, targetNames) {
+  isFlat <- function(entryContent) {
+    !is.null(ncol(entryContent[[1]])) && 
+      is.null(names(entryContent[[1]][[1]])) &&
+      length(entryContent) == length(targetNames)
+  }
+  
+  updateListNames <- function(entryContent, n) {
+    if (n == 0) {
+      names(entryContent) <- targetNames
+      entryContent
+    } else {
+      n <- n - 1
+      lapply(entryContent, function(elem) {
+        updateListNames(elem, n)
+      })
+    }
+  }
+  
+  entryContent <- values[[entryName]]
+  nMakeFlatter <- 0
+  
+  while (!isFlat(entryContent)) {
+    entryContent <- entryContent[[1]]
+    nMakeFlatter <- nMakeFlatter + 1
+  } 
+  
+  # check matching of targetNames, and if false update names
+  if (!identical(names(entryContent), targetNames)) {
+    values[[entryName]] <- updateListNames(values[[entryName]], nMakeFlatter)
+  }
+
+  values
 }

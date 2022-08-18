@@ -696,7 +696,7 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
         applyUnc <- FALSE
       }
 
-      if (!is.null(replacements) | length(na.omit(priorDistributions)) == 1) {
+      if (!is.null(replacements) || length(na.omit(priorDistributions)) == 1) {
         if (type == "priors") {
           getNimblePrior(priorParameters, priors[x], replacements,
             n = c(j, x),

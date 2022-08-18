@@ -93,16 +93,16 @@ uploadModelUI <- function(id) {
   ns <- NS(id)
   
   tagList(
+    fileInput(ns("uploadModel"), label = "Load local model"),
     selectInput(
       ns("remoteModel"),
-      label = "Select example model",
+      label = "Load online model",
       choices = dir(file.path(settings$pathToSavedModels)) %>%
         sub(pattern = '\\.zip$', replacement = ''),
       selected = NULL
     ),
-    actionButton(ns("loadRemoteModel"), "Load example model"),
-    tags$br(), tags$br(),
-    fileInput(ns("uploadModel"), label = "Load model")
+    actionButton(ns("loadRemoteModel"), "Load"),
+    tags$br(), tags$br()
   )
 }
 
