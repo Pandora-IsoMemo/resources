@@ -2,7 +2,7 @@
 
 Access App: https://isomemoapp.com/app/resources
 
-Folder with example data: [inst/app/predefinedModels](https://github.com/Pandora-IsoMemo/resources/tree/main/inst/app/predefinedModels)
+Folder with example data: [inst/app/predefinedModels](https://github.com/Pandora-IsoMemo/resources/tree/beta/inst/app/predefinedModels)
 
 ## File structure
 
