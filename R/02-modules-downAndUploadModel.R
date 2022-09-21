@@ -251,7 +251,8 @@ checkForEmptyTables <- function(values) {
   }
   
   ifEnabled <- function(checkboxValue, matrixName) {
-    if (!checkboxValue) return(NULL)
+    if (!checkboxValue)
+      return(NULL)
     
     matrixName
   }
@@ -276,15 +277,18 @@ checkForEmptyTables <- function(values) {
   )
   
   namesTablesToCheck <- c(
-    "Target", 
+    "Target",
     ifEnabled(values$targetOffset, "target-to-source offset"),
     ifEnabled(values$targetValuesShowCovariates, "Covariates"),
-    ifEnabled(values$targetValuesShowCoordinates, "Coordinates & chronology"),
+    ifEnabled(
+      values$targetValuesShowCoordinates,
+      "Coordinates & chronology"
+    ),
     ifEnabled(values$modelWeights, "Components"),
     "Sources",
     ifEnabled(values$includeSourceOffset, "source specific offset"),
     ifEnabled(values$modelConcentrations, "Concentrations")
-    )
+  )
   
   emptyTables <- c()
   for (i in tablesInUI[namesTablesToCheck]) {
@@ -298,24 +302,24 @@ checkForEmptyTables <- function(values) {
   return(namesEmptyTables)
 }
 
-dataLoadedAlert <- function(warningInputs, warningModel, uploadedVersion, alertType) {
-  shinyalert(
-    title = "Upload finished.",
-    text = HTML(
-      paste0(
+dataLoadedAlert <-
+  function(warningInputs,
+           warningModel,
+           uploadedVersion,
+           alertType) {
+    shinyalert(
+      title = "Upload finished.",
+      text = HTML(paste0(
         #"<div align='left'>",
         "<p>",
-        paste(
-          warningInputs,
-          warningModel,
-          uploadedVersion,
-          sep = "</p><br/><p>"
-        ),
+        paste(warningInputs,
+              warningModel,
+              uploadedVersion,
+              sep = "</p><br/><p>"),
         "</p>"#,
         #"</div>"
-      )
-    ),
-    type = alertType,
-    html = TRUE
-  )
-}
+      )),
+      type = alertType,
+      html = TRUE
+    )
+  }
