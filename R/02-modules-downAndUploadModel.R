@@ -195,7 +195,7 @@ uploadModel <-
       
       if (is.null(modelImport$values)) {
         warningInputs <-
-          "The file does not include input data or model selection parameters. "
+          "No input data or model selection parameters found."
         
         alertType <- "warning"
       } else {
@@ -204,9 +204,9 @@ uploadModel <-
         
         emptyTables <- checkForEmptyTables(modelImport$values)
         if (length(emptyTables) > 0) {
-          warningInputs <- paste0(
+          warningInputs <- paste(
             warningInputs,
-            "Following tables contain no data: ",
+            "Following tables contain only empty values: <br/>",
             paste0(emptyTables, collapse = ", "),
             " "
           )
@@ -226,7 +226,7 @@ uploadModel <-
       
       if (is.null(modelImport$model)) {
         warningModel <-
-          "The file does not include saved results. "
+          "No model results found. "
         alertType <- "warning"
         
         model(NULL)
@@ -236,21 +236,8 @@ uploadModel <-
         model(modelImport$model)
       }
       
-      
       rm(modelImport)
-      
-      shinyalert(
-        title = "Upload finished.",
-        text = tagList(
-          warningInputs,
-          tags$br(),
-          warningModel,
-          tags$br(),
-          uploadedVersion
-        ),
-        type = alertType,
-        html = TRUE
-      )
+      dataLoadedAlert(warningInputs, warningModel, uploadedVersion, alertType)
     })
     
     uploadedValues
@@ -284,4 +271,26 @@ checkForEmptyTables <- function(values) {
   namesEmptyTables <- names(tablesInUI[tablesInUI %in% emptyTables])
   
   return(namesEmptyTables)
+}
+
+dataLoadedAlert <- function(warningInputs, warningModel, uploadedVersion, alertType) {
+  shinyalert(
+    title = "Upload finished.",
+    text = HTML(
+      paste0(
+        #"<div align='left'>",
+        "<p>",
+        paste(
+          warningInputs,
+          warningModel,
+          uploadedVersion,
+          sep = "</p><br/><p>"
+        ),
+        "</p>"#,
+        #"</div>"
+      )
+    ),
+    type = alertType,
+    html = TRUE
+  )
 }
