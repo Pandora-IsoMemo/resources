@@ -682,6 +682,8 @@ fruitsMatrix <- function(input, output, session,
   # Process data from values -> UI ----
   observe({
     logDebug("Process date from values -> UI for sd and mean (%s)", meanId)
+    #print content of matrices to be displayed
+    #print(setNames(list(meanDataPage()), meanId))
     if (is.null(sdId)) {
       updateMatrixInput(session, "table", meanDataPage())
     } else {

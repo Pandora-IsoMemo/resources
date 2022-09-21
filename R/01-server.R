@@ -97,17 +97,26 @@ fruitsTab <- function(input,
   # )
   
 
+  # Download/Upload Model ----
   uploadedNotes <- reactiveVal()
   callModule(downloadModel, "modelDownload", session = session,
              values = values, 
              model = model,
              uploadedNotes = uploadedNotes)
 
-  callModule(uploadModel, "modelUpload", session = session,
-             values = values, 
-             model = model,
-             uploadedNotes = uploadedNotes,
-             reset = reactive(input$reset))
+  uploadedValues <- callModule(uploadModel, "modelUpload", session = session,
+                               model = model,
+                               uploadedNotes = uploadedNotes,
+                               reset = reactive(input$reset))
+  
+  observeEvent(uploadedValues(), {
+    logDebug("Entering observeEvent(uploadedValues())")
+    req(length(uploadedValues()) > 0)
+    
+    for (name in names(uploadedValues())) {
+      values[[name]] <- uploadedValues()[[name]]
+    }
+  })
   
   ## status ----
   

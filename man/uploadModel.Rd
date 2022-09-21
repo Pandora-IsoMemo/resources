@@ -7,7 +7,7 @@
 \usage{
 uploadModelUI(id)
 
-uploadModel(input, output, session, values, model, uploadedNotes, reset)
+uploadModel(input, output, session, model, uploadedNotes, reset)
 }
 \arguments{
 \item{id}{id of module}
@@ -17,8 +17,6 @@ uploadModel(input, output, session, values, model, uploadedNotes, reset)
 \item{output}{shiny output}
 
 \item{session}{shiny session}
-
-\item{values}{(reactive) list: Shiny input}
 
 \item{model}{(reactive) output of the model}
 
