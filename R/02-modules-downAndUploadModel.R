@@ -102,7 +102,8 @@ uploadModelUI <- function(id) {
       selected = NULL
     ),
     actionButton(ns("loadRemoteModel"), "Load"),
-    tags$br(), tags$br()
+    tags$br(),
+    tags$br()
   )
 }
 
@@ -114,7 +115,6 @@ uploadModelUI <- function(id) {
 #' @param input shiny input
 #' @param output shiny output
 #' @param session shiny session
-#' @param values (reactive) list: Shiny input
 #' @param model (reactive) output of the model
 #' @param uploadedNotes (reactive) variable that stores content of README.txt
 #' @param reset (reactive) result of reset button
@@ -124,14 +124,18 @@ uploadModel <-
   function(input,
            output,
            session,
-           values,
            model,
            uploadedNotes,
            reset) {
     pathToModel <- reactiveVal(NULL)
+    uploadedValues <- reactiveVal(list())
     
     observeEvent(input$uploadModel, {
-      logDebug(paste0("Entering ", session$ns(""), "observeEvent(input$uploadModel)"))
+      logDebug(paste0(
+        "Entering ",
+        session$ns(""),
+        "observeEvent(input$uploadModel)"
+      ))
       
       pathToModel(input$uploadModel$datapath)
     })
@@ -145,7 +149,11 @@ uploadModel <-
     })
     
     observeEvent(input$loadRemoteModel, {
-      logDebug(paste0("Entering ", session$ns(""), "observeEvent(input$loadRemoteModel)"))
+      logDebug(paste0(
+        "Entering ",
+        session$ns(""),
+        "observeEvent(input$loadRemoteModel)"
+      ))
       
       pathToModel(file.path(
         settings$pathToSavedModels,
@@ -156,69 +164,162 @@ uploadModel <-
     observeEvent(pathToModel(), {
       logDebug("Entering ", session$ns(""), "observe() (Load Model)")
       
+      alertType <- "error"
+      
       res <- try({
         zip::unzip(pathToModel())
         modelImport <- readRDS("model.rds")
         uploadedNotes(readLines("README.txt"))
       })
-
+      
       if (inherits(res, "try-error")) {
-        shinyjs::alert(
-          paste0(
-            "Could not load file.\n",
+        shinyalert(
+          title = "Could not load file.",
+          text = paste(
             "The file to be uploaded should be a .zip file",
-            " that contains the following files:",
-            " \n help.html,\n model.rds,\n README.txt\n",
+            "that contains the following files:",
+            "help.html, model.rds, README.txt. ",
             "If you download a model it will exactly have this format."
-          )
+          ),
+          type = alertType
         )
         return()
       }
       
       if (!exists("modelImport")) {
-        shinyjs::alert("File format not valid. Model object not found.")
+        shinyalert(title = "Could not load file.",
+                   text = "File format not valid. Model object not found.",
+                   type = alertType)
         return()
       }
       
-      if (is.null(modelImport$model)) {
-        warningEmptyModel <-
-          "The file does not include saved results. "
-        
-        model(NULL)
-        values$status <- values$statusSim <- "INITIALIZE"
-      } else {
-        warningEmptyModel <- "Model results loaded. "
-        
-        model(modelImport$model)
-        values$status <- values$statusSim <- "COMPLETED"
-      }
-      
       if (is.null(modelImport$values)) {
-        warningEmptyInputs <-
-          "The file does not include model selection and input data. "
-      } else {
-        warningEmptyInputs <- "Model selection and data loaded. "
+        warningInputs <-
+          "No input data or model selection parameters found."
         
-        for (name in names(modelImport$values)) {
-          values[[name]] <- modelImport$values[[name]]
+        alertType <- "warning"
+      } else {
+        warningInputs <-
+          "Input data and model selection parameters loaded. "
+        
+        emptyTables <- checkForEmptyTables(modelImport$values)
+        if (length(emptyTables) > 0) {
+          warningInputs <- paste(
+            warningInputs,
+            "Following tables contain only empty values: <br/>",
+            paste0(emptyTables, collapse = ", "),
+            " "
+          )
+          alertType <- "warning"
+        } else {
+          alertType <- "success"
         }
+        
+        uploadedValues(modelImport$values)
       }
       
       if (!is.null(modelImport$version)) {
-        uploadedVersion <- paste(", saved version", modelImport$version)
+        uploadedVersion <- paste("Saved version:", modelImport$version, ".")
       } else {
         uploadedVersion <- ""
       }
       
+      if (is.null(modelImport$model)) {
+        warningModel <-
+          "No model results found. "
+        alertType <- "warning"
+        
+        model(NULL)
+      } else {
+        warningModel <- "Model results loaded. "
+        # no update of alertType, do not overwrite a warning
+        model(modelImport$model)
+      }
       
       rm(modelImport)
-      
-      alert(paste0(
-        warningEmptyInputs,
-        warningEmptyModel,
-        paste0("Upload finished", uploadedVersion, ".")
-      ))
-      
-      
+      dataLoadedAlert(warningInputs, warningModel, uploadedVersion, alertType)
     })
+    
+    uploadedValues
+  }
+
+
+checkForEmptyTables <- function(values) {
+  isTableEmpty <- function(tbl) {
+    all(sapply(tbl, function(x)
+      all(is.na(x))))
+  }
+  
+  ifEnabled <- function(checkboxValue, matrixName) {
+    if (!checkboxValue)
+      return(NULL)
+    
+    matrixName
+  }
+  
+  tablesInUI <- c(
+    Target = "obsvn",
+    `target-to-source offset` = "weightsOffset",
+    Covariates = "targetValuesCovariates",
+    `Coordinates & chronology` = "exportCoordinates",
+    Components = "weights",
+    Sources = "source",
+    `source specific offset` = "sourceOffset",
+    Concentrations = "concentration"
+  )
+  checkboxesInUI <- c(
+    `Include target offset` = "targetOffset",
+    `Enter Covariates` = "targetValuesShowCovariates",
+    `Coordinates & chronology` = "targetValuesShowCoordinates",
+    `Include source specific offsets` = "includeSourceOffset",
+    `Include components` = "modelWeights",
+    `Include concentrations` = "modelConcentrations"
+  )
+  
+  namesTablesToCheck <- c(
+    "Target",
+    ifEnabled(values$targetOffset, "target-to-source offset"),
+    ifEnabled(values$targetValuesShowCovariates, "Covariates"),
+    ifEnabled(
+      values$targetValuesShowCoordinates,
+      "Coordinates & chronology"
+    ),
+    ifEnabled(values$modelWeights, "Components"),
+    "Sources",
+    ifEnabled(values$includeSourceOffset, "source specific offset"),
+    ifEnabled(values$modelConcentrations, "Concentrations")
+  )
+  
+  emptyTables <- c()
+  for (i in tablesInUI[namesTablesToCheck]) {
+    if (isTableEmpty(values[[i]])) {
+      emptyTables <- c(emptyTables, i)
+    }
+  }
+  
+  namesEmptyTables <- names(tablesInUI[tablesInUI %in% emptyTables])
+  
+  return(namesEmptyTables)
+}
+
+dataLoadedAlert <-
+  function(warningInputs,
+           warningModel,
+           uploadedVersion,
+           alertType) {
+    shinyalert(
+      title = "Upload finished.",
+      text = HTML(paste0(
+        #"<div align='left'>",
+        "<p>",
+        paste(warningInputs,
+              warningModel,
+              uploadedVersion,
+              sep = "</p><br/><p>"),
+        "</p>"#,
+        #"</div>"
+      )),
+      type = alertType,
+      html = TRUE
+    )
   }
