@@ -1,4 +1,4 @@
-# resources (MPI FRUITS App)
+# ReSources
 
 Access App: https://isomemoapp.com/app/resources
 
