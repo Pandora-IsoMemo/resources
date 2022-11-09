@@ -347,14 +347,12 @@ sourcesUI <- function(id, title = NULL) {
 #' @param events events
 #' @param hideTargetFilter (reactive) logical, hideTargetFilter
 #' @param termChoices termChoices
-#' @param baselineModel TRUE if baselineModel
 sourcesServer <-
   function(id,
            values,
            events,
            hideTargetFilter,
-           termChoices,
-           baselineModel) {
+           termChoices) {
     moduleServer(id,
                  function(input, output, session) {
                    ## Source - callModule fruitsMatrix ----
@@ -369,6 +367,10 @@ sourcesServer <-
                      } else {
                        values$targetNames
                      }
+                   })
+                   
+                   baselineModel <- reactive({
+                     values$modelType %in% c(3, 5)
                    })
                    
                    sourceObsvnFilterChoices <- reactive({
@@ -516,15 +518,17 @@ concentrationsUI <- function(id, title = NULL) {
 #' @param values values
 #' @param events events
 #' @param hideTargetFilter hideTargetFilter
-#' @param baselineModel TRUE if baselineModel
 concentrationsServer <-
   function(id,
            values,
            events,
-           hideTargetFilter,
-           baselineModel) {
+           hideTargetFilter) {
     moduleServer(id,
                  function(input, output, session) {
+                   baselineModel <- reactive({
+                     values$modelType %in% c(3, 5)
+                   })
+                   
                    sourceObsvnFilterChoices <- reactive({
                      if (baselineModel()) {
                        values$obsvnNames

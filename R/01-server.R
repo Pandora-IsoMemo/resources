@@ -231,7 +231,6 @@ fruitsTab <- function(input,
     values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
     
     for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
-      if (entry == "source") browser()
       values[[entry]] <- updateNamesIfMismatch(
         values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
       )
@@ -247,6 +246,11 @@ fruitsTab <- function(input,
   })
   
   ## Data options ----
+  # observeEvent(input$adaptiveNames, {
+  #   logDebug("Entering observeEvent(input$adaptiveNames)")
+  #   events$adaptive <- input$adaptiveNames
+  # })
+  
   termChoices <- reactive({
     c(
       "Default term" = "default",
@@ -255,11 +259,6 @@ fruitsTab <- function(input,
       "Add term 3" = "term3"
     )
   })
-  
-  # observeEvent(input$adaptiveNames, {
-  #   logDebug("Entering observeEvent(input$adaptiveNames)")
-  #   events$adaptive <- input$adaptiveNames
-  # })
   
   targetValuesServer("targetVals",
                      values = values,
@@ -283,22 +282,16 @@ fruitsTab <- function(input,
                    values = values,
                    events = events)
   
-  baselineModel <- reactive({
-    values$modelType %in% c(3, 5)
-  })
-  
   sourcesServer("sources",
                 values = values,
                 events = events,
                 hideTargetFilter = reactive(!input$modelWeights),
-                termChoices = termChoices,
-                baselineModel = reactive(baselineModel()))
+                termChoices = termChoices)
   
   concentrationsServer("concentration",
                        values = values,
                        events = events,
-                       hideTargetFilter = reactive(!input$modelWeights),
-                       baselineModel = reactive(baselineModel()))
+                       hideTargetFilter = reactive(!input$modelWeights))
   
   ## -- from IsoMemo
   observeEvent(isoMemoData()$event, {

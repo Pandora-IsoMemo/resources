@@ -4,7 +4,7 @@
 \alias{sourcesServer}
 \title{Sources Server}
 \usage{
-sourcesServer(id, values, events, hideTargetFilter, termChoices, baselineModel)
+sourcesServer(id, values, events, hideTargetFilter, termChoices)
 }
 \arguments{
 \item{id}{id of module}
@@ -16,8 +16,6 @@ sourcesServer(id, values, events, hideTargetFilter, termChoices, baselineModel)
 \item{hideTargetFilter}{(reactive) logical, hideTargetFilter}
 
 \item{termChoices}{termChoices}
-
-\item{baselineModel}{TRUE if baselineModel}
 }
 \description{
 Server function of the data - sources

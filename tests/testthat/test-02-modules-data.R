@@ -86,8 +86,7 @@ test_that("Test module targetValuesServer", {
                  `Add term 1` = "term1",
                  `Add term 2` = "term2",
                  `Add term 3` = "term3"
-               )),
-               baselineModel = reactive(FALSE)
+               ))
              ),
              {
                # Arrange
@@ -107,8 +106,7 @@ test_that("Test module targetValuesServer", {
                  `Add term 1` = "term1",
                  `Add term 2` = "term2",
                  `Add term 3` = "term3"
-               )),
-               baselineModel = reactive(TRUE)
+               ))
              ),
              {
                # Arrange
@@ -124,8 +122,7 @@ test_that("Test module targetValuesServer", {
              args = list(
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(TRUE),
-               baselineModel = reactive(FALSE)
+               hideTargetFilter = reactive(TRUE)
              ),
              {
                # Arrange
@@ -139,8 +136,7 @@ test_that("Test module targetValuesServer", {
              args = list(
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(FALSE),
-               baselineModel = reactive(TRUE)
+               hideTargetFilter = reactive(FALSE)
              ),
              {
                # Arrange
