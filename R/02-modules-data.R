@@ -347,16 +347,14 @@ sourcesUI <- function(id, title = NULL) {
 #' @param events events
 #' @param hideTargetFilter (reactive) logical, hideTargetFilter
 #' @param termChoices termChoices
-#' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
-#' @param sourceObsvnFilterHide sourceObsvnFilterHide
+#' @param baselineModel TRUE if baselineModel
 sourcesServer <-
   function(id,
            values,
            events,
            hideTargetFilter,
            termChoices,
-           sourceObsvnFilterChoices,
-           sourceObsvnFilterHide) {
+           baselineModel) {
     moduleServer(id,
                  function(input, output, session) {
                    ## Source - callModule fruitsMatrix ----
@@ -370,6 +368,14 @@ sourcesServer <-
                              collapse = "-")
                      } else {
                        values$targetNames
+                     }
+                   })
+                   
+                   sourceObsvnFilterChoices <- reactive({
+                     if (baselineModel()) {
+                       values$obsvnNames
+                     } else {
+                       NA
                      }
                    })
                    
@@ -394,7 +400,7 @@ sourcesServer <-
                        list(
                          id = "obsvn",
                          choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         hide = reactive(!baselineModel()),
                          distribution = FALSE,
                          batch = TRUE
                        ),
@@ -410,7 +416,7 @@ sourcesServer <-
                        list(
                          id = "obsvn",
                          choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         hide = reactive(!baselineModel()),
                          batch = TRUE
                        )
                      )
@@ -458,7 +464,7 @@ sourcesServer <-
                        list(
                          id = "obsvn",
                          choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         hide = reactive(!baselineModel()),
                          batch = TRUE
                        ),
                        list(
@@ -510,17 +516,23 @@ concentrationsUI <- function(id, title = NULL) {
 #' @param values values
 #' @param events events
 #' @param hideTargetFilter hideTargetFilter
-#' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
-#' @param sourceObsvnFilterHide sourceObsvnFilterHide
+#' @param baselineModel TRUE if baselineModel
 concentrationsServer <-
   function(id,
            values,
            events,
            hideTargetFilter,
-           sourceObsvnFilterChoices,
-           sourceObsvnFilterHide) {
+           baselineModel) {
     moduleServer(id,
                  function(input, output, session) {
+                   sourceObsvnFilterChoices <- reactive({
+                     if (baselineModel()) {
+                       values$obsvnNames
+                     } else {
+                       NA
+                     }
+                   })
+                   
                    ## Concentration - callModule fruitsMatrix ----
                    callModule(
                      fruitsMatrix,
@@ -546,7 +558,7 @@ concentrationsServer <-
                        list(
                          id = "obsvn",
                          choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         hide = reactive(!baselineModel()),
                          distribution = FALSE,
                          batch = TRUE
                        )
@@ -555,7 +567,7 @@ concentrationsServer <-
                        list(
                          id = "obsvn",
                          choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         hide = reactive(!baselineModel()),
                          batch = TRUE
                        )
                      )

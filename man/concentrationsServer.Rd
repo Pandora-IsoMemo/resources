@@ -4,14 +4,7 @@
 \alias{concentrationsServer}
 \title{Concentrations Server}
 \usage{
-concentrationsServer(
-  id,
-  values,
-  events,
-  hideTargetFilter,
-  sourceObsvnFilterChoices,
-  sourceObsvnFilterHide
-)
+concentrationsServer(id, values, events, hideTargetFilter, baselineModel)
 }
 \arguments{
 \item{id}{id of module}
@@ -22,9 +15,7 @@ concentrationsServer(
 
 \item{hideTargetFilter}{hideTargetFilter}
 
-\item{sourceObsvnFilterChoices}{sourceObsvnFilterChoices}
-
-\item{sourceObsvnFilterHide}{sourceObsvnFilterHide}
+\item{baselineModel}{TRUE if baselineModel}
 }
 \description{
 Server function of the data - concentrations

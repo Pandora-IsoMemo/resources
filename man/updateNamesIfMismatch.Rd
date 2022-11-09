@@ -4,15 +4,18 @@
 \alias{updateNamesIfMismatch}
 \title{Update Names If Mismatch}
 \usage{
-updateNamesIfMismatch(values, entryName, targetNames)
+updateNamesIfMismatch(values, entryName, newNames, isNamesFun)
 }
 \arguments{
 \item{values}{(list) with all data and model options}
 
 \item{entryName}{(character) name of values element}
 
-\item{targetNames}{(reactive) character vector of targetNames}
+\item{newNames}{(reactive) character vector of newNames}
+
+\item{isNamesFun}{(function) function that checks for the correct level in the list hierarchy
+of values}
 }
 \description{
-Update term names of entries such that they match to new targetNames
+Update names of entries such that they match to new newNames
 }

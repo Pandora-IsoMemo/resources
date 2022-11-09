@@ -87,8 +87,7 @@ test_that("Test module targetValuesServer", {
                  `Add term 2` = "term2",
                  `Add term 3` = "term3"
                )),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(TRUE)
+               baselineModel = reactive(FALSE)
              ),
              {
                # Arrange
@@ -109,8 +108,7 @@ test_that("Test module targetValuesServer", {
                  `Add term 2` = "term2",
                  `Add term 3` = "term3"
                )),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(FALSE)
+               baselineModel = reactive(TRUE)
              ),
              {
                # Arrange
@@ -127,8 +125,7 @@ test_that("Test module targetValuesServer", {
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
                hideTargetFilter = reactive(TRUE),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(TRUE)
+               baselineModel = reactive(FALSE)
              ),
              {
                # Arrange
@@ -143,8 +140,7 @@ test_that("Test module targetValuesServer", {
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
                hideTargetFilter = reactive(FALSE),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(FALSE)
+               baselineModel = reactive(TRUE)
              ),
              {
                # Arrange

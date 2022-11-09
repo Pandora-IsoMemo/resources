@@ -203,7 +203,11 @@ fruitsTab <- function(input,
     values$targetNames <-
       unique(colnames(values$obsvn[["default"]]))
     
-    values <- updateSourceNamesIfMismatch(values)
+    # for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
+    #   values[[entry]] <- updateNamesIfMismatch(
+    #     values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
+    #   )
+    # }
     
     if (input$modelWeights) {
       if (input$modelConcentrations) {
@@ -226,6 +230,16 @@ fruitsTab <- function(input,
     
     values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
     
+    for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
+      if (entry == "source") browser()
+      values[[entry]] <- updateNamesIfMismatch(
+        values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
+      )
+      # values[[entry]] <- updateNamesIfMismatch(
+      #   values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
+      # )
+    }
+    
     values$offsetNames <- "Offset"
     
     values$targetValuesCovariatesNames <-
@@ -240,14 +254,6 @@ fruitsTab <- function(input,
       "Add term 2" = "term2",
       "Add term 3" = "term3"
     )
-  })
-  
-  sourceObsvnFilterChoices <- reactive({
-    if (baselineModel()) {
-      values$obsvnNames
-    } else {
-      NA
-    }
   })
   
   # observeEvent(input$adaptiveNames, {
@@ -277,20 +283,22 @@ fruitsTab <- function(input,
                    values = values,
                    events = events)
   
+  baselineModel <- reactive({
+    values$modelType %in% c(3, 5)
+  })
+  
   sourcesServer("sources",
                 values = values,
                 events = events,
                 hideTargetFilter = reactive(!input$modelWeights),
                 termChoices = termChoices,
-                sourceObsvnFilterChoices = sourceObsvnFilterChoices,
-                sourceObsvnFilterHide = reactive(!baselineModel()))
+                baselineModel = reactive(baselineModel()))
   
   concentrationsServer("concentration",
                        values = values,
                        events = events,
                        hideTargetFilter = reactive(!input$modelWeights),
-                       sourceObsvnFilterChoices = sourceObsvnFilterChoices,
-                       sourceObsvnFilterHide = reactive(!baselineModel()))
+                       baselineModel = reactive(baselineModel()))
   
   ## -- from IsoMemo
   observeEvent(isoMemoData()$event, {
@@ -378,10 +386,6 @@ fruitsTab <- function(input,
       values$categoricalVars <-
         values$categoricalVars[!(potentialCat %in% values$numericVars)]
     }
-  })
-  
-  baselineModel <- reactive({
-    values$modelType %in% c(3, 5)
   })
   
   observeEvent(values$targetValuesShowCovariates, {
@@ -2056,42 +2060,25 @@ extractPotentialCat <- function(targetValuesCovariates) {
     )]
 }
 
-#' Update Source Names If Mismatch
-#' 
-#' Update term names of source related entries such that they match to new targetNames
-#' 
-#' @inheritParams updateNamesIfMismatch
-updateSourceNamesIfMismatch <- function(values) {
-  for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
-    values <- updateNamesIfMismatch(values, entry, targetNames = values$targetNames)
-  }
-  
-  values
-}
-
 
 #' Update Names If Mismatch
 #' 
-#' Update term names of entries such that they match to new targetNames
+#' Update names of entries such that they match to new newNames
 #' 
 #' @param values (list) with all data and model options
 #' @param entryName (character) name of values element
-#' @param targetNames (reactive) character vector of targetNames
-updateNamesIfMismatch <- function(values, entryName, targetNames) {
-  isFlat <- function(entryContent) {
-    !is.null(ncol(entryContent[[1]])) && 
-      is.null(names(entryContent[[1]][[1]])) &&
-      length(entryContent) == length(targetNames)
-  }
-  
-  updateListNames <- function(entryContent, n) {
+#' @param newNames (reactive) character vector of newNames
+#' @param isNamesFun (function) function that checks for the correct level in the list hierarchy
+#' of values
+updateNamesIfMismatch <- function(values, entryName, newNames, isNamesFun) {
+  updateListNames <- function(entryContent, n, newNames) {
     if (n == 0) {
-      names(entryContent) <- targetNames
+      names(entryContent) <- newNames
       entryContent
     } else {
       n <- n - 1
       lapply(entryContent, function(elem) {
-        updateListNames(elem, n)
+        updateListNames(elem, n, newNames)
       })
     }
   }
@@ -2099,15 +2086,45 @@ updateNamesIfMismatch <- function(values, entryName, targetNames) {
   entryContent <- values[[entryName]]
   nMakeFlatter <- 0
   
-  while (!isFlat(entryContent)) {
+  while (!isNamesFun(entryContent, length(newNames))) {
     entryContent <- entryContent[[1]]
     nMakeFlatter <- nMakeFlatter + 1
   } 
   
-  # check matching of targetNames, and if false update names
-  if (!identical(names(entryContent), targetNames)) {
-    values[[entryName]] <- updateListNames(values[[entryName]], nMakeFlatter)
+  # check matching of newNames, and if false update names
+  if (!identical(names(entryContent), newNames)) {
+    res <- updateListNames(values[[entryName]], nMakeFlatter, newNames)
+  } else {
+    res <- values[[entryName]]
   }
 
-  values
+  return(res)
 }
+
+#' Is Target Names
+#' 
+#' Checks if names of the list are targetNames (deepest hierarchy in a values object)
+#' 
+#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
+#'  values$sourceOffset, values$sourceOffsetUncert
+#' @param lengthNewNames (numeric) number of new names
+isTargetNames <- function(entryContent, lengthNewNames) {
+  !is.null(ncol(entryContent[[1]])) && 
+    is.null(names(entryContent[[1]][[1]])) &&
+    length(entryContent) == lengthNewNames
+}
+
+
+#' Is Obsvn Names
+#' 
+#' Checks if names if the list are obsvnNames (hierarchy above targetNames in a values object)
+#' 
+#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
+#'  values$sourceOffset, values$sourceOffsetUncert
+#' @param lengthNewNames (numeric) number of new names
+isObsvnNames <- function(entryContent, lengthNewNames) {
+  !is.null(ncol(entryContent[[1]][[1]])) && 
+    is.null(names(entryContent[[1]][[1]][[1]])) &&
+    length(entryContent) == lengthNewNames
+}
+

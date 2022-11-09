@@ -4,15 +4,7 @@
 \alias{sourcesServer}
 \title{Sources Server}
 \usage{
-sourcesServer(
-  id,
-  values,
-  events,
-  hideTargetFilter,
-  termChoices,
-  sourceObsvnFilterChoices,
-  sourceObsvnFilterHide
-)
+sourcesServer(id, values, events, hideTargetFilter, termChoices, baselineModel)
 }
 \arguments{
 \item{id}{id of module}
@@ -25,9 +17,7 @@ sourcesServer(
 
 \item{termChoices}{termChoices}
 
-\item{sourceObsvnFilterChoices}{sourceObsvnFilterChoices}
-
-\item{sourceObsvnFilterHide}{sourceObsvnFilterHide}
+\item{baselineModel}{TRUE if baselineModel}
 }
 \description{
 Server function of the data - sources
