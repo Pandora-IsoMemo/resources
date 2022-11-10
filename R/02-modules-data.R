@@ -522,18 +522,6 @@ concentrationsServer <-
            ) {
     moduleServer(id,
                  function(input, output, session) {
-                   baselineModel <- reactive({
-                     values$modelType %in% c(3, 5)
-                   })
-                   
-                   sourceObsvnFilterChoices <- reactive({
-                     if (baselineModel()) {
-                       values$obsvnNames
-                     } else {
-                       NA
-                     }
-                   })
-                   
                    ## Concentration - callModule fruitsMatrix ----
                    callModule(
                      fruitsMatrix,
@@ -558,8 +546,14 @@ concentrationsServer <-
                      filter = list(
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = reactive(!baselineModel()),
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          distribution = FALSE,
                          batch = TRUE
                        )
@@ -567,8 +561,14 @@ concentrationsServer <-
                      filterCov = list(
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = reactive(!baselineModel()),
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          batch = TRUE
                        )
                      )

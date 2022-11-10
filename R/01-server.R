@@ -203,12 +203,6 @@ fruitsTab <- function(input,
     values$targetNames <-
       unique(colnames(values$obsvn[["default"]]))
     
-    # for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
-    #   values[[entry]] <- updateNamesIfMismatch(
-    #     values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
-    #   )
-    # }
-    
     if (input$modelWeights) {
       if (input$modelConcentrations) {
         values$fractionNames <- unique(colnames(values$concentration[[1]]))
@@ -231,12 +225,25 @@ fruitsTab <- function(input,
     values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
     
     for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
-      values[[entry]] <- updateNamesIfMismatch(
+      targetNamesMatching <- areNamesNotMatching(
         values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
       )
-      # values[[entry]] <- updateNamesIfMismatch(
+      
+      if (targetNamesMatching$missmatch) {
+        #if (entry == "source") browser()
+        values[[entry]] <-
+          updateListNames(values[[entry]], targetNamesMatching$nFlatten, values$targetNames)
+      }
+      
+      # obsvnNamesMatching <- areNamesNotMatching(
       #   values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
       # )
+      # 
+      # if (obsvnNamesMatching$missmatch) {
+      #   #if (entry == "source") browser()
+      #   values[[entry]] <-
+      #     updateListNames(values[[entry]], obsvnNamesMatching$nFlatten, values$obsvnNames)
+      # }
     }
     
     values$offsetNames <- "Offset"
@@ -2062,19 +2069,7 @@ extractPotentialCat <- function(targetValuesCovariates) {
 #' @param newNames (reactive) character vector of newNames
 #' @param isNamesFun (function) function that checks for the correct level in the list hierarchy
 #' of values
-updateNamesIfMismatch <- function(values, entryName, newNames, isNamesFun) {
-  updateListNames <- function(entryContent, n, newNames) {
-    if (n == 0) {
-      names(entryContent) <- newNames
-      entryContent
-    } else {
-      n <- n - 1
-      lapply(entryContent, function(elem) {
-        updateListNames(elem, n, newNames)
-      })
-    }
-  }
-  
+areNamesNotMatching <- function(values, entryName, newNames, isNamesFun) {
   entryContent <- values[[entryName]]
   nMakeFlatter <- 0
   
@@ -2083,14 +2078,20 @@ updateNamesIfMismatch <- function(values, entryName, newNames, isNamesFun) {
     nMakeFlatter <- nMakeFlatter + 1
   } 
   
-  # check matching of newNames, and if false update names
-  if (!identical(names(entryContent), newNames)) {
-    res <- updateListNames(values[[entryName]], nMakeFlatter, newNames)
-  } else {
-    res <- values[[entryName]]
-  }
+  return(list(missmatch = !identical(names(entryContent), newNames),
+              nFlatten = nMakeFlatter))
+}
 
-  return(res)
+updateListNames <- function(entryContent, n, newNames) {
+  if (n == 0) {
+    names(entryContent) <- newNames
+    entryContent
+  } else {
+    n <- n - 1
+    lapply(entryContent, function(elem) {
+      updateListNames(elem, n, newNames)
+    })
+  }
 }
 
 #' Is Target Names
