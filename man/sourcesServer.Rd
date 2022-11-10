@@ -4,7 +4,7 @@
 \alias{sourcesServer}
 \title{Sources Server}
 \usage{
-sourcesServer(id, values, events, hideTargetFilter, termChoices)
+sourcesServer(id, values, events, termChoices)
 }
 \arguments{
 \item{id}{id of module}
@@ -12,8 +12,6 @@ sourcesServer(id, values, events, hideTargetFilter, termChoices)
 \item{values}{values}
 
 \item{events}{events}
-
-\item{hideTargetFilter}{(reactive) logical, hideTargetFilter}
 
 \item{termChoices}{termChoices}
 }

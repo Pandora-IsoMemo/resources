@@ -80,7 +80,6 @@ test_that("Test module targetValuesServer", {
              args = list(
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(TRUE),
                termChoices = reactive(c(
                  `Default term` = "default",
                  `Add term 1` = "term1",
@@ -100,7 +99,6 @@ test_that("Test module targetValuesServer", {
              args = list(
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(FALSE),
                termChoices = reactive(c(
                  `Default term` = "default",
                  `Add term 1` = "term1",
@@ -121,8 +119,7 @@ test_that("Test module targetValuesServer", {
   testServer(concentrationsServer,
              args = list(
                values = do.call(reactiveValues, testData),
-               events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(TRUE)
+               events = do.call(reactiveValues, testEvents)
              ),
              {
                # Arrange
@@ -135,8 +132,7 @@ test_that("Test module targetValuesServer", {
   testServer(concentrationsServer,
              args = list(
                values = do.call(reactiveValues, testData),
-               events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(FALSE)
+               events = do.call(reactiveValues, testEvents)
              ),
              {
                # Arrange

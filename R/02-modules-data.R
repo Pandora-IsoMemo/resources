@@ -345,13 +345,11 @@ sourcesUI <- function(id, title = NULL) {
 #' @param id id of module
 #' @param values values
 #' @param events events
-#' @param hideTargetFilter (reactive) logical, hideTargetFilter
 #' @param termChoices termChoices
 sourcesServer <-
   function(id,
            values,
            events,
-           hideTargetFilter,
            termChoices) {
     moduleServer(id,
                  function(input, output, session) {
@@ -359,7 +357,7 @@ sourcesServer <-
                    ns <- session$ns
                    
                    sourceCovNames <- reactive({
-                     if (!hideTargetFilter()) {
+                     if (values$modelWeights) {
                        apply(expand.grid(values$fractionNames, values$targetNames),
                              1,
                              paste,
@@ -389,7 +387,7 @@ sourcesServer <-
                      meanId = "source",
                      sdId = "sourceUncert",
                      row = "sourceNames",
-                     col = reactive(if (hideTargetFilter()) {
+                     col = reactive(if (!values$modelWeights) {
                        "targetNames"
                      } else {
                        "fractionNames"
@@ -409,7 +407,7 @@ sourcesServer <-
                        list(
                          id = "target",
                          choices = reactive(values$targetNames),
-                         hide = hideTargetFilter,
+                         hide = reactive(!values$modelWeights),
                          distribution = FALSE
                        )
                      ),
@@ -457,7 +455,7 @@ sourcesServer <-
                      meanId = "sourceOffset",
                      sdId = "sourceOffsetUncert",
                      row = "sourceNames",
-                     col = reactive(if (hideTargetFilter()) {
+                     col = reactive(if (!values$modelWeights) {
                        "targetNames"
                      } else {
                        "fractionNames"
@@ -472,7 +470,7 @@ sourcesServer <-
                        list(
                          id = "target",
                          choices = reactive(values$targetNames),
-                         hide = hideTargetFilter
+                         hide = reactive(!values$modelWeights)
                        )
                      )
                    )
@@ -517,12 +515,11 @@ concentrationsUI <- function(id, title = NULL) {
 #' @param id id of module
 #' @param values values
 #' @param events events
-#' @param hideTargetFilter hideTargetFilter
 concentrationsServer <-
   function(id,
            values,
-           events,
-           hideTargetFilter) {
+           events
+           ) {
     moduleServer(id,
                  function(input, output, session) {
                    baselineModel <- reactive({
@@ -546,14 +543,14 @@ concentrationsServer <-
                      meanId = "concentration",
                      sdId = "concentrationUncert",
                      row = "sourceNames",
-                     col = reactive(if (hideTargetFilter()) {
+                     col = reactive(if (!values$modelWeights) {
                        "targetNames"
                      } else {
                        "fractionNames"
                      }),
                      distributionId = "concentrationDistribution",
                      covarianceId = "concentrationCovariance",
-                     namesCov = reactive(if (hideTargetFilter()) {
+                     namesCov = reactive(if (!values$modelWeights) {
                        values$targetNames
                      } else {
                        values$fractionNames

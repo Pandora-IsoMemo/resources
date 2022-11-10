@@ -285,13 +285,12 @@ fruitsTab <- function(input,
   sourcesServer("sources",
                 values = values,
                 events = events,
-                hideTargetFilter = reactive(!input$modelWeights),
                 termChoices = termChoices)
   
   concentrationsServer("concentration",
                        values = values,
-                       events = events,
-                       hideTargetFilter = reactive(!input$modelWeights))
+                       events = events
+                       )
   
   ## -- from IsoMemo
   observeEvent(isoMemoData()$event, {

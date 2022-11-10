@@ -4,7 +4,7 @@
 \alias{concentrationsServer}
 \title{Concentrations Server}
 \usage{
-concentrationsServer(id, values, events, hideTargetFilter)
+concentrationsServer(id, values, events)
 }
 \arguments{
 \item{id}{id of module}
@@ -12,8 +12,6 @@ concentrationsServer(id, values, events, hideTargetFilter)
 \item{values}{values}
 
 \item{events}{events}
-
-\item{hideTargetFilter}{hideTargetFilter}
 }
 \description{
 Server function of the data - concentrations
