@@ -367,12 +367,8 @@ sourcesServer <-
                      }
                    })
                    
-                   baselineModel <- reactive({
-                     values$modelType %in% c(3, 5)
-                   })
-                   
                    sourceObsvnFilterChoices <- reactive({
-                     if (baselineModel()) {
+                     if (values$modelType %in% c(3, 5)) {
                        values$obsvnNames
                      } else {
                        NA
@@ -399,8 +395,14 @@ sourcesServer <-
                        list(id = "term", choices = termChoices),
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = reactive(!baselineModel()),
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          distribution = FALSE,
                          batch = TRUE
                        ),
@@ -415,8 +417,14 @@ sourcesServer <-
                        list(id = "term", choices = termChoices),
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = reactive(!baselineModel()),
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          batch = TRUE
                        )
                      )
@@ -463,8 +471,14 @@ sourcesServer <-
                      filter = list(
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = reactive(!baselineModel()),
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          batch = TRUE
                        ),
                        list(

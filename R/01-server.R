@@ -230,20 +230,18 @@ fruitsTab <- function(input,
       )
       
       if (targetNamesMatching$missmatch) {
-        #if (entry == "source") browser()
         values[[entry]] <-
           updateListNames(values[[entry]], targetNamesMatching$nFlatten, values$targetNames)
       }
       
-      # obsvnNamesMatching <- areNamesNotMatching(
-      #   values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
-      # )
-      # 
-      # if (obsvnNamesMatching$missmatch) {
-      #   #if (entry == "source") browser()
-      #   values[[entry]] <-
-      #     updateListNames(values[[entry]], obsvnNamesMatching$nFlatten, values$obsvnNames)
-      # }
+      obsvnNamesMatching <- areNamesNotMatching(
+        values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
+      )
+
+      if (obsvnNamesMatching$missmatch) {
+        values[[entry]] <-
+          updateListNames(values[[entry]], obsvnNamesMatching$nFlatten, values$obsvnNames)
+      }
     }
     
     values$offsetNames <- "Offset"
@@ -2072,13 +2070,15 @@ extractPotentialCat <- function(targetValuesCovariates) {
 areNamesNotMatching <- function(values, entryName, newNames, isNamesFun) {
   entryContent <- values[[entryName]]
   nMakeFlatter <- 0
-  
   while (!isNamesFun(entryContent, length(newNames))) {
+    # go one level deeper and to compare names:
     entryContent <- entryContent[[1]]
     nMakeFlatter <- nMakeFlatter + 1
   } 
   
-  return(list(missmatch = !identical(names(entryContent), newNames),
+  namesNotMatching <- !is.null(names(entryContent)) && !identical(names(entryContent), newNames)
+  
+  return(list(missmatch = namesNotMatching,
               nFlatten = nMakeFlatter))
 }
 
