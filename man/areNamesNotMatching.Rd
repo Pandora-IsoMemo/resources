@@ -2,9 +2,15 @@
 % Please edit documentation in R/01-server.R
 \name{areNamesNotMatching}
 \alias{areNamesNotMatching}
-\title{Update Names If Mismatch}
+\title{Are Names Not Matching}
 \usage{
-areNamesNotMatching(values, entryName, newNames, isNamesFun)
+areNamesNotMatching(
+  values,
+  entryName,
+  newNames,
+  isNamesFun = isTargetNames,
+  n = NULL
+)
 }
 \arguments{
 \item{values}{(list) with all data and model options}
@@ -13,9 +19,11 @@ areNamesNotMatching(values, entryName, newNames, isNamesFun)
 
 \item{newNames}{(reactive) character vector of newNames}
 
-\item{isNamesFun}{(function) function that checks for the correct level in the list hierarchy
+\item{isNamesFun}{(function) function that checks for the correct level in the list hierarchy}
+
+\item{n}{(numeric) depth of list to look for names
 of values}
 }
 \description{
-Update names of entries such that they match to new newNames
+Check if names of entries are matching new newNames
 }

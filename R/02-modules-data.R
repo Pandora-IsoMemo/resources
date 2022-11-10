@@ -367,14 +367,6 @@ sourcesServer <-
                      }
                    })
                    
-                   sourceObsvnFilterChoices <- reactive({
-                     if (values$modelType %in% c(3, 5)) {
-                       values$obsvnNames
-                     } else {
-                       NA
-                     }
-                   })
-                   
                    callModule(
                      fruitsMatrix,
                      "source",

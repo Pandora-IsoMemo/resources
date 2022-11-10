@@ -200,8 +200,8 @@ fruitsTab <- function(input,
   observe(priority = 200, {
     logDebug("Entering observe() (set values$xxxNames)")
     
-    values$targetNames <-
-      unique(colnames(values$obsvn[["default"]]))
+    values$targetNames <- unique(colnames(values$obsvn[["default"]]))
+    values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
     
     if (input$modelWeights) {
       if (input$modelConcentrations) {
@@ -222,32 +222,51 @@ fruitsTab <- function(input,
         unique(rownames(values$source[[1]][[1]][[1]]))
     }
     
-    values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
-    
-    for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
-      targetNamesMatching <- areNamesNotMatching(
-        values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
-      )
-      
-      if (targetNamesMatching$missmatch) {
-        values[[entry]] <-
-          updateListNames(values[[entry]], targetNamesMatching$nFlatten, values$targetNames)
-      }
-      
-      obsvnNamesMatching <- areNamesNotMatching(
-        values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
-      )
-
-      if (obsvnNamesMatching$missmatch) {
-        values[[entry]] <-
-          updateListNames(values[[entry]], obsvnNamesMatching$nFlatten, values$obsvnNames)
-      }
-    }
-    
     values$offsetNames <- "Offset"
     
     values$targetValuesCovariatesNames <-
       unique(colnames(values$targetValuesCovariates))
+    
+    # update names of list elements for source objects
+    for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
+      # check "Proxy" names:
+      targetNamesMatching <- areNamesNotMatching(
+        values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
+      )
+      if (targetNamesMatching$missmatch) {
+        values[[entry]] <-
+          updateListNames(values[[entry]], depth = targetNamesMatching$n, values$targetNames)
+      }
+      
+      # check "Observation" names
+      obsvnNamesMatching <- areNamesNotMatching(
+        values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
+      )
+      if (obsvnNamesMatching$missmatch) {
+        values[[entry]] <-
+          updateListNames(values[[entry]], depth = obsvnNamesMatching$n, values$obsvnNames)
+      }
+    }
+    
+    for (entry in c("sourceCovariance")) {
+      # check "Observation" names
+      if (length(values[[entry]]) > 0) {
+        obsvnNamesMatching <- areNamesNotMatching(values, entry, newNames = values$obsvnNames, n = 1)
+        if (obsvnNamesMatching$missmatch) {
+          values[[entry]] <- updateListNames(values[[entry]], depth = 1, values$obsvnNames)
+        }
+      }
+    }
+    
+    # update names of list elements for concentration objects
+    for (entry in c("concentration", "concentrationUncert", "concentrationCovariance")) {
+      # check "Observation" names
+      obsvnNamesMatching <- areNamesNotMatching(values, entry, newNames = values$obsvnNames, n = 0)
+      if (obsvnNamesMatching$missmatch) {
+        values[[entry]] <-
+          updateListNames(values[[entry]], depth = 0, values$obsvnNames)
+      }
+    }
   })
   
   ## Data options ----
@@ -2058,38 +2077,57 @@ extractPotentialCat <- function(targetValuesCovariates) {
 }
 
 
-#' Update Names If Mismatch
+#' Are Names Not Matching
 #' 
-#' Update names of entries such that they match to new newNames
+#' Check if names of entries are matching new newNames
 #' 
 #' @param values (list) with all data and model options
 #' @param entryName (character) name of values element
 #' @param newNames (reactive) character vector of newNames
 #' @param isNamesFun (function) function that checks for the correct level in the list hierarchy
+#' @param n (numeric) depth of list to look for names
 #' of values
-areNamesNotMatching <- function(values, entryName, newNames, isNamesFun) {
+areNamesNotMatching <- function(values,
+                                entryName,
+                                newNames, 
+                                isNamesFun = isTargetNames, 
+                                n = NULL) {
   entryContent <- values[[entryName]]
-  nMakeFlatter <- 0
-  while (!isNamesFun(entryContent, length(newNames))) {
-    # go one level deeper and to compare names:
-    entryContent <- entryContent[[1]]
-    nMakeFlatter <- nMakeFlatter + 1
-  } 
+  nFlatten <- 0
+  
+  if (is.null(n)) {
+    while (!isNamesFun(entryContent, length(newNames))) {
+      # go one level deeper to compare names:
+      entryContent <- entryContent[[1]]
+      nFlatten <- nFlatten + 1
+    } 
+  } else {
+    while (nFlatten < n) {
+      # go one level deeper to compare names:
+      entryContent <- entryContent[[1]]
+      nFlatten <- nFlatten + 1
+    } 
+  }
   
   namesNotMatching <- !is.null(names(entryContent)) && !identical(names(entryContent), newNames)
   
   return(list(missmatch = namesNotMatching,
-              nFlatten = nMakeFlatter))
+              n = nFlatten))
 }
 
-updateListNames <- function(entryContent, n, newNames) {
-  if (n == 0) {
+#' Update List Names
+#' 
+#' @param entryContent (list) possibly nested list
+#' @param depth depth of list where names should be updated
+#' @param newNames new names for list elements
+updateListNames <- function(entryContent, depth, newNames) {
+  if (depth == 0) {
     names(entryContent) <- newNames
     entryContent
   } else {
-    n <- n - 1
+    depth <- depth - 1
     lapply(entryContent, function(elem) {
-      updateListNames(elem, n, newNames)
+      updateListNames(elem, depth, newNames)
     })
   }
 }
