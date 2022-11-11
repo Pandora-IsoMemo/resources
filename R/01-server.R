@@ -237,7 +237,7 @@ fruitsTab <- function(input,
         values[[entry]] <-
           updateListNames(values[[entry]], depth = targetNamesMatching$n, values$targetNames)
       }
-      
+
       # check "Observation" names
       obsvnNamesMatching <- areNamesNotMatching(
         values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
@@ -2094,7 +2094,7 @@ areNamesNotMatching <- function(values,
                                 n = NULL) {
   entryContent <- values[[entryName]]
   nFlatten <- 0
-  
+
   if (is.null(n)) {
     while (!isNamesFun(entryContent, length(newNames))) {
       # go one level deeper to compare names:
@@ -2142,7 +2142,7 @@ updateListNames <- function(entryContent, depth, newNames) {
 isTargetNames <- function(entryContent, lengthNewNames) {
   !is.null(ncol(entryContent[[1]])) && 
     is.null(names(entryContent[[1]][[1]])) &&
-    length(entryContent) == lengthNewNames
+    (is.null(names(entryContent)) || length(entryContent) == lengthNewNames)
 }
 
 
@@ -2156,6 +2156,6 @@ isTargetNames <- function(entryContent, lengthNewNames) {
 isObsvnNames <- function(entryContent, lengthNewNames) {
   !is.null(ncol(entryContent[[1]][[1]])) && 
     is.null(names(entryContent[[1]][[1]][[1]])) &&
-    length(entryContent) == lengthNewNames
+    (is.null(names(entryContent)) || length(entryContent) == lengthNewNames)
 }
 
