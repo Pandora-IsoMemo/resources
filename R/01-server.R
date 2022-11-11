@@ -227,7 +227,7 @@ fruitsTab <- function(input,
     values$targetValuesCovariatesNames <-
       unique(colnames(values$targetValuesCovariates))
     
-    # update names of list elements for source objects
+    ### update names of source's list elements ----
     for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
       # check "Proxy" names:
       targetNamesMatching <- areNamesNotMatching(
@@ -258,7 +258,7 @@ fruitsTab <- function(input,
       }
     }
     
-    # update names of list elements for concentration objects
+    ## update names of concentration's list elements ----
     for (entry in c("concentration", "concentrationUncert", "concentrationCovariance")) {
       # check "Observation" names
       obsvnNamesMatching <- areNamesNotMatching(values, entry, newNames = values$obsvnNames, n = 0)
