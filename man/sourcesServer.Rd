@@ -4,15 +4,7 @@
 \alias{sourcesServer}
 \title{Sources Server}
 \usage{
-sourcesServer(
-  id,
-  values,
-  events,
-  hideTargetFilter,
-  termChoices,
-  sourceObsvnFilterChoices,
-  sourceObsvnFilterHide
-)
+sourcesServer(id, values, events, termChoices)
 }
 \arguments{
 \item{id}{id of module}
@@ -21,13 +13,7 @@ sourcesServer(
 
 \item{events}{events}
 
-\item{hideTargetFilter}{(reactive) logical, hideTargetFilter}
-
 \item{termChoices}{termChoices}
-
-\item{sourceObsvnFilterChoices}{sourceObsvnFilterChoices}
-
-\item{sourceObsvnFilterHide}{sourceObsvnFilterHide}
 }
 \description{
 Server function of the data - sources

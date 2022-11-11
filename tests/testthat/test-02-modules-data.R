@@ -80,15 +80,12 @@ test_that("Test module targetValuesServer", {
              args = list(
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(TRUE),
                termChoices = reactive(c(
                  `Default term` = "default",
                  `Add term 1` = "term1",
                  `Add term 2` = "term2",
                  `Add term 3` = "term3"
-               )),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(TRUE)
+               ))
              ),
              {
                # Arrange
@@ -102,15 +99,12 @@ test_that("Test module targetValuesServer", {
              args = list(
                values = do.call(reactiveValues, testData),
                events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(FALSE),
                termChoices = reactive(c(
                  `Default term` = "default",
                  `Add term 1` = "term1",
                  `Add term 2` = "term2",
                  `Add term 3` = "term3"
-               )),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(FALSE)
+               ))
              ),
              {
                # Arrange
@@ -125,10 +119,7 @@ test_that("Test module targetValuesServer", {
   testServer(concentrationsServer,
              args = list(
                values = do.call(reactiveValues, testData),
-               events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(TRUE),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(TRUE)
+               events = do.call(reactiveValues, testEvents)
              ),
              {
                # Arrange
@@ -141,10 +132,7 @@ test_that("Test module targetValuesServer", {
   testServer(concentrationsServer,
              args = list(
                values = do.call(reactiveValues, testData),
-               events = do.call(reactiveValues, testEvents),
-               hideTargetFilter = reactive(FALSE),
-               sourceObsvnFilterChoices = reactive(NA),
-               sourceObsvnFilterHide = reactive(FALSE)
+               events = do.call(reactiveValues, testEvents)
              ),
              {
                # Arrange

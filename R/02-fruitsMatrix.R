@@ -309,6 +309,8 @@ fruitsMatrix <- function(input, output, session,
       ),
       current = values[[meanId]]
     )
+    ### CHECK HERE if smthg was overwritten  <----
+    #if (meanId == "concentration") browser()
     values[[meanId]] <- extend(
       what = values[[meanId]],
       with = dummy,

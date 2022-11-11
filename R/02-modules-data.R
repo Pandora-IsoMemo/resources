@@ -345,25 +345,19 @@ sourcesUI <- function(id, title = NULL) {
 #' @param id id of module
 #' @param values values
 #' @param events events
-#' @param hideTargetFilter (reactive) logical, hideTargetFilter
 #' @param termChoices termChoices
-#' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
-#' @param sourceObsvnFilterHide sourceObsvnFilterHide
 sourcesServer <-
   function(id,
            values,
            events,
-           hideTargetFilter,
-           termChoices,
-           sourceObsvnFilterChoices,
-           sourceObsvnFilterHide) {
+           termChoices) {
     moduleServer(id,
                  function(input, output, session) {
                    ## Source - callModule fruitsMatrix ----
                    ns <- session$ns
                    
                    sourceCovNames <- reactive({
-                     if (!hideTargetFilter()) {
+                     if (values$modelWeights) {
                        apply(expand.grid(values$fractionNames, values$targetNames),
                              1,
                              paste,
@@ -381,7 +375,7 @@ sourcesServer <-
                      meanId = "source",
                      sdId = "sourceUncert",
                      row = "sourceNames",
-                     col = reactive(if (hideTargetFilter()) {
+                     col = reactive(if (!values$modelWeights) {
                        "targetNames"
                      } else {
                        "fractionNames"
@@ -393,15 +387,21 @@ sourcesServer <-
                        list(id = "term", choices = termChoices),
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          distribution = FALSE,
                          batch = TRUE
                        ),
                        list(
                          id = "target",
                          choices = reactive(values$targetNames),
-                         hide = hideTargetFilter,
+                         hide = reactive(!values$modelWeights),
                          distribution = FALSE
                        )
                      ),
@@ -409,8 +409,14 @@ sourcesServer <-
                        list(id = "term", choices = termChoices),
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          batch = TRUE
                        )
                      )
@@ -449,7 +455,7 @@ sourcesServer <-
                      meanId = "sourceOffset",
                      sdId = "sourceOffsetUncert",
                      row = "sourceNames",
-                     col = reactive(if (hideTargetFilter()) {
+                     col = reactive(if (!values$modelWeights) {
                        "targetNames"
                      } else {
                        "fractionNames"
@@ -457,14 +463,20 @@ sourcesServer <-
                      filter = list(
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          batch = TRUE
                        ),
                        list(
                          id = "target",
                          choices = reactive(values$targetNames),
-                         hide = hideTargetFilter
+                         hide = reactive(!values$modelWeights)
                        )
                      )
                    )
@@ -509,16 +521,11 @@ concentrationsUI <- function(id, title = NULL) {
 #' @param id id of module
 #' @param values values
 #' @param events events
-#' @param hideTargetFilter hideTargetFilter
-#' @param sourceObsvnFilterChoices sourceObsvnFilterChoices
-#' @param sourceObsvnFilterHide sourceObsvnFilterHide
 concentrationsServer <-
   function(id,
            values,
-           events,
-           hideTargetFilter,
-           sourceObsvnFilterChoices,
-           sourceObsvnFilterHide) {
+           events
+           ) {
     moduleServer(id,
                  function(input, output, session) {
                    ## Concentration - callModule fruitsMatrix ----
@@ -530,14 +537,14 @@ concentrationsServer <-
                      meanId = "concentration",
                      sdId = "concentrationUncert",
                      row = "sourceNames",
-                     col = reactive(if (hideTargetFilter()) {
+                     col = reactive(if (!values$modelWeights) {
                        "targetNames"
                      } else {
                        "fractionNames"
                      }),
                      distributionId = "concentrationDistribution",
                      covarianceId = "concentrationCovariance",
-                     namesCov = reactive(if (hideTargetFilter()) {
+                     namesCov = reactive(if (!values$modelWeights) {
                        values$targetNames
                      } else {
                        values$fractionNames
@@ -545,8 +552,14 @@ concentrationsServer <-
                      filter = list(
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          distribution = FALSE,
                          batch = TRUE
                        )
@@ -554,8 +567,14 @@ concentrationsServer <-
                      filterCov = list(
                        list(
                          id = "obsvn",
-                         choices = sourceObsvnFilterChoices,
-                         hide = sourceObsvnFilterHide,
+                         choices = reactive({
+                           if (values$modelType %in% c(3, 5)) {
+                             values$obsvnNames
+                           } else {
+                             NA
+                           }
+                         }),
+                         hide = reactive(!(values$modelType %in% c(3, 5))),
                          batch = TRUE
                        )
                      )
