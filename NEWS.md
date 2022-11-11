@@ -1,5 +1,10 @@
 # ReSources development version
 
+## ReSources 22.11.2
+
+### Bug fixes
+- endless loop when uploading data with no names of list elements, that is no baseline model (#62)
+
 ## ReSources 22.11.1
 
 ### Bug fixes
