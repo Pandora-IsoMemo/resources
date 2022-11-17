@@ -2122,7 +2122,7 @@ areNamesNotMatching <- function(values,
 #' @param newNames new names for list elements
 updateListNames <- function(entryContent, depth, newNames) {
   if (depth == 0) {
-    names(entryContent) <- newNames
+    names(entryContent) <- newNames[1:length(names(entryContent))]
     entryContent
   } else {
     depth <- depth - 1
@@ -2141,8 +2141,7 @@ updateListNames <- function(entryContent, depth, newNames) {
 #' @param lengthNewNames (numeric) number of new names
 isTargetNames <- function(entryContent, lengthNewNames) {
   !is.null(ncol(entryContent[[1]])) && 
-    is.null(names(entryContent[[1]][[1]])) &&
-    (is.null(names(entryContent)) || length(entryContent) == lengthNewNames)
+    is.null(names(entryContent[[1]][[1]]))
 }
 
 
@@ -2155,7 +2154,6 @@ isTargetNames <- function(entryContent, lengthNewNames) {
 #' @param lengthNewNames (numeric) number of new names
 isObsvnNames <- function(entryContent, lengthNewNames) {
   !is.null(ncol(entryContent[[1]][[1]])) && 
-    is.null(names(entryContent[[1]][[1]][[1]])) &&
-    (is.null(names(entryContent)) || length(entryContent) == lengthNewNames)
+    is.null(names(entryContent[[1]][[1]][[1]]))
 }
 
