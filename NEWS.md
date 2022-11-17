@@ -1,5 +1,10 @@
 # ReSources development version
 
+## ReSources 22.11.3
+
+### Bug fixes
+- fix loop when entering new columns (#64)
+
 ## ReSources 22.11.2
 
 ### Bug fixes
