@@ -38,14 +38,13 @@ getNimblePrior <- function(priorParameters, prior, replacements, n, individualNa
     if (applyUnc == FALSE) {
       nimblePrior <- c(paste0(gsub("=", "<", nimblePrior)), paste0(gsub("=", ">", nimblePrior)))
 
-      nimblePrior <- paste0(nimblePrior, c("+pUnc_", "+pUnc_"), n[2])
+      nimblePrior <- paste0(nimblePrior, c(paste0("+", Unc), paste0("+", Unc)), n[2])
 
       return(c(
         paste0(
           "prior", n[2], "_", paste0(individualNames[n[1]], c("a", "b")),
           " ~ dconstraint(", nimblePrior, c("*1/2", "*-1/2"), "& 10000 > 9999)"
-        ),
-        paste0("pUnc_", n[2], " ~ dunif(0,", Unc, ")")
+        )
       ))
     } else {
       nimblePrior <- c(paste0(gsub("=", "<", nimblePrior)), paste0(gsub("=", ">", nimblePrior)))
