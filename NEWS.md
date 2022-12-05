@@ -21,3 +21,18 @@ tables, values are not reset anymore (#34)
 ### Enhancements
 - check if uploaded data contains empty tables
 - use shinyalerts in data uploads with different types of alarms: "error", "warning", "success"
+
+## ReSources 22.08.2
+
+### Bug Fixes
+- fix conflicts with column names (#44)
+
+## ReSources _older versions_
+
+### Enhancements
+- optimal prior (#42)
+- interface updates (#23)
+
+### Bug Fixes
+- fix copy-paste bug (#33)
+- fix crash after deleting cov column (#12)
