@@ -10,7 +10,7 @@
 #' @importFrom futile.logger flog.warn
 #' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density
 #' geom_histogram geom_line theme element_text scale_fill_brewer labs ylim scale_fill_manual scale_color_manual
-#' geom_point scale_color_brewer xlim aes geom_errorbar
+#' geom_point scale_color_brewer xlim aes geom_errorbar geom_smooth
 #' @importFrom grDevices dev.off pdf png svg tiff chull pdfFonts postscriptFonts colorRampPalette
 #' @importFrom htmltools save_html withTags
 #' @importFrom jsonlite fromJSON toJSON
@@ -21,18 +21,20 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom readr guess_encoding
 #' @importFrom readxl read_excel
-#' @importFrom shiny runApp NS tabPanel sidebarLayout sidebarPanel
-#' tabPanel tags fileInput actionButton mainPanel tabsetPanel span
-#' reactiveValues callModule observe reactive renderText navbarMenu observeEvent
-#' div textOutput showModal removeModal modalDialog tagList selectInput renderUI
-#' conditionalPanel helpText textInput includeHTML textAreaInput uiOutput
-#' tagAppendAttributes updateSelectInput fluidRow column isolate numericInput
-#' eventReactive updateTextInput updateNumericInput exportTestValues renderTable
-#' tableOutput checkboxInput is.reactive singleton reactiveValuesToList withProgress
-#' validate setProgress renderPlot plotOutput radioButtons modalButton outputOptions
-#' updateRadioButtons updateCheckboxInput showTab hideTab downloadButton downloadHandler
-#' req sliderInput reactiveVal renderPrint HTML debounce updateTextAreaInput
-#' updateSelectizeInput invalidateLater renderCachedPlot
+#' @importFrom shiny actionButton callModule checkboxInput column conditionalPanel debounce div
+#'  downloadButton downloadHandler eventReactive exportTestValues fileInput fluidRow helpText
+#'  hideTab HTML includeHTML invalidateLater isolate is.reactive 
+#'  mainPanel modalButton modalDialog moduleServer 
+#'  navbarMenu NS numericInput observe observeEvent outputOptions plotOutput 
+#'  reactive reactiveValues renderText radioButtons reactiveVal reactiveValuesToList removeModal 
+#'  renderCachedPlot renderPlot renderPrint renderTable renderUI 
+#'  req runApp selectInput selectizeInput setProgress showModal showTab sidebarLayout sidebarPanel 
+#'  singleton sliderInput span tableOutput tabPanel tabsetPanel tagAppendAttributes tagList tags 
+#'  testServer
+#'  textAreaInput textInput textOutput uiOutput updateCheckboxInput updateNumericInput
+#'  updateRadioButtons updateSelectInput updateSelectizeInput updateTextAreaInput updateTextInput
+#'  validate withProgress
+#' @importFrom shinyalert shinyalert
 #' @importFrom shinyjs reset useShinyjs alert show hide
 #' @importFrom shinyMatrix matrixInput updateMatrixInput
 #' @importFrom shinyWidgets pickerInput updatePickerInput

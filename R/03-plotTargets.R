@@ -8,16 +8,25 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
                         Teaser = TRUE, contributionLimit = "None",
                         pointDat = data.frame(), histBins = 50,
                         binSize = NULL,
-                        fontFamily = NULL, whiskerMultiplier = 0.95, boxQuantile = 0.68) {
-  if (length(groupVars) == 0) {
+                        fontFamily = NULL, whiskerMultiplier = 0.95, boxQuantile = 0.68,
+                        numCov = FALSE) {
+  if (length(groupVars) == 0 && numCov == FALSE) {
     return(NULL)
+  }
+  if(numCov == TRUE){
+    numVars <- matrix(t(apply(fruitsObj$covariatesNum, 1, function(r)r*attr(fruitsObj$covariatesNum,'scaled:scale') + attr(fruitsObj$covariatesNum, 'scaled:center'))), ncol = ncol(fruitsObj$covariatesNum))
+    colnames(numVars) <- colnames(fruitsObj$covariatesNum)
+    numCols <- cbind(Target = rownames(fruitsObj$covariatesNum), numVars[, groupType, drop = F] %>% as.data.frame)
+    modelResults <- left_join(modelResults, numCols, by = "Target")
   }
   modelResults <- modelResults[modelResults[, 1] == estType, ]
   filterRows <- which(individual == modelResults[, filterType])
   if (filterType != "all" & length(filterRows) > 0 & filterType != groupType) {
     modelResults <- modelResults[filterRows, ]
   }
-  modelResults <- modelResults[modelResults[, groupType] %in% groupVars, ]
+  if (length(groupVars) != 0){
+    modelResults <- modelResults[modelResults[, groupType] %in% groupVars, ]
+  }
   modelResults$group <- factor(modelResults[, groupType], levels = unique(modelResults[, groupType]))
   modelResults <- modelResults[, c("estimate", "group")]
   if (contributionLimit == "0-100%") {
@@ -153,6 +162,48 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
       p <- p + scale_fill_manual(values = colorPalette(p$data$group %>% unique() %>% length()))
     }
   }
+  
+  if (plotType == "Line") {
+    if (xlabel == "") {
+      if (contributionLimit == "0-100%") {
+        xlabel <- "contribution (%)"
+      } else {
+        xlabel <- "contribution"
+      }
+    }
+    
+    dataSummary <- modelResults %>%
+      group_by(group) %>%
+      summarise(
+        # sd = sd(estimate),
+        median = median(estimate),
+        meanEst = mean(estimate),
+        q68 = quantile(estimate, boxQuantile),
+        q95 = quantile(estimate, 1 - ((1 - whiskerMultiplier) / 2)),
+        q32 = quantile(estimate, 1 - boxQuantile),
+        q05 = quantile(estimate, (1 - whiskerMultiplier) / 2),
+      ) %>%
+      ungroup()
+    dataSummary$group <- as.numeric(dataSummary$group)
+    
+    if(nrow(dataSummary) < 7){
+      method = "lm"
+    } else {
+      method = "loess"
+    }
+    
+    p <- ggplot(dataSummary, aes_(x = ~group, y = ~meanEst)) +
+      geom_point() + geom_smooth(method = "lm") +
+      ylab(ylabel) +
+      xlab(xlabel)
+    if (contributionLimit == "0-100%") {
+      p <- p + ylim(c(0, 100))
+    }
+    if (contributionLimit == "0-1") {
+      p <- p + ylim(c(0, 1))
+    }
+  }
+  
   if (plotType == "Histogram") {
     if (xlabel == "") {
       if (contributionLimit == "0-100%") {

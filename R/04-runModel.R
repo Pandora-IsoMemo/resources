@@ -165,6 +165,9 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
   if (fruitsObj$modelOptions$hierarchical) {
     conf$monitors <- c(conf$monitors, "alpha_", "I_", "mu", "beta_", "theta_")
   }
+  if(fruitsObj$modelOptions$inflatedBeta == "1"){
+    conf$monitors <- c(conf$monitors, "a", "alphaRAW_")
+  }
 
   FRUITSMCMC <- buildMCMC(conf)
   if (progress) setProgress(message = "Compile model", value = 0.4)
@@ -181,6 +184,15 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
     thin = fruitsObj$modelOptions$thinning,
     nchains = fruitsObj$modelOptions$nchains
   )
+  wAIC <- calculateWAIC(FRUITSMCMC)$WAIC
+  
+  if(fruitsObj$modelOptions$inflatedBeta == "1"){
+    samples$samples <- samples$samples[, !grepl(("alphaRAW_\\["), colnames(samples$samples))]
+    samples$samples <- samples$samples[, !grepl(("a\\["), colnames(samples$samples))]
+    
+    }
+  
+  
   if (fruitsObj$modelOptions$nchains > 1 & length(userEstParameters) > 0) {
     parameters <- do.call("rbind", samples$samples)
     userEstimateSamples <- do.call("rbind", samples$samples2)
@@ -218,8 +230,7 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
   
   pValue <- lapply(1:100, function(z) computePPValues(parameters, fruitsObj$data$obsvn, obsvnSds))
   pValue <- preparePValue(pValue)
-  wAIC <- calculateWAIC(FRUITSMCMC)$WAIC
-  BIC <- getBIC(samples, fruitsObj$data$obsvn, obsvnSds)
+  BIC <- getBIC(parameters, fruitsObj$data$obsvn, obsvnSds)
   return(list(
     parameters = parameters, userEstimateSamples = userEstimateSamples, wAIC = wAIC,
     pValue = pValue, BIC = BIC
@@ -476,10 +487,9 @@ bugfixFraction1 <- function(data, constant) {
   return(data)
 }
 
-getBIC <- function(samples, obs, obsvar) {
-  allsamples <- samples$samples
-  allsamples <- matrix(colMeans(allsamples[, grepl("mu\\[", colnames(allsamples)), drop = FALSE]), ncol = NCOL(obs), nrow = NROW(obs))
+getBIC <- function(parameters, obs, obsvar) {
+  allsamples <- matrix(colMeans(parameters[, grepl("mu\\[", colnames(parameters)), drop = FALSE]), ncol = NCOL(obs), nrow = NROW(obs))
   logLik <- sum(log(dnorm(as.vector(allsamples), mean = as.vector(obs), sd = as.vector(obsvar))))
-  BIC <- -2 * logLik + ncol(samples$samples) * log(length(as.vector(obs)))
+  BIC <- -2 * logLik + ncol(parameters) * log(length(as.vector(obs)))
   BIC
 }

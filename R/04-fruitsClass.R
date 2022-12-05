@@ -147,7 +147,12 @@ fruits <- function(data,
     constants$numColsNum <- length(numCols)
   }
 
-  data$sourceDirichPrior <- rep(modelOptions$alphaHyper, constants[["nSources"]])
+  if(modelOptions$optimalPrior == TRUE){
+    data$sourceDirichPrior <- rep(0.8 / constants[["nSources"]], constants[["nSources"]])
+  } else {
+    data$sourceDirichPrior <- rep(modelOptions$alphaHyper, constants[["nSources"]])
+  }
+  
   if (modelOptions$inflatedBeta != "0") {
     data$infBetaPrior <- c(0.2, 0.8)
   }
@@ -368,7 +373,7 @@ checkModelOptions <- function(modelOptions) {
     namesExpected = c(
       "modelType", "modelWeights", "modelConcentrations",
       "modelWeightsContrained", "modelConcentrationsContrained",
-      "minUnc", "targetOffset", "alphaHyper", "covariateType",
+      "minUnc", "targetOffset", "alphaHyper", "optimalPrior", "covariateType",
       "burnin", "iterations", "thinning", "nchains", "hierarchical",
       "includeSourceOffset", "weightsDist", "sourceDist",
       "concentrationDist", "obsvnDist", "inflatedBeta",
@@ -700,6 +705,11 @@ replaceSourceTerms <- function(sourceTerm, sourceUncertTerm, modelOptions, value
       }
     )
     allColumnNames <- unique(unlist(allColumnNames))
+    
+    # order allColumnNames with respect to valueNames$fractions in order to pass the check:
+    # "checkDataNameConsistency()"
+    allColumnNames <- allColumnNames[order(match(allColumnNames, valueNames$fractions))]
+    
     if (!modelOptions$modelWeights) {
       allColumnNames <- valueNames$targets
     }

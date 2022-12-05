@@ -1,0 +1,38 @@
+# ReSources development version
+
+## ReSources 22.11.3
+
+### Bug fixes
+- fix loop when entering new columns (#64)
+
+## ReSources 22.11.2
+
+### Bug fixes
+- endless loop when uploading data with no names of list elements, that is no baseline model (#62)
+
+## ReSources 22.11.1
+
+### Bug fixes
+- fix update of list names for sources and concentration tables after names where changed in target
+tables, values are not reset anymore (#34)
+
+## ReSources 22.09.1
+
+### Enhancements
+- check if uploaded data contains empty tables
+- use shinyalerts in data uploads with different types of alarms: "error", "warning", "success"
+
+## ReSources 22.08.2
+
+### Bug Fixes
+- fix conflicts with column names (#44)
+
+## ReSources _older versions_
+
+### Enhancements
+- optimal prior (#42)
+- interface updates (#23)
+
+### Bug Fixes
+- fix copy-paste bug (#33)
+- fix crash after deleting cov column (#12)

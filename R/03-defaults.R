@@ -33,6 +33,7 @@ defaultMatrixNames <- function(m, prefixRow, prefixCol, sep = "_") {
 
   m
 }
+
 defaultValues <- function() {
   list(
     status = "INITIALIZE",
@@ -48,6 +49,7 @@ defaultValues <- function() {
     obsvnError = list(
       default = emptyMatrix("Individual_1", "proxy_1")
     ),
+    targetValuesShowCovariates = TRUE,
     targetValuesCovariates = emptyMatrix("Individual_1", "covariate"),
     targetValuesCovariance = list(),
     obsvnNames = "Individual_1",
@@ -81,12 +83,15 @@ defaultValues <- function() {
     concentrationDistCovRep = FALSE,
     concentrationCovariance = list(emptyMatrix("proxy_1", "proxy_1")),
     modelType = "1",
+    minUnc = 0.005,
     modelWeights = FALSE,
     modelConcentrations = TRUE,
     modelWeightsContrained = TRUE,
     modelConcentrationsContrained = TRUE,
     alphaHyper = 1,
-    covariateType = 0,
+    oxcalCheck = FALSE,
+    optimalPrior = TRUE,
+    covariateType = "0",
     targetOffset = TRUE,
     burnin = 10000,
     iterations = 10000,
@@ -140,7 +145,7 @@ sampleName <- function(variable, suffix = FALSE) {
     fractionNames = "fraction",
     targetPlusFractionNames = "proxy-fraction"
   ))
-  if (inherits(n, "try-error")) browser()
+  # if (inherits(n, "try-error")) browser()
   if (suffix) {
     paste0(n, "_1")
   } else {

@@ -1,7 +1,7 @@
 splitDoubleMatrix <- function(x, rownames = FALSE) {
   stopifnot(is.matrix(x))
   stopifnot(ncol(x) == 0 || !is.null(colnames(x)))
-  stopifnot(!rownames | !is.null(rownames(x)))
+  stopifnot(!rownames || !is.null(rownames(x)))
 
   if (ncol(x) %% 2 == 1) {
     x <- cbind(x, NA)

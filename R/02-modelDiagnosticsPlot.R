@@ -38,7 +38,7 @@ modelDiagnosticsPlotUI <- function(id) {
         label = "Select filter categories:",
         choices = c("")
       ),
-      pickerInput(ns("groupVarsDiag"), "Select target",
+      pickerInput(ns("groupVarsDiag"), "Select estimate",
         choices = list(),
         selected = NULL, multiple = TRUE,
         options = list(

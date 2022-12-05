@@ -11,6 +11,7 @@ exampleValues <- function() {
     modelConcentrations = TRUE,
     modelConcentrationsContrained = TRUE,
     alphaHyper = 1,
+    optimalPrior = TRUE,
     covariateType = 2,
     targetOffset = TRUE,
     minUnc = 1E-4,

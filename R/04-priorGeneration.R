@@ -38,14 +38,13 @@ getNimblePrior <- function(priorParameters, prior, replacements, n, individualNa
     if (applyUnc == FALSE) {
       nimblePrior <- c(paste0(gsub("=", "<", nimblePrior)), paste0(gsub("=", ">", nimblePrior)))
 
-      nimblePrior <- paste0(nimblePrior, c("+pUnc_", "+pUnc_"), n[2])
+      nimblePrior <- paste0(nimblePrior, c(paste0("+", Unc), paste0("+", Unc)), n[2])
 
       return(c(
         paste0(
           "prior", n[2], "_", paste0(individualNames[n[1]], c("a", "b")),
           " ~ dconstraint(", nimblePrior, c("*1/2", "*-1/2"), "& 10000 > 9999)"
-        ),
-        paste0("pUnc_", n[2], " ~ dunif(0,", Unc, ")")
+        )
       ))
     } else {
       nimblePrior <- c(paste0(gsub("=", "<", nimblePrior)), paste0(gsub("=", ">", nimblePrior)))
@@ -696,7 +695,7 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
         applyUnc <- FALSE
       }
 
-      if (!is.null(replacements) | length(na.omit(priorDistributions)) == 1) {
+      if (!is.null(replacements) || length(na.omit(priorDistributions)) == 1) {
         if (type == "priors") {
           getNimblePrior(priorParameters, priors[x], replacements,
             n = c(j, x),
@@ -734,11 +733,11 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
       
       if (length(na.omit(priorDistributions)) >= 1) {
         priorDist <- priorDist[which(!duplicated(priorList2))]
-        priorList <- c(priorList, priorDist)
+        priorList <- c(priorList, na.omit(priorDist))
       }
       if (length(na.omit(priorUncertainties)) == 1) {
         priorDistUnc <- priorDistUnc[which(!duplicated(priorList2))]
-        priorList <- c(priorList, priorDistUnc)
+        priorList <- c(priorList, na.omit(priorDistUnc))
       }
     } else {
       priorList2 <- lapply(1:length(priorList), function(y) strsplit(priorList[[y]], "<-")[[1]][2])

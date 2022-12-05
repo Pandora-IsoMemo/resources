@@ -12,218 +12,73 @@ fruitsUI <- function(id, title = "FRUITS") {
     value = id,
     useShinyjs(),
     fluidRow(
+      # Left sidebar ----
       sidebarPanel(
+        style = "position:fixed; width:15%; overflow-y:scroll; max-height:700px",
         width = 2,
-        # uploadModelUI(ns("modelUpload"), "Upload Model"),
-        # downloadModelUI(ns("modelDownload"), "Download Model"),
-        # tags$hr(),
-        selectInput(
-          ns("exampleData"),
-          label = "Select example models",
-          choices = c(
-            "Five Sources Data",
-            "Brown Bear Data",
-            "Black Bear Data",
-            "Roman Data"
-          ),
-          selected = "Five_Sources_Data"
-        ),
-        actionButton(ns("exampleModel"), "Load selected model"),
-        tags$hr(),
-        actionButton(ns("run"), "Run"),
-        actionButton(ns("reset"), "Reset"),
-        actionButton(ns("showAbout"), "About"),
-        checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
-        helpText(
-          "This feature is experimental and may cause unexpected behaviour when importing or pasting data into the app"
-        ),
-        tags$hr(),
-        # tags$h4("View data table"),
-        # tags$button(
-        #   class = "btn btn-default",
-        #   type = "button",
-        #   onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-        #   "IsoMemo"
+        uploadModelUI(ns("modelUpload")),
+        downloadModelUI(ns("modelDownload"), NULL),
+        # selectInput(
+        #   ns("exampleData"),
+        #   label = "Select example models",
+        #   choices = c(
+        #     "Five Sources Data",
+        #     "Brown Bear Data",
+        #     "Black Bear Data",
+        #     "Roman Data"
+        #   ),
+        #   selected = "Five_Sources_Data"
         # ),
-        # dbContentButton(ns("feeding"), table = "feeding"),
-        # tags$br(),
-        # dbContentButton(ns("suess"), table = "suess"),
-        # dbContentButton(ns("diet"), table = "diet"),
-        # dbContentButton(ns("digest"), table = "digest"),
-        dbContentSelectUI(ns("popUpTables"), label = "View data table"),
-        tags$h4("Visit app"),
+        # actionButton(ns("exampleModel"), "Load selected model"),
+        tags$hr(),
+        actionButton(ns("reset"), "Reset"),
+        tags$br(), tags$br(),
+        actionButton(ns("run"), "Run"),
+        #checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
+        tags$hr(),
+        dbContentSelectUI(ns("popUpTables"), label = "Data table"),
         tags$button(
           class = "btn btn-default",
           type = "button",
           onClick = "javascript:window.open('https://isomemoapp.com/app/iso-memo-app', '_blank')",
-          "IsoMemo"
+          "IsoMemo App"
         ),
         div(
           style = "display:none;",
           verbatimTextOutput(ns("status")),
           verbatimTextOutput(ns("statusSim"))
-        )
+        )#,
+        # tags$hr(),
+        # downloadModelUI(ns("modelDownload"), "Download Model"),
+        # uploadModelUI(ns("modelUpload"))
       ),
-      # Data ----
+      # Main panel ----
       mainPanel(
-        width = 8,
+        width = 10,
         tabsetPanel(
           id = ns("mainTabs"),
           type = "tabs",
+          ## Data ----
           navbarMenu(
             "Data",
             tabPanel(
               "Target & target-to-source offsets",
-              fruitsMatrixFilter(
-                scope = ns("targetValues"),
-                id = "term",
-                label = "Term"
-              ),
-              fruitsMatrixDistribution(scope = ns("targetValues")),
-              fruitsMatrixInput(ns("targetValues"), "obsvnNames", "targetNames"),
-              checkboxInput(ns("targetOffset"), "Include target offset",
-                            value = TRUE
-              ),
-              conditionalPanel(
-                condition = "input.targetOffset == true",
-                fruitsMatrixInput(
-                  ns("weightOffset"),
-                  "targetNames",
-                  "offsetNames",
-                  fixedCols = "Offset"
-                ),
-                ns = ns
-              ),
-              checkboxInput(ns("targetValuesShowCovariates"), "Enter Covariates"),
-              conditionalPanel(
-                condition = "input.targetValuesShowCovariates == true",
-                ns = ns,
-                fruitsMatrixInput(
-                  ns("targetValuesCovariates"),
-                  "obsvnNames",
-                  "covariateNames",
-                  double = FALSE,
-                  class = "character"
-                )
-              ),
-              fruitsMatrixFilter(
-                scope = ns("targetValues"),
-                id = "obsvn",
-                label = "Observation - Target Covariance Matrix"
-              ),
-              fruitsMatrixInput(
-                scope = ns("targetValues"),
-                row = "targetNames",
-                col = "targetNames",
-                cov = TRUE
-              ),
-              checkboxInput(
-                ns("targetValuesShowCoordinates"),
-                "Coordinates & chronology"
-              ),
-              conditionalPanel(
-                condition = "input.targetValuesShowCoordinates == true",
-                ns = ns,
-                fruitsMatrixInput(
-                  ns("exportCoordinates"),
-                  "obsvnNames",
-                  "coordinateNames",
-                  double = FALSE,
-                  fixedCols = c(
-                    "longitude",
-                    "latitude",
-                    "LowerLimit/Mean/Point",
-                    "UpperLimit/SD"
-                  )
-                ),
-                tags$br()
-              )
+              targetValuesUI(ns("targetVals"), title = "Target & target-to-source offsets")
             ),
-            ## Data/Weights ----
             tabPanel(
               "Components",
-              fruitsMatrixDistribution(
-                scope = ns("weights"),
-                choices = c("constant", "normal", "log-normal")
-              ),
-              fruitsMatrixInput(ns("weights"), "targetNames", "fractionNames")
+              componentsUI(ns("components"), title = "Components")
             ),
-            ## Data/Sources ----
             tabPanel(
               "Sources",
-              div(
-                fruitsMatrixFilter(
-                  scope = ns("source"),
-                  id = "obsvn",
-                  label = "Observation"
-                )
-              ),
-              fruitsMatrixFilter(
-                scope = ns("source"),
-                id = "term",
-                label = "Term"
-              ),
-              fruitsMatrixDistribution(scope = ns("source")),
-              div(fruitsMatrixFilter(
-                scope = ns("source"),
-                id = "target",
-                label = "Proxy"
-              )),
-              fruitsMatrixInput(
-                scope = ns("source"),
-                row = "sourceNames",
-                col = "targetNames"
-              ),
-              checkboxInput(
-                ns("includeSourceOffset"),
-                "Include source specific offsets",
-                value = FALSE
-              ),
-              conditionalPanel(
-                condition = "input.includeSourceOffset == true",
-                ns = ns,
-                fruitsMatrixFilter(
-                  scope = ns("sourceOffset"),
-                  id = "obsvn",
-                  label = "Observation"
-                ),
-                fruitsMatrixFilter(
-                  scope = ns("sourceOffset"),
-                  id = "target",
-                  label = "Proxy"
-                ),
-                fruitsMatrixInput(ns("sourceOffset"), row = "sourceNames", col = "targetNames")
-              ),
-              fruitsMatrixInput(
-                ns("source"),
-                row = "sourceNames",
-                col = "sourceNames",
-                cov = TRUE,
-                toggleCov = TRUE
-              )
+              sourcesUI(ns("sources"), title = "Sources")
             ),
-            ## Data/Concentrations ----
             tabPanel(
               "Concentrations",
-              div(
-                fruitsMatrixFilter(
-                  scope = ns("concentration"),
-                  id = "obsvn",
-                  label = "Observation"
-                )
-              ),
-              fruitsMatrixDistribution(scope = ns("concentration")),
-              fruitsMatrixInput(ns("concentration"), row = "sourceNames", col = "targetNames"),
-              fruitsMatrixInput(
-                ns("concentration"),
-                row = "targetNames",
-                col = "targetNames",
-                cov = TRUE,
-                toggleCov = TRUE
-              )
+              concentrationsUI(ns("concentration"), title = "Concentrations")
             )
           ),
-          # Model options ----
+          ## Model options ----
           tabPanel(
             "Model options",
             fluidRow(
@@ -286,8 +141,13 @@ fruitsUI <- function(id, title = "FRUITS") {
                       ),
                       selected = 0
                     ),
+                    checkboxInput(
+                      ns("optimalPrior"),
+                      "Optimal objective prior",
+                      value = TRUE
+                    ),
                     conditionalPanel(
-                      condition = "input.inflatedBeta == '0'",
+                      condition = "input.optimalPrior == false && input.inflatedBeta == '0'",
                       ns = ns,
                       numericInput(
                         ns("alphaHyper"),
@@ -363,7 +223,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # Priors ----
+          ## Priors ----
           tabPanel(
             "Prior Info",
             tags$h4("All Priors"),
@@ -417,7 +277,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetOffset == true",
+                    condition = "output.targetOffset == true",
                     selectInput(
                       ns("priorOffset"),
                       "Target-to-source offsets",
@@ -441,7 +301,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     )
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true & input.covariateType !== '0'",
+                    condition = "output.targetValuesShowCovariates == true & input.covariateType !== '0'",
                     ns = ns,
                     selectInput(
                       ns("priorHierarchicalValues"),
@@ -508,7 +368,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorProxyHierarchicalValues"),
@@ -521,7 +381,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorConsumerHierarchicalValues"),
@@ -535,7 +395,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                   ),
                   
                   conditionalPanel(
-                    condition = "input.modelConcentrations == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelConcentrations == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorConcentrationHierarchicalValues"),
@@ -548,7 +408,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.modelWeights == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelWeights == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("priorWeightHierarchicalValues"),
@@ -565,7 +425,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # User Estimates ----
+          ## User Estimates ----
           tabPanel(
             "User Estimates",
             tags$h4("Estimates"),
@@ -652,7 +512,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetOffset == true",
+                    condition = "output.targetOffset == true",
                     selectInput(
                       ns("userEstimateOffset"),
                       "Target-to-source offsets",
@@ -676,7 +536,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     selectInput(
                       ns("userEstimateHierarchicalValues"),
                       "Source contribution categories",
@@ -732,7 +592,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     size = 3
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateProxyHierarchicalValues"),
@@ -745,7 +605,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateConsumerHierarchicalValues"),
@@ -759,7 +619,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                   ),
                   
                   conditionalPanel(
-                    condition = "input.modelConcentrations == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelConcentrations == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateConcentrationHierarchicalValues"),
@@ -772,7 +632,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     ns = ns
                   ),
                   conditionalPanel(
-                    condition = "input.modelWeights == true && input.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
+                    condition = "input.modelWeights == true && output.targetValuesShowCovariates == true && (input.modelType == 5 || input.modelType == 4)"
                     ,
                     selectInput(
                       ns("userEstimateWeightHierarchicalValues"),
@@ -788,7 +648,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # Model Characteristics ----
+          ## Model Characteristics ----
           tabPanel(
             "Model Characteristics",
             tags$h4("Model Characteristics"),
@@ -865,7 +725,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     multiple = TRUE
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     ns = ns,
                     pickerInput(
                       ns("characteristicsCovariatesTarget"),
@@ -914,7 +774,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     checkboxInput(ns("showTargetNames"), label = "Show target names", value = TRUE)
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     ns = ns,
                     pickerInput(
                       ns("characteristicsCovariates"),
@@ -962,7 +822,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                     )
                   ),
                   conditionalPanel(
-                    condition = "input.targetValuesShowCovariates == true",
+                    condition = "output.targetValuesShowCovariates == true",
                     ns = ns,
                     pickerInput(
                       ns("characteristicsCovariatesMix"),
@@ -1023,7 +883,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             ))
           ),
-          # Results Report ----
+          ## Results Report ----
           navbarMenu(
             "Results Report",
             menuName = "resultsReport",
@@ -1117,7 +977,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             )
           ),
-          # Diagnostics ----
+          ## Diagnostics ----
           navbarMenu(
             "Model Diagnostics",
             menuName = "modelDiagnostics",
@@ -1168,7 +1028,7 @@ fruitsUI <- function(id, title = "FRUITS") {
               exportDataUI(ns("exportDataChainsAll"), "Export all chains")
             )
           ),
-          # Output ----
+          ## Output ----
           navbarMenu(
             "Output",
             menuName = "Output",
@@ -1185,14 +1045,14 @@ fruitsUI <- function(id, title = "FRUITS") {
               "Export Output to IsoMemo-App",
               value = "isomemo",
               conditionalPanel(
-                condition = "input.targetValuesShowCoordinates == false",
+                condition = "output.targetValuesShowCoordinates == false",
                 ns = ns,
                 tags$h5(
                   "Please add coordinates in the data - Target Values tab to export results to the IsoMemo App"
                 )
               ),
               conditionalPanel(
-                condition = "input.targetValuesShowCoordinates == true",
+                condition = "output.targetValuesShowCoordinates == true",
                 ns = ns,
                 radioButtons(
                   ns("exportType"),
@@ -1231,7 +1091,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                   selectInput(ns("exportUserEstimates"), "UserEstimates", choices = NULL)
                 ),
                 conditionalPanel(
-                  condition = "input.targetValuesShowCovariates == true",
+                  condition = "output.targetValuesShowCovariates == true",
                   ns = ns,
                   checkboxInput(
                     inputId = ns("useSite"),
@@ -1262,42 +1122,14 @@ fruitsUI <- function(id, title = "FRUITS") {
                 actionButton(ns("exportToIsoMemo"), "Export to IsoMemo App")
               )
             ),
-            # OxCal ----
+            ### OxCal ----
             tabPanel(
               "Oxcal export",
               OxCalOutputUI(ns("oxcal"))
             )
           )
         )
-      ),
-      sidebarPanel(
-        width = 2,
-        downloadModelUI(ns("modelDownload"), "Download Model"),
-        uploadModelUI(ns("modelUpload"), "Upload Model")
       )
     )
   )
 }
-
-emptyMatrix <-
-  function(rownames = NULL,
-           colnames = NULL,
-           nrow = length(rownames),
-           ncol = length(colnames)) {
-    m <- matrix(NA, nrow, ncol)
-    rownames(m) <- rownames
-    colnames(m) <- colnames
-    m
-  }
-
-emptyMatrix2 <-
-  function(rownames = NULL,
-           colnames = NULL,
-           nrow = length(rownames),
-           ncol = 2 * length(colnames)) {
-    m <- matrix(NA, nrow, ncol)
-    rownames(m) <- rownames
-    colnames(m) <-
-      paste(rep(colnames, each = 2), "||", c("mean", "uncert"), sep = "")
-    m
-  }
