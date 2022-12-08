@@ -231,7 +231,7 @@ fruitsTab <- function(input,
     for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
       # check "Proxy" names:
       targetNamesMatching <- areNamesNotMatching(
-        values, entry, newNames = values$targetNames, isNamesFun = isTargetNames
+        values[[entry]], newNames = values$targetNames, isEntryFun = isDeepestEntry
       )
       if (targetNamesMatching$missmatch) {
         values[[entry]] <-
@@ -240,7 +240,7 @@ fruitsTab <- function(input,
 
       # check "Observation" names
       obsvnNamesMatching <- areNamesNotMatching(
-        values, entry, newNames = values$obsvnNames, isNamesFun = isObsvnNames
+        values[[entry]], newNames = values$obsvnNames, isEntryFun = isPreDeepestEntry
       )
       if (obsvnNamesMatching$missmatch) {
         values[[entry]] <-
@@ -251,7 +251,7 @@ fruitsTab <- function(input,
     for (entry in c("sourceCovariance")) {
       # check "Observation" names
       if (length(values[[entry]]) > 0) {
-        obsvnNamesMatching <- areNamesNotMatching(values, entry, newNames = values$obsvnNames, n = 1)
+        obsvnNamesMatching <- areNamesNotMatching(values[[entry]], newNames = values$obsvnNames, n = 1)
         if (obsvnNamesMatching$missmatch) {
           values[[entry]] <- updateListNames(values[[entry]], depth = 1, values$obsvnNames)
         }
@@ -261,7 +261,7 @@ fruitsTab <- function(input,
     ## update names of concentration's list elements ----
     for (entry in c("concentration", "concentrationUncert", "concentrationCovariance")) {
       # check "Observation" names
-      obsvnNamesMatching <- areNamesNotMatching(values, entry, newNames = values$obsvnNames, n = 0)
+      obsvnNamesMatching <- areNamesNotMatching(values[[entry]], newNames = values$obsvnNames, n = 0)
       if (obsvnNamesMatching$missmatch) {
         values[[entry]] <-
           updateListNames(values[[entry]], depth = 0, values$obsvnNames)
@@ -2081,22 +2081,18 @@ extractPotentialCat <- function(targetValuesCovariates) {
 #' 
 #' Check if names of entries are matching new newNames
 #' 
-#' @param values (list) with all data and model options
-#' @param entryName (character) name of values element
+#' @param entryContent (list) list to look for names
 #' @param newNames (reactive) character vector of newNames
-#' @param isNamesFun (function) function that checks for the correct level in the list hierarchy
+#' @param isEntryFun (function) function that checks for the correct level in the list hierarchy
 #' @param n (numeric) depth of list to look for names
 #' of values
-areNamesNotMatching <- function(values,
-                                entryName,
+areNamesNotMatching <- function(entryContent,
                                 newNames, 
-                                isNamesFun = isTargetNames, 
+                                isEntryFun = isDeepestEntry, 
                                 n = NULL) {
-  entryContent <- values[[entryName]]
   nFlatten <- 0
-
   if (is.null(n)) {
-    while (!isNamesFun(entryContent, length(newNames))) {
+    while (!isEntryFun(entryContent)) {
       # go one level deeper to compare names:
       entryContent <- entryContent[[1]]
       nFlatten <- nFlatten + 1
@@ -2115,6 +2111,60 @@ areNamesNotMatching <- function(values,
               n = nFlatten))
 }
 
+
+#' Get Depth And Table
+#' 
+#' Get the list depth and the content of the table.
+#' 
+#' @param entryContent (list) list to look for names
+#' @param isEntryFun (function) function that checks for the correct level in the list hierarchy
+#' @param n (numeric) depth of list to look for names
+#' of values
+getDepthAndTable <- function(entryContent, isEntryFun = isDeepestEntry, n = NULL) {
+  nFlatten <- 0
+  if (is.null(n)) {
+    while (!isEntryFun(entryContent)) {
+      # go one level deeper to compare names:
+      entryContent <- entryContent[[1]]
+      nFlatten <- nFlatten + 1
+    } 
+  } else {
+    while (nFlatten < n) {
+      # go one level deeper to compare names:
+      entryContent <- entryContent[[1]]
+      nFlatten <- nFlatten + 1
+    } 
+  }
+  
+  list(nFlatten = nFlatten,
+       entryContent = entryContent)
+}
+
+
+#' Is Deepest Entry
+#' 
+#' Checks if names of the list are targetNames (deepest hierarchy in a values object)
+#' 
+#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
+#'  values$sourceOffset, values$sourceOffsetUncert
+isDeepestEntry <- function(entryContent) {
+  !is.null(ncol(entryContent[[1]])) && 
+    is.null(names(entryContent[[1]][[1]]))
+}
+
+
+#' Is Pre Deepest Entry
+#' 
+#' Checks if names if the list are obsvnNames (hierarchy above targetNames in a values object)
+#' 
+#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
+#'  values$sourceOffset, values$sourceOffsetUncert
+isPreDeepestEntry <- function(entryContent) {
+  !is.null(ncol(entryContent[[1]][[1]])) && 
+    is.null(names(entryContent[[1]][[1]][[1]]))
+}
+
+
 #' Update List Names
 #' 
 #' @param entryContent (list) possibly nested list
@@ -2132,28 +2182,19 @@ updateListNames <- function(entryContent, depth, newNames) {
   }
 }
 
-#' Is Target Names
+
+#' Delete Table From List
 #' 
-#' Checks if names of the list are targetNames (deepest hierarchy in a values object)
-#' 
-#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
-#'  values$sourceOffset, values$sourceOffsetUncert
-#' @param lengthNewNames (numeric) number of new names
-isTargetNames <- function(entryContent, lengthNewNames) {
-  !is.null(ncol(entryContent[[1]])) && 
-    is.null(names(entryContent[[1]][[1]]))
+#' @param entryContent (list) possibly nested list
+#' @param depth depth of list where names should be updated
+#' @param name name of list element to be deleted
+deleteTableFromList <- function(entryContent, depth, name) {
+  if (depth == 0) {
+    entryContent[names(entryContent) != name]
+  } else {
+    depth <- depth - 1
+    lapply(entryContent, function(elem) {
+      deleteTableFromList(elem, depth, name)
+    })
+  }
 }
-
-
-#' Is Obsvn Names
-#' 
-#' Checks if names if the list are obsvnNames (hierarchy above targetNames in a values object)
-#' 
-#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
-#'  values$sourceOffset, values$sourceOffsetUncert
-#' @param lengthNewNames (numeric) number of new names
-isObsvnNames <- function(entryContent, lengthNewNames) {
-  !is.null(ncol(entryContent[[1]][[1]])) && 
-    is.null(names(entryContent[[1]][[1]][[1]]))
-}
-

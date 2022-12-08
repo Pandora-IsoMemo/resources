@@ -512,17 +512,20 @@ fruitsMatrix <- function(input, output, session,
     fullMean <- removeLine(matrix = meanData(), 
                            type = input$tabledelete$type, 
                            name = input$tabledelete$name)
+    
     setList(values[[meanId]], filterValues(), fullMean)
+    # >> ! remove corresponding elements in source/concentration tables ----
+    # only if meanId == "obsvn" ? and type == "column
     
     if (!is.null(sdId)) {
       fullSd <- removeLine(matrix = sdData(), 
                            type = input$tabledelete$type, 
                            name = input$tabledelete$name)
       setList(values[[sdId]], filterValues(), fullSd)
-      
-      # >> ! remove corresponding elements in source/concentration tables ----
-      # only if meanId == "obsvn" ?
     }
+    
+    # >> ! remove corresponding elements in source/concentration tables ----
+    # only if meanId == "obsvn" ?
     
     if (meanId == "targetValuesCovariates") {
       categoricalVars <- intersect(values[["categoricalVars"]], 
@@ -532,9 +535,6 @@ fruitsMatrix <- function(input, output, session,
       numericVars <- intersect(values[["numericVars"]], 
                                extractPotentialNumerics(values[["targetValuesCovariates"]]))
       setList(values[["numericVars"]], NULL, numericVars)
-      
-      # >> ! remove corresponding elements in source/concentration tables ----
-      # only if meanId == "obsvn" ?
     }
     
     # if (events$adaptive) {
