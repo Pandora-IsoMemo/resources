@@ -509,7 +509,6 @@ fruitsMatrix <- function(input, output, session,
   # Remove Name (col / row) ----
   observeEvent(input$tabledelete, priority = 100, {
     logDebug("Remove row or column from (%s)", meanId)
-    
     fullMean <- removeLine(matrix = meanData(), 
                            type = input$tabledelete$type, 
                            name = input$tabledelete$name)
@@ -520,6 +519,9 @@ fruitsMatrix <- function(input, output, session,
                            type = input$tabledelete$type, 
                            name = input$tabledelete$name)
       setList(values[[sdId]], filterValues(), fullSd)
+      
+      # >> ! remove corresponding elements in source/concentration tables ----
+      # only if meanId == "obsvn" ?
     }
     
     if (meanId == "targetValuesCovariates") {
@@ -530,6 +532,9 @@ fruitsMatrix <- function(input, output, session,
       numericVars <- intersect(values[["numericVars"]], 
                                extractPotentialNumerics(values[["targetValuesCovariates"]]))
       setList(values[["numericVars"]], NULL, numericVars)
+      
+      # >> ! remove corresponding elements in source/concentration tables ----
+      # only if meanId == "obsvn" ?
     }
     
     # if (events$adaptive) {
@@ -585,6 +590,10 @@ fruitsMatrix <- function(input, output, session,
 
       setList(values[[meanId]], filterValues(), fullMean)
       setList(values[[sdId]], filterValues(), fullSd)
+      
+      # >> ? better here update names of corresponding elements in source/concentration tables ----
+      # only if meanId == "obsvn" ?
+      
     } else {
       inputMean <- inputData()
       fullMean <- meanData()
@@ -603,6 +612,9 @@ fruitsMatrix <- function(input, output, session,
         createNameEvents(meanData(), fullMean, rowVar(), colVar())
       )
 
+      # >> ? better here update names of corresponding elements in source/concentration tables ----
+      # only if meanId == "obsvn" ?
+      
       setList(values[[meanId]], filterValues(), fullMean)
     }
   })
