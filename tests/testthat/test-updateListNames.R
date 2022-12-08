@@ -112,25 +112,25 @@ test_that("Test deleteTableFromList", {
   expect_equal(names(
     deleteTableFromList(testValues[["source"]],
                         depth = 2,
-                        colName = colToDelete)[[1]][[1]]
+                        name = colToDelete)[[1]][[1]]
   ),
   leftCols)
   expect_equal(names(
     deleteTableFromList(testValues[["sourceUncert"]],
                         depth = 2,
-                        colName = colToDelete)[[1]][[1]]
+                        name = colToDelete)[[1]][[1]]
   ),
   leftCols)
   expect_equal(names(
     deleteTableFromList(testValues[["sourceOffset"]],
                         depth = 1,
-                        colName = colToDelete)[[1]]
+                        name = colToDelete)[[1]]
   ),
   leftCols)
   expect_equal(names(
     deleteTableFromList(testValues[["sourceOffsetUncert"]],
                         depth = 1,
-                        colName = colToDelete)[[1]]
+                        name = colToDelete)[[1]]
   ),
   leftCols)
 })
