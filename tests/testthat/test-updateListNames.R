@@ -129,31 +129,31 @@ test_that("Test deleteTableFromList", {
   expect_equal(names(
     deleteTableFromList(testValues[["source"]],
                         depth = 2,
-                        name = colToDelete)[[1]][[1]]
+                        namesList = colToDelete)[[1]][[1]]
   ),
   leftCols)
   expect_equal(names(
     deleteTableFromList(testValues[["sourceUncert"]],
                         depth = 2,
-                        name = colToDelete)[[1]][[1]]
+                        namesList = colToDelete)[[1]][[1]]
   ),
   leftCols)
   expect_equal(names(
     deleteTableFromList(testValues[["sourceOffset"]],
                         depth = 1,
-                        name = colToDelete)[[1]]
+                        namesList = colToDelete)[[1]]
   ),
   leftCols)
   expect_equal(names(
     deleteTableFromList(testValues[["sourceOffsetUncert"]],
                         depth = 1,
-                        name = colToDelete)[[1]]
+                        namesList = colToDelete)[[1]]
   ),
   leftCols)
 })
 
 
-test_that("Test removeTargetFromLists if non-baseline model", {
+test_that("Test updateTargetsInLists if non-baseline model", {
   testValues <-
     readRDS(testthat::test_path("blackBearData_default.rds"))
   
@@ -162,25 +162,16 @@ test_that("Test removeTargetFromLists if non-baseline model", {
   expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
   expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
   
-  testValues <- removeTargetFromLists(testValues, "d13C")
-  
-  expect_equal(names(testValues[["source"]][[1]][[1]]), "d15N")
-  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), "d15N")
-  expect_equal(names(testValues[["sourceOffset"]][[1]]), "d15N")
-  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), "d15N")
-})
-
-
-test_that("Test removeTargetFromLists if baseline model", {
   testValues <-
-    readRDS(testthat::test_path("blackBearData_baselineModel.rds"))
+    updateTargetsInLists(testValues, c("d13C_new", "d15N"), updateFun = updateListNames)
   
-  expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C", "d15N"))
-  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C", "d15N"))
-  expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
-  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C_new", "d15N"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C_new", "d15N"))
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C_new", "d15N"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C_new", "d15N"))
   
-  testValues <- removeTargetFromLists(testValues, "d13C")
+  testValues <-
+    updateTargetsInLists(testValues, "d13C_new", updateFun = deleteTableFromList)
   
   expect_equal(names(testValues[["source"]][[1]][[1]]), "d15N")
   expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), "d15N")
@@ -189,7 +180,7 @@ test_that("Test removeTargetFromLists if baseline model", {
 })
 
 
-test_that("Test removeTargetFromLists if baseline model", {
+test_that("Test updateTargetsInLists if baseline model", {
   testValues <-
     readRDS(testthat::test_path("blackBearData_baselineModel.rds"))
   
@@ -199,12 +190,22 @@ test_that("Test removeTargetFromLists if baseline model", {
   expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
   
   # trying to remove obsvn with functions for targets should change nothing
-  testValues <- removeTargetFromLists(testValues, "Individual_1")
+  testValues <-
+    updateTargetsInLists(testValues, "Individual_1", updateFun = deleteTableFromList)
   
   expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C", "d15N"))
   expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C", "d15N"))
   expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
   expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
+  
+  # now testing deletion of a target
+  testValues <-
+    updateTargetsInLists(testValues, "d13C", updateFun = deleteTableFromList)
+  
+  expect_equal(names(testValues[["source"]][[1]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), "d15N")
 })
 
 
@@ -215,7 +216,8 @@ test_that("Test removeObsvnFromLists if non-baseline model", {
   expect_null(names(testValues[["source"]][[1]]))
   expect_true(length(testValues[["source"]][[1]]) > 0)
   
-  testValues <- suppressWarnings(removeObsvnFromLists(testValues, "Individual_1"))
+  testValues <-
+    suppressWarnings(removeObsvnFromLists(testValues, "Individual_1"))
   
   expect_null(names(testValues[["source"]][[1]]))
   expect_true(length(testValues[["source"]][[1]]) > 0)
@@ -261,4 +263,45 @@ test_that("Test removeObsvnFromLists if baseline model", {
                c("Individual_1", "Individual_3", "Individual_4"))
   expect_equal(names(testValues[["concentrationCovariance"]])[1:3],
                c("Individual_1", "Individual_3", "Individual_4"))
+})
+
+
+test_that("Test updateListNames", {
+  testFile <-
+    c(
+      "blackBearData_default.rds",
+      "brownBearData_default.rds",
+      "dataWithPriors_default.rds",
+      "fiveSourcesData_default.rds"
+    ) %>%
+    sample(size = 1)
+  testValues <- readRDS(testthat::test_path(testFile))
+  
+  testCols <- names(testValues[["source"]][[1]][[1]])
+  testCols[1] <- "newColName"
+  
+  expect_equal(names(
+    updateListNames(testValues[["source"]],
+                    depth = 2,
+                    namesList = testCols)[[1]][[1]]
+  ),
+  testCols)
+  expect_equal(names(
+    updateListNames(testValues[["sourceUncert"]],
+                    depth = 2,
+                    namesList = testCols)[[1]][[1]]
+  ),
+  testCols)
+  expect_equal(names(updateListNames(
+    testValues[["sourceOffset"]],
+    depth = 1,
+    namesList = testCols
+  )[[1]]),
+  testCols)
+  expect_equal(names(updateListNames(
+    testValues[["sourceOffsetUncert"]],
+    depth = 1,
+    namesList = testCols
+  )[[1]]),
+  testCols)
 })

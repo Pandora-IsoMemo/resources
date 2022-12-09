@@ -4,14 +4,14 @@
 \alias{deleteTableFromList}
 \title{Delete Table From List}
 \usage{
-deleteTableFromList(entryContent, depth, name)
+deleteTableFromList(entryContent, depth, namesList)
 }
 \arguments{
 \item{entryContent}{(list) possibly nested list}
 
 \item{depth}{depth of list where names should be updated}
 
-\item{name}{name of list element to be deleted}
+\item{namesList}{names of list elements to be deleted}
 }
 \description{
 Delete Table From List

@@ -197,90 +197,106 @@ fruitsTab <- function(input,
   
   
   ## Set names: targetNames, fractionNames, sourceNames, obsvnNames, offsetNames, targetValuesCovariatesNames ----
-  observe(priority = 200, {
-    logDebug("Entering observe() (set values$xxxNames)")
-    
-    values$targetNames <- unique(colnames(values$obsvn[["default"]]))
-    values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
-    
-    #browser()
-    # add check to find deleted element ...
-    # if (meanId == "obsvn") {
-    #   # remove elements in source/concentration tables ----
-    #   # if deleted row/column in obsvn table remove corresponding elements in 
-    #   # source/concentration tables
-    #   # do not use filterValues() here since we want to remove all occurences
-    #   if (input$tabledelete$type == "row") {
-    #     values <- removeObsvnFromLists(values, input$tabledelete$name)
-    #   } else { # input$tabledelete$type == "column"
-    #     values <- removeTargetFromLists(values, input$tabledelete$name)
-    #   }
-    # }
-    
-    if (input$modelWeights) {
-      if (input$modelConcentrations) {
-        values$fractionNames <- unique(colnames(values$concentration[[1]]))
-      }
-      else {
-        values$fractionNames <- unique(colnames(values$weights))
-      }
-    }
-    else {
-      values$fractionNames <- values$targetNames
-    }
-    
-    if (input$modelConcentrations) {
-      values$sourceNames <- unique(rownames(values$concentration[[1]]))
-    } else {
-      values$sourceNames <-
-        unique(rownames(values$source[[1]][[1]][[1]]))
-    }
-    
-    values$offsetNames <- "Offset"
-    
-    values$targetValuesCovariatesNames <-
-      unique(colnames(values$targetValuesCovariates))
-    
-    ### update names of source's list elements ----
-    for (entry in c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert")) {
-      # check "Proxy" names:
-      targetNamesMatching <- areNamesNotMatching(
-        values[[entry]], newNames = values$targetNames, isEntryFun = isDeepestEntry
-      )
-      if (targetNamesMatching$missmatch) {
-        values[[entry]] <-
-          updateListNames(values[[entry]], depth = targetNamesMatching$n, values$targetNames)
-      }
-
-      # check "Observation" names
-      obsvnNamesMatching <- areNamesNotMatching(
-        values[[entry]], newNames = values$obsvnNames, isEntryFun = isPreDeepestEntry
-      )
-      if (obsvnNamesMatching$missmatch) {
-        values[[entry]] <-
-          updateListNames(values[[entry]], depth = obsvnNamesMatching$n, values$obsvnNames)
-      }
-    }
-    
-    for (entry in c("sourceCovariance")) {
-      # check "Observation" names
-      if (length(values[[entry]]) > 0) {
-        obsvnNamesMatching <- areNamesNotMatching(values[[entry]], newNames = values$obsvnNames, n = 1)
-        if (obsvnNamesMatching$missmatch) {
-          values[[entry]] <- updateListNames(values[[entry]], depth = 1, values$obsvnNames)
+  observe(
+    priority = 200,
+    {
+      logDebug("Entering observe() (set values$xxxNames)")
+      
+      values$targetNames <-
+        unique(colnames(values$obsvn[["default"]]))
+      values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
+      
+      if (input$modelWeights) {
+        if (input$modelConcentrations) {
+          values$fractionNames <- unique(colnames(values$concentration[[1]]))
+        }
+        else {
+          values$fractionNames <- unique(colnames(values$weights))
         }
       }
-    }
-    
-    ## update names of concentration's list elements ----
-    for (entry in c("concentration", "concentrationUncert", "concentrationCovariance")) {
-      # check "Observation" names
-      obsvnNamesMatching <- areNamesNotMatching(values[[entry]], newNames = values$obsvnNames, n = 0)
-      if (obsvnNamesMatching$missmatch) {
-        values[[entry]] <-
-          updateListNames(values[[entry]], depth = 0, values$obsvnNames)
+      else {
+        values$fractionNames <- values$targetNames
       }
-    }
+      
+      if (input$modelConcentrations) {
+        values$sourceNames <- unique(rownames(values$concentration[[1]]))
+      } else {
+        values$sourceNames <-
+          unique(rownames(values$source[[1]][[1]][[1]]))
+      }
+      
+      values$offsetNames <- "Offset"
+      
+      values$targetValuesCovariatesNames <-
+        unique(colnames(values$targetValuesCovariates))
+      
+      isolate({
+        
+        #browser()
+        # add check to find deleted element ...
+        # if (meanId == "obsvn") {
+        #   # remove elements in source/concentration tables ----
+        #   # if deleted row/column in obsvn table remove corresponding elements in
+        #   # source/concentration tables
+        #   # do not use filterValues() here since we want to remove all occurences
+        #   if (input$tabledelete$type == "row") {
+        #     values <- removeObsvnFromLists(values, input$tabledelete$name)
+        #   } else { # input$tabledelete$type == "column"
+        #     values <- updateTargetsInLists(values, input$tabledelete$name)
+        #   }
+        # }
+        
+        ### update names of source's list elements ----
+        for (entry in c("source",
+                        "sourceUncert",
+                        "sourceOffset",
+                        "sourceOffsetUncert")) {
+          # check "Proxy" names:
+          targetNamesMatching <- areNamesNotMatching(values[[entry]],
+                                                     newNames = values$targetNames,
+                                                     isEntryFun = isDeepestEntry)
+          if (targetNamesMatching$missmatch) {
+            values[[entry]] <-
+              updateListNames(values[[entry]], depth = targetNamesMatching$n, values$targetNames)
+          }
+          
+          # check "Observation" names
+          obsvnNamesMatching <- areNamesNotMatching(values[[entry]],
+                                                    newNames = values$obsvnNames,
+                                                    isEntryFun = isPreDeepestEntry)
+          if (obsvnNamesMatching$missmatch) {
+            values[[entry]] <-
+              updateListNames(values[[entry]], depth = obsvnNamesMatching$n, values$obsvnNames)
+          }
+        }
+        
+        for (entry in c("sourceCovariance")) {
+          # check "Observation" names
+          if (length(values[[entry]]) > 0) {
+            obsvnNamesMatching <-
+              areNamesNotMatching(values[[entry]],
+                                  newNames = values$obsvnNames,
+                                  n = 1)
+            if (obsvnNamesMatching$missmatch) {
+              values[[entry]] <-
+                updateListNames(values[[entry]], depth = 1, values$obsvnNames)
+            }
+          }
+        }
+        
+        ## update names of concentration's list elements ----
+        for (entry in c("concentration",
+                        "concentrationUncert",
+                        "concentrationCovariance")) {
+          # check "Observation" names
+          obsvnNamesMatching <-
+            areNamesNotMatching(values[[entry]], newNames = values$obsvnNames, n = 0)
+          if (obsvnNamesMatching$missmatch) {
+            values[[entry]] <-
+              updateListNames(values[[entry]], depth = 0, values$obsvnNames)
+          }
+        }
+      })
   })
   
   ## Data options ----
@@ -423,10 +439,6 @@ fruitsTab <- function(input,
     if (values$targetValuesShowCovariates == FALSE) {
       updateCheckboxInput(session, "useSite", value = FALSE)
     }
-  })
-  
-  observeEvent(values$targetValuesShowCovariates, {
-    logDebug("Entering observeEvent(values$targetValuesShowCovariates)")
     
     if (values$targetValuesShowCovariates &&
         !is.null(input$modelType) && input$modelType == "1") {
@@ -457,6 +469,20 @@ fruitsTab <- function(input,
   
   observeEvent(values$modelWeights, {
     logDebug("Entering observeEvent(values$modelWeights)")
+    if (values$modelWeights == TRUE) {
+      showTab(
+        inputId = "mainTabs",
+        target = "Components",
+        session = session
+      )
+    } else {
+      hideTab(
+        inputId = "mainTabs",
+        target = "Components",
+        session = session
+      )
+    }
+    
     updateCheckboxInput(session, "modelWeights",
                         value = values$modelWeights
     )
@@ -540,24 +566,6 @@ fruitsTab <- function(input,
     logDebug("Entering observeEvent(input$optimalPrior)")
     values$optimalPrior <-
       input$optimalPrior
-  })
-  
-  
-  observeEvent(values$modelWeights, {
-    logDebug("Entering observeEvent(values$modelWeights)")
-    if (values$modelWeights == TRUE) {
-      showTab(
-        inputId = "mainTabs",
-        target = "Components",
-        session = session
-      )
-    } else {
-      hideTab(
-        inputId = "mainTabs",
-        target = "Components",
-        session = session
-      )
-    }
   })
   
   observeEvent(values$modelConcentrations, {
@@ -1825,15 +1833,6 @@ fruitsTab <- function(input,
   observeEvent(values$targetNames, {
     logDebug("Entering observeEvent(values$targetNames)")
     updateSelectInput(session, "exportProxy", choices = values$targetNames)
-  })
-  
-  observeEvent(values$fractionNames, {
-    logDebug("Entering observeEvent(values$fractionNames)")
-    updateSelectInput(session, "exportBeta", choices = values$fractionNames)
-  })
-  
-  observeEvent(values$targetNames, {
-    logDebug("Entering observeEvent(values$targetNames)")
     updateSelectInput(session, "exportTheta",
                       choices = applyNames(
                         expand.grid(
@@ -1845,16 +1844,15 @@ fruitsTab <- function(input,
     )
   })
   
+  observeEvent(values$fractionNames, {
+    logDebug("Entering observeEvent(values$fractionNames)")
+    updateSelectInput(session, "exportBeta", choices = values$fractionNames)
+  })
+  
   observeEvent(values$sourceNames, {
     logDebug("Entering observeEvent(values$sourceNames)")
     updateSelectInput(session, "exportSources", choices = values$sourceNames)
   })
-  
-  observeEvent(values$targetNames, {
-    logDebug("Entering observeEvent(values$targetNames)")
-    updateSelectInput(session, "exportProxy", choices = values$targetNames)
-  })
-  
   
   observe({
     logDebug("Entering observe(siteExport)")
@@ -2123,46 +2121,4 @@ areNamesNotMatching <- function(entryContent,
   
   return(list(missmatch = namesNotMatching,
               n = nFlatten))
-}
-
-
-#' Is Deepest Entry
-#' 
-#' Checks if names of the list are targetNames (deepest hierarchy in a values object)
-#' 
-#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
-#'  values$sourceOffset, values$sourceOffsetUncert
-isDeepestEntry <- function(entryContent) {
-  !is.null(ncol(entryContent[[1]])) && 
-    is.null(names(entryContent[[1]][[1]]))
-}
-
-
-#' Is Pre Deepest Entry
-#' 
-#' Checks if names if the list are obsvnNames (hierarchy above targetNames in a values object)
-#' 
-#' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
-#'  values$sourceOffset, values$sourceOffsetUncert
-isPreDeepestEntry <- function(entryContent) {
-  !is.null(ncol(entryContent[[1]][[1]])) && 
-    is.null(names(entryContent[[1]][[1]][[1]]))
-}
-
-
-#' Update List Names
-#' 
-#' @param entryContent (list) possibly nested list
-#' @param depth depth of list where names should be updated
-#' @param newNames new names for list elements
-updateListNames <- function(entryContent, depth, newNames) {
-  if (depth == 0) {
-    names(entryContent) <- newNames[1:length(names(entryContent))]
-    entryContent
-  } else {
-    depth <- depth - 1
-    lapply(entryContent, function(elem) {
-      updateListNames(elem, depth, newNames)
-    })
-  }
 }
