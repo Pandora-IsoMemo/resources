@@ -240,9 +240,9 @@ fruitsTab <- function(input,
         #   # source/concentration tables
         #   # do not use filterValues() here since we want to remove all occurences
         #   if (input$tabledelete$type == "row") {
-        #     values <- removeObsvnFromLists(values, input$tabledelete$name)
+        #     values <- updateObsvnsInLists(values, input$tabledelete$name, updateFun = deleteTableFromList)
         #   } else { # input$tabledelete$type == "column"
-        #     values <- updateTargetsInLists(values, input$tabledelete$name)
+        #     values <- updateTargetsInLists(values, input$tabledelete$name, updateFun = deleteTableFromList)
         #   }
         # }
         

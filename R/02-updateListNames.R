@@ -28,9 +28,8 @@ updateTargetsInLists <- function(values, name, updateFun) {
 #'
 #' Removes all list entries named "name" from all lists that contain entries named by observations.
 #'
-#' @param values (list) list containing all input data (all input tables)
-#' @param name (character) name of the target to be removed
-removeObsvnFromLists <- function(values, name) {
+#' @inheritParams updateObsvnsOfEntry
+updateObsvnsInLists <- function(values, name, updateFun) {
   for (entry in c("source",
                   "sourceUncert",
                   "sourceOffset",
@@ -39,7 +38,7 @@ removeObsvnFromLists <- function(values, name) {
                   "concentration",
                   "concentrationUncert",
                   "concentrationCovariance")) {
-    values[[entry]] <- removeObsvnFromEntry(values, entry, name)
+    values[[entry]] <- updateObsvnsOfEntry(values, entry, name, updateFun = updateFun)
   }
   
   values
@@ -54,7 +53,9 @@ removeObsvnFromLists <- function(values, name) {
 #' @param entry (character) one of c("source", "sourceUncert", "sourceOffset", "sourceOffsetUncert",
 #'  "sourceCovariance", "concentration", "concentrationUncert", "concentrationCovariance")
 #' @param name (character) name of the target to be removed
-removeObsvnFromEntry <- function(values, entry, name) {
+#' @param updateFun name of function that updates the lists, either
+#'  deleteTableFromList or updateListNames
+updateObsvnsOfEntry <- function(values, entry, name, updateFun) {
   if (entry %in% c("source",
                    "sourceUncert",
                    "sourceOffset",
@@ -73,7 +74,7 @@ removeObsvnFromEntry <- function(values, entry, name) {
   depth <-
     getDepthAndTable(values[[entry]], isEntryFun = isEntryFun)$nFlatten
   
-  deleteTableFromList(values[[entry]],
+  updateFun(values[[entry]],
                       depth = depth,
                       namesList = name)
 }

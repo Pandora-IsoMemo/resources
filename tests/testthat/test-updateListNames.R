@@ -209,7 +209,7 @@ test_that("Test updateTargetsInLists if baseline model", {
 })
 
 
-test_that("Test removeObsvnFromLists if non-baseline model", {
+test_that("Test updateObsvnsInLists if non-baseline model", {
   testValues <-
     readRDS(testthat::test_path("blackBearData_default.rds"))
   
@@ -217,14 +217,14 @@ test_that("Test removeObsvnFromLists if non-baseline model", {
   expect_true(length(testValues[["source"]][[1]]) > 0)
   
   testValues <-
-    suppressWarnings(removeObsvnFromLists(testValues, "Individual_1"))
+    suppressWarnings(updateObsvnsInLists(testValues, "Individual_1", updateFun = deleteTableFromList))
   
   expect_null(names(testValues[["source"]][[1]]))
   expect_true(length(testValues[["source"]][[1]]) > 0)
 })
 
 
-test_that("Test removeObsvnFromLists if baseline model", {
+test_that("Test updateObsvnsInLists if baseline model", {
   testValues <-
     readRDS(testthat::test_path("blackBearData_baselineModel.rds"))
   
@@ -245,7 +245,7 @@ test_that("Test removeObsvnFromLists if baseline model", {
   expect_equal(names(testValues[["concentrationCovariance"]])[1:3],
                c("Individual_1", "Individual_2", "Individual_3"))
   
-  testValues <- removeObsvnFromLists(testValues, "Individual_2")
+  testValues <- updateObsvnsInLists(testValues, "Individual_2", updateFun = deleteTableFromList)
   
   expect_equal(names(testValues[["source"]][[1]])[1:3],
                c("Individual_1", "Individual_3", "Individual_4"))
