@@ -1,4 +1,4 @@
-test_that("Test matching of names", {
+test_that("Test matching of names for non-baseline model", {
   testValues <-
     readRDS(testthat::test_path("fiveSourcesData_default.rds"))
   
@@ -8,16 +8,28 @@ test_that("Test matching of names", {
   expect_equal(targetNames, c("Carbon", "Nitrogen"))
   expect_equal(obsvnNames[1:2], c("Individual_1", "Individual_2"))
   
+  # here level of targetNames (colnames of obsvn)
   expect_equal(names(testValues[["source"]][[1]][[1]]), c("Carbon", "Nitrogen"))
   expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("Carbon", "Nitrogen"))
   expect_equal(names(testValues[["sourceOffset"]][[1]]), c("Carbon", "Nitrogen"))
   expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("Carbon", "Nitrogen"))
   
+  # here level of obsvnNames (rownames of obsvn)
+  expect_null(names(testValues[["source"]][[1]]))
+  expect_null(names(testValues[["sourceUncert"]][[1]]))
+  expect_null(names(testValues[["sourceOffset"]]))
+  expect_null(names(testValues[["sourceOffsetUncert"]]))
+  
+  # here level of obsvnNames (rownames of obsvn), no targetNames for these entries
   expect_null(names(testValues[["sourceCovariance"]][[1]]))
   expect_null(names(testValues[["concentration"]]))
   expect_null(names(testValues[["concentrationUncert"]]))
   expect_null(names(testValues[["concentrationCovariance"]]))
   
+})
+
+
+test_that("Test matching of names for baseline model", {
   testValues <-
     readRDS(testthat::test_path("blackBearData_baselineModel.rds"))
   
@@ -27,20 +39,25 @@ test_that("Test matching of names", {
   expect_equal(targetNames, c("d13C", "d15N"))
   expect_equal(obsvnNames[1:2], c("Individual_1", "Individual_2"))
   
-  expect_equal(names(testValues[["source"]][[1]])[1:2], c("Individual_1", "Individual_2"))
+  # here level of targetNames (colnames of obsvn)
   expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C", "d15N"))
-  expect_equal(names(testValues[["sourceUncert"]][[1]])[1:2], c("Individual_1", "Individual_2"))
   expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C", "d15N"))
-  expect_equal(names(testValues[["sourceOffset"]])[1:2], c("Individual_1", "Individual_2"))
   expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
-  expect_equal(names(testValues[["sourceOffsetUncert"]])[1:2], c("Individual_1", "Individual_2"))
   expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
   
+  # here level of obsvnNames (rownames of obsvn)
+  expect_equal(names(testValues[["source"]][[1]])[1:2], c("Individual_1", "Individual_2"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]])[1:2], c("Individual_1", "Individual_2"))
+  expect_equal(names(testValues[["sourceOffset"]])[1:2], c("Individual_1", "Individual_2"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]])[1:2], c("Individual_1", "Individual_2"))
+  
+  # here level of obsvnNames (rownames of obsvn), no targetNames for these entries
   expect_equal(names(testValues[["sourceCovariance"]][[1]])[1:2], c("Individual_1", "Individual_2"))
   expect_equal(names(testValues[["concentration"]])[1:2], c("Individual_1", "Individual_2"))
   expect_equal(names(testValues[["concentrationUncert"]])[1:2], c("Individual_1", "Individual_2"))
   expect_equal(names(testValues[["concentrationCovariance"]])[1:2], c("Individual_1", "Individual_2"))
 })
+
 
 test_that("Test getDepthAndTable", {
   testFile <-
@@ -54,7 +71,7 @@ test_that("Test getDepthAndTable", {
     sample(size = 1)
   testValues <- readRDS(testthat::test_path(testFile))
   
-  # isEntryFun = isDeepestEntry
+  # isEntryFun = isDeepestEntry -> here level of targetNames (colnames of obsvn)
   expect_equal(getDepthAndTable(testValues[["source"]], isEntryFun = isDeepestEntry)$nFlatten,
                2)
   expect_equal(getDepthAndTable(testValues[["sourceUncert"]], isEntryFun = isDeepestEntry)$nFlatten,
@@ -64,7 +81,7 @@ test_that("Test getDepthAndTable", {
   expect_equal(getDepthAndTable(testValues[["sourceOffsetUncert"]], isEntryFun = isDeepestEntry)$nFlatten,
                1)
   
-  # isEntryFun = isPreDeepestEntry
+  # isEntryFun = isPreDeepestEntry -> here level of obsvnNames (rownames of obsvn)
   expect_equal(getDepthAndTable(testValues[["source"]], isEntryFun = isPreDeepestEntry)$nFlatten,
                1)
   expect_equal(getDepthAndTable(testValues[["sourceUncert"]], isEntryFun = isPreDeepestEntry)$nFlatten,
@@ -74,7 +91,7 @@ test_that("Test getDepthAndTable", {
   expect_equal(getDepthAndTable(testValues[["sourceOffsetUncert"]], isEntryFun = isPreDeepestEntry)$nFlatten,
                0)
   
-  # isEntryFun = isDeepestEntry
+  # isEntryFun = isDeepestEntry -> here level of obsvnNames (rownames of obsvn)
   expect_equal(getDepthAndTable(testValues[["sourceCovariance"]], isEntryFun = isDeepestEntry)$nFlatten,
                1)
   expect_equal(getDepthAndTable(testValues[["concentration"]], isEntryFun = isDeepestEntry)$nFlatten,
@@ -133,4 +150,115 @@ test_that("Test deleteTableFromList", {
                         name = colToDelete)[[1]]
   ),
   leftCols)
+})
+
+
+test_that("Test removeTargetFromLists if non-baseline model", {
+  testValues <-
+    readRDS(testthat::test_path("blackBearData_default.rds"))
+  
+  expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
+  
+  testValues <- removeTargetFromLists(testValues, "d13C")
+  
+  expect_equal(names(testValues[["source"]][[1]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), "d15N")
+})
+
+
+test_that("Test removeTargetFromLists if baseline model", {
+  testValues <-
+    readRDS(testthat::test_path("blackBearData_baselineModel.rds"))
+  
+  expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
+  
+  testValues <- removeTargetFromLists(testValues, "d13C")
+  
+  expect_equal(names(testValues[["source"]][[1]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), "d15N")
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), "d15N")
+})
+
+
+test_that("Test removeTargetFromLists if baseline model", {
+  testValues <-
+    readRDS(testthat::test_path("blackBearData_baselineModel.rds"))
+  
+  expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
+  
+  # trying to remove obsvn with functions for targets should change nothing
+  testValues <- removeTargetFromLists(testValues, "Individual_1")
+  
+  expect_equal(names(testValues[["source"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
+})
+
+
+test_that("Test removeObsvnFromLists if non-baseline model", {
+  testValues <-
+    readRDS(testthat::test_path("blackBearData_default.rds"))
+  
+  expect_null(names(testValues[["source"]][[1]]))
+  expect_true(length(testValues[["source"]][[1]]) > 0)
+  
+  testValues <- suppressWarnings(removeObsvnFromLists(testValues, "Individual_1"))
+  
+  expect_null(names(testValues[["source"]][[1]]))
+  expect_true(length(testValues[["source"]][[1]]) > 0)
+})
+
+
+test_that("Test removeObsvnFromLists if baseline model", {
+  testValues <-
+    readRDS(testthat::test_path("blackBearData_baselineModel.rds"))
+  
+  expect_equal(names(testValues[["source"]][[1]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  expect_equal(names(testValues[["sourceOffset"]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  expect_equal(names(testValues[["sourceCovariance"]][[1]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  expect_equal(names(testValues[["concentration"]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  expect_equal(names(testValues[["concentrationUncert"]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  expect_equal(names(testValues[["concentrationCovariance"]])[1:3],
+               c("Individual_1", "Individual_2", "Individual_3"))
+  
+  testValues <- removeObsvnFromLists(testValues, "Individual_2")
+  
+  expect_equal(names(testValues[["source"]][[1]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
+  expect_equal(names(testValues[["sourceUncert"]][[1]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
+  expect_equal(names(testValues[["sourceOffset"]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
+  expect_equal(names(testValues[["sourceOffsetUncert"]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
+  expect_equal(names(testValues[["sourceCovariance"]][[1]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
+  expect_equal(names(testValues[["concentration"]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
+  expect_equal(names(testValues[["concentrationUncert"]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
+  expect_equal(names(testValues[["concentrationCovariance"]])[1:3],
+               c("Individual_1", "Individual_3", "Individual_4"))
 })

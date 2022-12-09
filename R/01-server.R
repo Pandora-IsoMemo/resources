@@ -203,6 +203,20 @@ fruitsTab <- function(input,
     values$targetNames <- unique(colnames(values$obsvn[["default"]]))
     values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
     
+    #browser()
+    # add check to find deleted element ...
+    # if (meanId == "obsvn") {
+    #   # remove elements in source/concentration tables ----
+    #   # if deleted row/column in obsvn table remove corresponding elements in 
+    #   # source/concentration tables
+    #   # do not use filterValues() here since we want to remove all occurences
+    #   if (input$tabledelete$type == "row") {
+    #     values <- removeObsvnFromLists(values, input$tabledelete$name)
+    #   } else { # input$tabledelete$type == "column"
+    #     values <- removeTargetFromLists(values, input$tabledelete$name)
+    #   }
+    # }
+    
     if (input$modelWeights) {
       if (input$modelConcentrations) {
         values$fractionNames <- unique(colnames(values$concentration[[1]]))
@@ -2112,35 +2126,6 @@ areNamesNotMatching <- function(entryContent,
 }
 
 
-#' Get Depth And Table
-#' 
-#' Get the list depth and the content of the table.
-#' 
-#' @param entryContent (list) list to look for names
-#' @param isEntryFun (function) function that checks for the correct level in the list hierarchy
-#' @param n (numeric) depth of list to look for names
-#' of values
-getDepthAndTable <- function(entryContent, isEntryFun = isDeepestEntry, n = NULL) {
-  nFlatten <- 0
-  if (is.null(n)) {
-    while (!isEntryFun(entryContent)) {
-      # go one level deeper to compare names:
-      entryContent <- entryContent[[1]]
-      nFlatten <- nFlatten + 1
-    } 
-  } else {
-    while (nFlatten < n) {
-      # go one level deeper to compare names:
-      entryContent <- entryContent[[1]]
-      nFlatten <- nFlatten + 1
-    } 
-  }
-  
-  list(nFlatten = nFlatten,
-       entryContent = entryContent)
-}
-
-
 #' Is Deepest Entry
 #' 
 #' Checks if names of the list are targetNames (deepest hierarchy in a values object)
@@ -2178,23 +2163,6 @@ updateListNames <- function(entryContent, depth, newNames) {
     depth <- depth - 1
     lapply(entryContent, function(elem) {
       updateListNames(elem, depth, newNames)
-    })
-  }
-}
-
-
-#' Delete Table From List
-#' 
-#' @param entryContent (list) possibly nested list
-#' @param depth depth of list where names should be updated
-#' @param name name of list element to be deleted
-deleteTableFromList <- function(entryContent, depth, name) {
-  if (depth == 0) {
-    entryContent[names(entryContent) != name]
-  } else {
-    depth <- depth - 1
-    lapply(entryContent, function(elem) {
-      deleteTableFromList(elem, depth, name)
     })
   }
 }

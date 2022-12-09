@@ -514,8 +514,6 @@ fruitsMatrix <- function(input, output, session,
                            name = input$tabledelete$name)
     
     setList(values[[meanId]], filterValues(), fullMean)
-    # >> ! remove corresponding elements in source/concentration tables ----
-    # only if meanId == "obsvn" ? and type == "column
     
     if (!is.null(sdId)) {
       fullSd <- removeLine(matrix = sdData(), 
@@ -524,8 +522,7 @@ fruitsMatrix <- function(input, output, session,
       setList(values[[sdId]], filterValues(), fullSd)
     }
     
-    # >> ! remove corresponding elements in source/concentration tables ----
-    # only if meanId == "obsvn" ?
+    # >> if trying to remove elements in source/concentration tables HERE, than endless loop ----
     
     if (meanId == "targetValuesCovariates") {
       categoricalVars <- intersect(values[["categoricalVars"]], 
