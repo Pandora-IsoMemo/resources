@@ -203,7 +203,7 @@ fruitsTab <- function(input,
       logDebug("Entering observe() (set values$xxxNames)")
       
       # update list entries that depend on targetNames
-      if (any(unique(colnames(values$obsvn[["default"]])) != values$targetNames)) {
+      if (!identical(unique(colnames(values$obsvn[["default"]])), values$targetNames)) {
         isolate({
           newTargetNames <- unique(colnames(values$obsvn[["default"]]))
           if (length(values$targetNames) == length(newTargetNames)) {
@@ -225,7 +225,7 @@ fruitsTab <- function(input,
       }
       
       # update list entries that depend on obsvnNames
-      if (any(unique(rownames(values$obsvn[["default"]])) != values$obsvnNames)) {
+      if (!identical(unique(rownames(values$obsvn[["default"]])), values$obsvnNames)) {
         isolate({
           oldObsvnNames <- values$obsvnNames
           newObsvnNames <- unique(rownames(values$obsvn[["default"]]))
