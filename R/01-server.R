@@ -202,9 +202,59 @@ fruitsTab <- function(input,
     {
       logDebug("Entering observe() (set values$xxxNames)")
       
-      values$targetNames <-
-        unique(colnames(values$obsvn[["default"]]))
-      values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
+      # update list entries that depend on targetNames
+      if (any(unique(colnames(values$obsvn[["default"]])) != values$targetNames)) {
+        isolate({
+          newTargetNames <- unique(colnames(values$obsvn[["default"]]))
+          if (length(values$targetNames) == length(newTargetNames)) {
+            # update names of targets
+            values <-
+              updateTargetsInLists(values, newTargetNames, updateFun = updateListNames)
+          }
+          
+          if (length(values$targetNames) > length(newTargetNames)) {
+            # remove target
+            removedTarget <-
+              values$targetNames[!(values$targetNames %in% newTargetNames)]
+            values <-
+              updateTargetsInLists(values, removedTarget, updateFun = deleteTableFromList)
+          }
+          
+          values$targetNames <- newTargetNames
+        })
+      }
+      
+      # update list entries that depend on obsvnNames
+      if (any(unique(rownames(values$obsvn[["default"]])) != values$obsvnNames)) {
+        isolate({
+          oldObsvnNames <- values$obsvnNames
+          newObsvnNames <- unique(rownames(values$obsvn[["default"]]))
+          # always push new obsvn names to values
+          values$obsvnNames <- newObsvnNames
+          
+          # if modelType %in% c(1, 2, 4) there is only one element for all rows -> no update
+          # of list elements
+          if (values$modelType %in% c(3, 5)) { # that is, if is baseline model
+            if (length(oldObsvnNames) == length(newObsvnNames)) {
+              # update names of obsvns
+              values <-
+                updateObsvnsInLists(values, newObsvnNames, updateFun = updateListNames)
+            }
+            
+            if (length(oldObsvnNames) > length(newObsvnNames)) {
+              # remove obsvn
+              removedObsvn <-
+                oldObsvnNames[!(oldObsvnNames %in% newObsvnNames)]
+              values <-
+                updateObsvnsInLists(values, removedObsvn, updateFun = deleteTableFromList)
+            }
+          } 
+        })
+      }
+      
+      # values$targetNames <-
+      #   unique(colnames(values$obsvn[["default"]]))
+      # values$obsvnNames <- unique(rownames(values$obsvn[["default"]]))
       
       if (input$modelWeights) {
         if (input$modelConcentrations) {
@@ -230,73 +280,59 @@ fruitsTab <- function(input,
       values$targetValuesCovariatesNames <-
         unique(colnames(values$targetValuesCovariates))
       
-      isolate({
-        
-        #browser()
-        # add check to find deleted element ...
-        # if (meanId == "obsvn") {
-        #   # remove elements in source/concentration tables ----
-        #   # if deleted row/column in obsvn table remove corresponding elements in
-        #   # source/concentration tables
-        #   # do not use filterValues() here since we want to remove all occurences
-        #   if (input$tabledelete$type == "row") {
-        #     values <- updateObsvnsInLists(values, input$tabledelete$name, updateFun = deleteTableFromList)
-        #   } else { # input$tabledelete$type == "column"
-        #     values <- updateTargetsInLists(values, input$tabledelete$name, updateFun = deleteTableFromList)
-        #   }
-        # }
-        
-        ### update names of source's list elements ----
-        for (entry in c("source",
-                        "sourceUncert",
-                        "sourceOffset",
-                        "sourceOffsetUncert")) {
-          # check "Proxy" names:
-          targetNamesMatching <- areNamesNotMatching(values[[entry]],
-                                                     newNames = values$targetNames,
-                                                     isEntryFun = isDeepestEntry)
-          if (targetNamesMatching$missmatch) {
-            values[[entry]] <-
-              updateListNames(values[[entry]], depth = targetNamesMatching$n, values$targetNames)
-          }
-          
-          # check "Observation" names
-          obsvnNamesMatching <- areNamesNotMatching(values[[entry]],
-                                                    newNames = values$obsvnNames,
-                                                    isEntryFun = isPreDeepestEntry)
-          if (obsvnNamesMatching$missmatch) {
-            values[[entry]] <-
-              updateListNames(values[[entry]], depth = obsvnNamesMatching$n, values$obsvnNames)
-          }
-        }
-        
-        for (entry in c("sourceCovariance")) {
-          # check "Observation" names
-          if (length(values[[entry]]) > 0) {
-            obsvnNamesMatching <-
-              areNamesNotMatching(values[[entry]],
-                                  newNames = values$obsvnNames,
-                                  n = 1)
-            if (obsvnNamesMatching$missmatch) {
-              values[[entry]] <-
-                updateListNames(values[[entry]], depth = 1, values$obsvnNames)
-            }
-          }
-        }
-        
-        ## update names of concentration's list elements ----
-        for (entry in c("concentration",
-                        "concentrationUncert",
-                        "concentrationCovariance")) {
-          # check "Observation" names
-          obsvnNamesMatching <-
-            areNamesNotMatching(values[[entry]], newNames = values$obsvnNames, n = 0)
-          if (obsvnNamesMatching$missmatch) {
-            values[[entry]] <-
-              updateListNames(values[[entry]], depth = 0, values$obsvnNames)
-          }
-        }
-      })
+      # isolate({
+      #   
+      #   ### update names of source's list elements ----
+      #   for (entry in c("source",
+      #                   "sourceUncert",
+      #                   "sourceOffset",
+      #                   "sourceOffsetUncert")) {
+      #     # check "Proxy" names:
+      #     targetNamesMatching <- areNamesNotMatching(values[[entry]],
+      #                                                newNames = values$targetNames,
+      #                                                isEntryFun = isDeepestEntry)
+      #     if (targetNamesMatching$missmatch) {
+      #       values[[entry]] <-
+      #         updateListNames(values[[entry]], depth = targetNamesMatching$n, values$targetNames)
+      #     }
+      #     
+      #     # check "Observation" names
+      #     obsvnNamesMatching <- areNamesNotMatching(values[[entry]],
+      #                                               newNames = values$obsvnNames,
+      #                                               isEntryFun = isPreDeepestEntry)
+      #     if (obsvnNamesMatching$missmatch) {
+      #       values[[entry]] <-
+      #         updateListNames(values[[entry]], depth = obsvnNamesMatching$n, values$obsvnNames)
+      #     }
+      #   }
+      #   
+      #   for (entry in c("sourceCovariance")) {
+      #     # check "Observation" names
+      #     if (length(values[[entry]]) > 0) {
+      #       obsvnNamesMatching <-
+      #         areNamesNotMatching(values[[entry]],
+      #                             newNames = values$obsvnNames,
+      #                             n = 1)
+      #       if (obsvnNamesMatching$missmatch) {
+      #         values[[entry]] <-
+      #           updateListNames(values[[entry]], depth = 1, values$obsvnNames)
+      #       }
+      #     }
+      #   }
+      #   
+      #   ## update names of concentration's list elements ----
+      #   for (entry in c("concentration",
+      #                   "concentrationUncert",
+      #                   "concentrationCovariance")) {
+      #     # check "Observation" names
+      #     obsvnNamesMatching <-
+      #       areNamesNotMatching(values[[entry]], newNames = values$obsvnNames, n = 0)
+      #     if (obsvnNamesMatching$missmatch) {
+      #       values[[entry]] <-
+      #         updateListNames(values[[entry]], depth = 0, values$obsvnNames)
+      #     }
+      #   }
+      # })
   })
   
   ## Data options ----
