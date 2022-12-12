@@ -189,6 +189,9 @@ test_that("Test updateTargetsInLists if baseline model", {
   expect_equal(names(testValues[["sourceOffset"]][[1]]), c("d13C", "d15N"))
   expect_equal(names(testValues[["sourceOffsetUncert"]][[1]]), c("d13C", "d15N"))
   
+  expect_equal(names(testValues[["source"]][[1]])[1:2], c("Individual_1", "Individual_2"))
+  expect_true(length(testValues[["source"]][[1]]) > 0)
+  
   # trying to remove obsvn with functions for targets should change nothing
   testValues <-
     updateTargetsInLists(testValues, "Individual_1", updateFun = deleteTableFromList)
@@ -214,8 +217,9 @@ test_that("Test updateObsvnsInLists if non-baseline model", {
     readRDS(testthat::test_path("blackBearData_default.rds"))
   
   expect_null(names(testValues[["source"]][[1]]))
-  expect_true(length(testValues[["source"]][[1]]) > 0)
+  expect_length(testValues[["source"]][[1]], 1)
   
+  # removing obsvn from non-baseline model should change nothing
   testValues <-
     suppressWarnings(updateObsvnsInLists(testValues, "Individual_1", updateFun = deleteTableFromList))
   

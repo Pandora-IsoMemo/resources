@@ -90,7 +90,7 @@ deleteTableFromList <- function(entryContent, depth, namesList) {
     if (!is.null(names(entryContent))) {
       entryContent[!(names(entryContent) %in% namesList)]
     } else {
-      warning("Tried to delete named entry from unnamed list. Please debug!")
+      # there is only one entry for all elements -> do not remove anything
       entryContent
     }
     
@@ -110,8 +110,13 @@ deleteTableFromList <- function(entryContent, depth, namesList) {
 #' @param namesList new names for list elements
 updateListNames <- function(entryContent, depth, namesList) {
   if (depth == 0) {
-    names(entryContent) <- namesList[1:length(names(entryContent))]
-    entryContent
+    if (!is.null(names(entryContent))) {
+      names(entryContent) <- namesList[1:length(names(entryContent))]
+      entryContent
+    } else {
+      # there is only one entry for all elements -> no update of names
+      entryContent
+    }
   } else {
     depth <- depth - 1
     lapply(entryContent, function(elem) {
