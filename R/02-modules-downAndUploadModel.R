@@ -236,7 +236,12 @@ uploadModel <-
         model(modelImport$model)
       }
       
+      # clean up
       rm(modelImport)
+      file.remove("model.rds")
+      file.remove("README.txt")
+      file.remove("help.html")
+      
       dataLoadedAlert(warningInputs, warningModel, uploadedVersion, alertType)
     })
     
