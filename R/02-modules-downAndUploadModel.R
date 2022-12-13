@@ -162,7 +162,7 @@ uploadModel <-
     })
     
     observeEvent(pathToModel(), {
-      logDebug("Entering ", session$ns(""), "observe() (Load Model)")
+      logDebug("Entering (%s) observe() (Load Model)", session$ns(""))
       
       alertType <- "error"
       

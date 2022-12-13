@@ -310,12 +310,16 @@ fruitsMatrix <- function(input, output, session,
       current = values[[meanId]]
     )
     ### CHECK HERE if smthg was overwritten  <----
-    #if (meanId == "concentration") browser()
-    values[[meanId]] <- extend(
+    #if (meanId == "obsvn") browser()
+    tmpValues <- extend(
       what = values[[meanId]],
       with = dummy,
       strip = TRUE
     )
+    
+    if (!identical(values[[meanId]], tmpValues)) {
+      values[[meanId]] <- tmpValues
+    }
 
     if (!is.null(sdId)) {
       dummy <- createDummyMatrix(
@@ -329,11 +333,15 @@ fruitsMatrix <- function(input, output, session,
         current = values[[sdId]]
       )
 
-      values[[sdId]] <- extend(
+      tmpValues <- extend(
         what = values[[sdId]],
         with = dummy,
         strip = TRUE
       )
+      
+      if (!identical(values[[sdId]], tmpValues)) {
+        values[[sdId]] <- tmpValues
+      }
     }
 
     if (!is.null(distributionId) && length(filterChoicesDistribution()) > 0) {
@@ -342,11 +350,15 @@ fruitsMatrix <- function(input, output, session,
         current = values[[distributionId]]
       )
 
-      values[[distributionId]] <- extend(
+      tmpValues <- extend(
         what = values[[distributionId]],
         with = distributionDummy,
         strip = TRUE
       )
+      
+      if (!identical(values[[distributionId]], tmpValues)) {
+        values[[distributionId]] <- tmpValues
+      }
     }
 
     if (!is.null(covarianceId)) {
@@ -360,11 +372,16 @@ fruitsMatrix <- function(input, output, session,
         ),
         current = values[[covarianceId]]
       )
-      values[[covarianceId]] <- extend(
+      
+      tmpValues <- extend(
         what = values[[covarianceId]],
         with = covarianceDummy,
         strip = TRUE
       )
+      
+      if (!identical(values[[covarianceId]], tmpValues)) {
+        values[[covarianceId]] <- tmpValues
+      }
     }
   })
 
@@ -376,7 +393,7 @@ fruitsMatrix <- function(input, output, session,
 
   # Process name events for mean + sd ----
   observeEvent(events$name, priority = 400, {
-    logDebug("ObserveEvent events$name")
+    logDebug("ObserveEvent events$name (%s)", meanId)
     # if (!events$adaptive) {
     #   events$processed <- events$processed + 1
     #   return()
@@ -433,6 +450,11 @@ fruitsMatrix <- function(input, output, session,
   inputData <- eventReactive(input$table, {
     logDebug("Get input from shiny matrix for mean and sd (%s)", meanId)
     
+    # If a row was deleted, nrow will differ
+    # Do not overwrite values, this leads to loop because of conflicts with pagination
+    # Wait for the update from values -> input, than nrows will be equal
+    if (nrow(input$table) != nrow(meanDataPage())) return()
+    
     m <- input$table
     storage.mode(m) <- class
     m <- minimalMatrix(m)
@@ -483,6 +505,7 @@ fruitsMatrix <- function(input, output, session,
 
   # Get data from values ----
   meanData <- reactive({
+    # data for selected term
     logDebug("Get data from values for mean (%s)", meanId)
     stopifnot(indexLength(values[[meanId]]) == length(filterValues()))
 
@@ -557,7 +580,7 @@ fruitsMatrix <- function(input, output, session,
   # Process input data -> values ----
   observeEvent(inputData(), {
     logDebug("Process input data -> values for mean + sd (%s)", meanId)
-    
+    #if (meanId == "obsvn") browser()
     if (!is.null(sdId)) {
       inputMean <- inputData()[[1]]
       inputSd <- inputData()[[2]]
@@ -675,7 +698,7 @@ fruitsMatrix <- function(input, output, session,
   })
 
   meanDataPage <- reactive({
-    logDebug("Updating meanDataPage")
+    logDebug("Updating meanDataPage (%s)", meanId)
     i <- pmin((currentPage() - 1) * itemsPerPage + 1, nrow(meanData()))
     j <- pmin(i + itemsPerPage - 1, nrow(meanData()))
     meanData()[i:j, , drop = FALSE]
@@ -683,7 +706,7 @@ fruitsMatrix <- function(input, output, session,
 
   sdDataPage <- reactive({
     req(sdId)
-    logDebug("Updating sdDataPage")
+    logDebug("Updating sdDataPage (%s)", meanId)
     i <- pmin((currentPage() - 1) * itemsPerPage + 1, nrow(meanData()))
     j <- pmin(i + itemsPerPage - 1, nrow(sdData()))
     meanData()[i:j, , drop = FALSE]
@@ -692,7 +715,7 @@ fruitsMatrix <- function(input, output, session,
 
   # Process data from values -> UI ----
   observe({
-    logDebug("Process date from values -> UI for sd and mean (%s)", meanId)
+    logDebug("Process data from values -> UI for sd and mean (%s)", meanId)
     #print content of matrices to be displayed
     #print(setNames(list(meanDataPage()), meanId))
     if (is.null(sdId)) {
