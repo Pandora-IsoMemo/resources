@@ -24,6 +24,6 @@ Create or Alter a Model Object
 }
 \section{Functions}{
 \itemize{
-\item \code{alterModel}: 
-}}
+\item \code{alterModel()}: 
 
+}}

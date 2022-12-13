@@ -1,5 +1,10 @@
 # ReSources development version
 
+## ReSources 22.12.1
+
+### Bug fixes
+- fix loop when deleting a column or a row (#58)
+
 ## ReSources 22.11.3
 
 ### Bug fixes

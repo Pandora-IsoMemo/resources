@@ -162,7 +162,7 @@ uploadModel <-
     })
     
     observeEvent(pathToModel(), {
-      logDebug("Entering ", session$ns(""), "observe() (Load Model)")
+      logDebug("Entering (%s) observe() (Load Model)", session$ns(""))
       
       alertType <- "error"
       
@@ -236,7 +236,12 @@ uploadModel <-
         model(modelImport$model)
       }
       
+      # clean up
       rm(modelImport)
+      file.remove("model.rds")
+      file.remove("README.txt")
+      file.remove("help.html")
+      
       dataLoadedAlert(warningInputs, warningModel, uploadedVersion, alertType)
     })
     
