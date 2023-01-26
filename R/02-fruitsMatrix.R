@@ -846,7 +846,8 @@ fruitsMatrix <- function(input, output, session,
   # Process imported data
   observeEvent(dataImported(), {
     logDebug("Process imported data (%s)", meanId)
-    m <- dataImported()
+    m <- dataImported() %>%
+      as.matrix()
     storage.mode(m) <- class
 
     if (is.null(sdId)) {
@@ -889,7 +890,8 @@ fruitsMatrix <- function(input, output, session,
   # Process imported data
   observeEvent(dataImportedCov(), {
     logDebug("Process imported data (%s)", meanId)
-    m <- dataImportedCov()
+    m <- dataImportedCov() %>%
+      as.matrix()
     storage.mode(m) <- class
 
     m <- asMatrix(m)
@@ -953,7 +955,8 @@ fruitsMatrix <- function(input, output, session,
 
   observeEvent(dataImportedBatch(), {
     logDebug("Process imported data (%s)", meanId)
-    fullm <- dataImportedBatch()
+    fullm <- dataImportedBatch() %>%
+      as.matrix()
     includeSd <- attr(fullm, "includeSd")
     includeRownames <- attr(fullm, "includeRownames")
 
@@ -1089,7 +1092,8 @@ fruitsMatrix <- function(input, output, session,
 
   observeEvent(dataImportedBatchCov(), {
     logDebug("Process imported data (%s)", meanId)
-    fullm <- dataImportedBatchCov()
+    fullm <- dataImportedBatchCov() %>%
+      as.matrix()
     includeSd <- attr(fullm, "includeSd")
     includeRownames <- attr(fullm, "includeRownames")
 
