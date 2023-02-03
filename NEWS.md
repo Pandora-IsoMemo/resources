@@ -1,5 +1,11 @@
 # ReSources development version
 
+## ReSources 23.02.1
+
+### Bug fixes
+- fix bug in export of xlsx files
+- fix height of sidebar with auto scroll
+
 ## ReSources 22.12.1
 
 ### Bug fixes
