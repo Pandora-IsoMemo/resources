@@ -1170,7 +1170,7 @@ fruitsMatrix <- function(input, output, session,
     logDebug("Updating tableData")
     function() {
       if (is.null(sdId)) {
-        meanId()
+        meanData()
       } else {
         data <- combineDoubleMatrix(meanData(), sdData())
         colnames(data) <- gsub("\\|\\|(mean|sd).*", " - \\1", colnames(data))
