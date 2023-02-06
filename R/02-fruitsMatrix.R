@@ -1228,7 +1228,7 @@ fruitsMatrix <- function(input, output, session,
 
   # batch button ----
   observe({
-    visible <- (input$distribution == "multivariate-normal" && (is.null(input$showCov) || input$showCov == TRUE))
+    visible <- ((!is.null(input$distribution)) && input$distribution == "multivariate-normal" && (is.null(input$showCov) || input$showCov == TRUE))
 
     showBatchButton <- lapply(filterCov, function(f) {
       (is.null(f$hide) || !f$hide()) && isTRUE(f$batch)

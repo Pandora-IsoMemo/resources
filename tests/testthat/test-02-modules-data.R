@@ -31,7 +31,7 @@ test_that("Test module targetValuesServer", {
                  `Add term 2` = "term2",
                  `Add term 3` = "term3"
                )),
-               modelType = reactive("1")
+               modelType = reactive("5")
              ),
              {
                # Arrange
