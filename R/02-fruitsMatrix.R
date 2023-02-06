@@ -820,8 +820,8 @@ fruitsMatrix <- function(input, output, session,
   ## -- Import ----
 
   # Get imported data
-  dataImported <- callModule(
-    importData, "import",
+  dataImported <- importDataServer(
+    "import",
     rowNames = reactive(values[[rowVar()]]),
     colNames = reactive({
       if (is.null(sdId)) {
@@ -870,8 +870,8 @@ fruitsMatrix <- function(input, output, session,
   })
 
   # Get imported data
-  dataImportedCov <- callModule(
-    importData, "importCov",
+  dataImportedCov <- importDataServer(
+    "importCov",
     rowNames = reactive(namesCovVar()),
     colNames = reactive(namesCovVar()),
     customChecks = list(
@@ -942,8 +942,8 @@ fruitsMatrix <- function(input, output, session,
   })
 
   # Get batch imported data
-  dataImportedBatch <- callModule(
-    importData, "batchImport",
+  dataImportedBatch <- importDataServer(
+    "batchImport",
     rowNames = reactive(values[[rowVar()]]),
     colNames = reactive(character(0)),
     batch = TRUE,
@@ -1077,8 +1077,8 @@ fruitsMatrix <- function(input, output, session,
     }
   })
 
-  dataImportedBatchCov <- callModule(
-    importData, "batchImportCov",
+  dataImportedBatchCov <- importDataServer(
+    "batchImportCov",
     rowNames = namesCovVar,
     colNames = namesCovVar,
     batch = TRUE,

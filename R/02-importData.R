@@ -55,11 +55,13 @@ importDataUI <- function(id, label = "Import Data") {
 }
 
 # server function to import data
-importData <- function(input, output, session,
-                       rowNames = NULL,
-                       colNames = NULL,
-                       batch = FALSE,
-                       customChecks = list()) {
+importDataServer <- function(id,
+                             rowNames = NULL,
+                             colNames = NULL,
+                             batch = FALSE,
+                             customChecks = list()) {
+  moduleServer(id,
+  function(input, output, session) {
   ns <- session$ns
 
   values <- reactiveValues(
@@ -178,6 +180,7 @@ importData <- function(input, output, session,
   })
 
   return(reactive(values$data))
+  })
 }
 
 # import data dialog ui
