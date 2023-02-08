@@ -284,13 +284,26 @@ test_that("test compileRunModel - dataWithPriors with default inputs", {
     "Baseline model (no shared info)" = "5"
   )
   
-  testResultsVec <-
-    compileTestModels(testData, testModelTypes, priors = testPriors)
+  testResultsVec <- list()
+  
+  # expect an error:
+  testResultsVec[1] <-
+    suppressWarnings(compileTestModels(testData, testModelTypes[1], priors = testPriors))
   
   for (typeName in c("Update model (all info shared)")) {
     print(paste("Testing modelType:", typeName))
     expect_true(inherits(testResultsVec[[typeName]], "try-error"))
   }
+  
+  # expect success:
+  testResultsVec[2] <-
+    compileTestModels(testData, testModelTypes[2], priors = testPriors)
+  testResultsVec[3] <-
+    compileTestModels(testData, testModelTypes[3], priors = testPriors)
+  testResultsVec[4] <-
+    compileTestModels(testData, testModelTypes[4], priors = testPriors)
+  testResultsVec[5] <-
+    compileTestModels(testData, testModelTypes[5], priors = testPriors)
   
   for (typeName in c(
     "Individual targets (partially shared info)",
