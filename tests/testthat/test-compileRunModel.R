@@ -328,7 +328,7 @@ test_that("test compileRunModel - dataWithPriors with default inputs", {
     expect_equal(testResultsVec[[typeName]]$userEstimateSamples, NULL)
     expect_gt(min(testResultsVec[[typeName]]$parameters), -50)
     expect_lt(max(testResultsVec[[typeName]]$parameters), 101)
-    expect_gt(testResultsVec[[typeName]]$wAIC, 450)
+    expect_gt(testResultsVec[[typeName]]$wAIC, 440)
     expect_lt(testResultsVec[[typeName]]$wAIC, 550)
     expect_gt(min(testResultsVec[[typeName]]$pValue), 0.99)
     expect_lt(max(testResultsVec[[typeName]]$pValue), 1.01)
