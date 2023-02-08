@@ -1,5 +1,14 @@
 # ReSources development version
 
+## ReSources 23.02.2
+
+### New Features
+- the _Import Data_ module is now imported from the package DataTools (#70, PR #72)
+- additionally to file import, now import from URL or from Pandora Platform is possible
+- specific checks for matrix imports are integrated into the new _Import Data_ module
+- all redundant code was removed
+- using "file" as default source in Import Data
+
 ## ReSources 23.02.1
 
 ### Bug fixes
