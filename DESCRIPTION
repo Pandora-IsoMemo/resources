@@ -16,6 +16,7 @@ Imports:
   car,
   coda,
   colourpicker,
+  DataTools (>= 23.2.5),
   dplyr,
   DT,
   jsonlite,
@@ -48,4 +49,4 @@ Suggests:
   lintr,
   testthat,
   MpiIsoApp (>= 1.2.5)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1

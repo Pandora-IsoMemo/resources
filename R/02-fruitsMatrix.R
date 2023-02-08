@@ -830,7 +830,9 @@ fruitsMatrix <- function(input, output, session,
         rep(values[[colVar()]], each = 2)
       }
     }),
-    customChecks = list(
+    defaultSource = "file",
+    outputAsMatrix = TRUE,
+    customWarningChecks = list(
       function() {
         function(df) {
           if (nrow(df) > 10000) {
@@ -846,7 +848,9 @@ fruitsMatrix <- function(input, output, session,
   # Process imported data
   observeEvent(dataImported(), {
     logDebug("Process imported data (%s)", meanId)
-    m <- dataImported()
+    req(length(dataImported()) > 0, !is.null(dataImported()[[1]]))
+    m <- dataImported()[[1]]
+    
     storage.mode(m) <- class
 
     if (is.null(sdId)) {
@@ -873,7 +877,9 @@ fruitsMatrix <- function(input, output, session,
     "importCov",
     rowNames = reactive(namesCovVar()),
     colNames = reactive(namesCovVar()),
-    customChecks = list(
+    defaultSource = "file",
+    outputAsMatrix = TRUE,
+    customWarningChecks = list(
       function() {
         function(df) {
           if (nrow(df) > 10000) {
@@ -889,7 +895,9 @@ fruitsMatrix <- function(input, output, session,
   # Process imported data
   observeEvent(dataImportedCov(), {
     logDebug("Process imported data (%s)", meanId)
-    m <- dataImportedCov()
+    req(length(dataImportedCov()) > 0, !is.null(dataImportedCov()[[1]]))
+    m <- dataImportedCov()[[1]]
+    
     storage.mode(m) <- class
 
     m <- asMatrix(m)
@@ -944,8 +952,10 @@ fruitsMatrix <- function(input, output, session,
     "batchImport",
     rowNames = reactive(values[[rowVar()]]),
     colNames = reactive(character(0)),
+    defaultSource = "file",
     batch = TRUE,
-    customChecks = list(
+    outputAsMatrix = TRUE,
+    customWarningChecks = list(
       checkColNames,
       checkEmptyValues
     )
@@ -953,7 +963,9 @@ fruitsMatrix <- function(input, output, session,
 
   observeEvent(dataImportedBatch(), {
     logDebug("Process imported data (%s)", meanId)
-    fullm <- dataImportedBatch()
+    req(length(dataImportedBatch()) > 0, !is.null(dataImportedBatch()[[1]]))
+    fullm <- dataImportedBatch()[[1]]
+    
     includeSd <- attr(fullm, "includeSd")
     includeRownames <- attr(fullm, "includeRownames")
 
@@ -1006,6 +1018,7 @@ fruitsMatrix <- function(input, output, session,
   checkColNamesCov <- reactive({
     logDebug("Updating checkColNamesCov")
     function(data) {
+      browser()
       batchFilter <- unlist(lapply(filterCov, function(x) isTRUE(x$batch)))
       choices <- filterCov[batchFilter][[1]]$choices()
       batchNames <- if (attr(data, "includeRownames")) rownames(data) else unique(data[, 1])
@@ -1024,6 +1037,7 @@ fruitsMatrix <- function(input, output, session,
   checkRowNamesCov <- reactive({
     logDebug("Updating checkRowNamesCov")
     function(data) {
+      browser()
       if (attr(data, "includeRownames")) {
         names <- data[, 1]
         if (!setequal(unique(names), namesCovVar())) {
@@ -1078,8 +1092,10 @@ fruitsMatrix <- function(input, output, session,
     "batchImportCov",
     rowNames = namesCovVar,
     colNames = namesCovVar,
+    defaultSource = "file",
     batch = TRUE,
-    customChecks = list(
+    outputAsMatrix = TRUE,
+    customWarningChecks = list(
       checkColNamesCov,
       checkRowNamesCov,
       checkColsCov,
@@ -1089,7 +1105,9 @@ fruitsMatrix <- function(input, output, session,
 
   observeEvent(dataImportedBatchCov(), {
     logDebug("Process imported data (%s)", meanId)
-    fullm <- dataImportedBatchCov()
+    req(length(dataImportedBatchCov()) > 0, !is.null(dataImportedBatchCov()[[1]])) 
+    fullm <- dataImportedBatchCov()[[1]]
+    
     includeSd <- attr(fullm, "includeSd")
     includeRownames <- attr(fullm, "includeRownames")
 

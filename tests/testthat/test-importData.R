@@ -36,6 +36,13 @@ test_that("Test module importData", {
                  accept = TRUE
                )
                
+               expect_type(session$returned(), "character")
+               expect_equal(class(session$returned()),
+                            c("matrix", "array"))
+               expect_true(attr(session$returned(),
+                                which = "includeSd"))
+               expect_false(attr(session$returned(),
+                                 which = "includeRownames"))
                expect_equal(
                  session$returned(),
                  structure(
@@ -106,6 +113,8 @@ test_that("Test module importData", {
                  ),
                  accept = TRUE
                )
+               expect_type(session$returned(), "double")
+               expect_equal(class(session$returned()), c("matrix", "array"))
                expect_equal(dim(session$returned()), c(48, 6))
                expect_setequal(
                  rownames(session$returned()),
