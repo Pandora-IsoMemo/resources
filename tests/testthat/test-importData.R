@@ -5,10 +5,11 @@ test_that("Test module importData", {
                print("test empty data input")
                # Act
                session$setInputs(openPopup = TRUE)
-               expect_equal(session$returned(), NULL)
+               expect_equal(session$returned(), list())
              })
   
   testServer(importDataServer,
+             args = list(outputAsMatrix = TRUE),
              {
                # Arrange
                print("test import of batch covariance")
@@ -17,10 +18,10 @@ test_that("Test module importData", {
                  openPopup = TRUE,
                  source = "file",
                  type = "csv",
-                 rownames = FALSE,
+                 withRownames = FALSE,
                  colSep = ",",
                  decSep = ".",
-                 colnames = TRUE,
+                 withColnames = TRUE,
                  includeSd = TRUE,
                  file = structure(
                    list(
@@ -36,15 +37,15 @@ test_that("Test module importData", {
                  accept = TRUE
                )
                
-               expect_type(session$returned(), "character")
-               expect_equal(class(session$returned()),
+               expect_type(session$returned()[["batch_covariance.csv"]], "character")
+               expect_equal(class(session$returned()[["batch_covariance.csv"]]),
                             c("matrix", "array"))
-               expect_true(attr(session$returned(),
+               expect_true(attr(session$returned()[["batch_covariance.csv"]],
                                 which = "includeSd"))
-               expect_false(attr(session$returned(),
+               expect_false(attr(session$returned()[["batch_covariance.csv"]],
                                  which = "includeRownames"))
                expect_equal(
-                 session$returned(),
+                 session$returned()[["batch_covariance.csv"]],
                  structure(
                    c(
                      "Individual_1",
@@ -87,18 +88,19 @@ test_that("Test module importData", {
              })
   
   testServer(importDataServer,
+             args = list(outputAsMatrix = TRUE),
              {
                # Arrange
-               print("test import with rownames")
+               print("test import with duplicate rownames")
                # Act
                session$setInputs(
                  openPopup = TRUE,
                  source = "file",
                  type = "xlsx",
-                 rownames = TRUE,
+                 withRownames = TRUE,
                  colSep = ",",
                  decSep = ".",
-                 colnames = TRUE,
+                 withColnames = TRUE,
                  includeSd = TRUE,
                  file = structure(
                    list(
@@ -113,11 +115,12 @@ test_that("Test module importData", {
                  ),
                  accept = TRUE
                )
-               expect_type(session$returned(), "double")
-               expect_equal(class(session$returned()), c("matrix", "array"))
-               expect_equal(dim(session$returned()), c(48, 6))
+               
+               expect_type(session$returned()[["sources.xlsx"]], "double")
+               expect_equal(class(session$returned()[["sources.xlsx"]]), c("matrix", "array"))
+               expect_equal(dim(session$returned()[["sources.xlsx"]]), c(48, 6))
                expect_setequal(
-                 rownames(session$returned()),
+                 rownames(session$returned()[["sources.xlsx"]]),
                  c(
                    "Plants",
                    "TerrestrialAnimals",
@@ -125,7 +128,7 @@ test_that("Test module importData", {
                    "FreshwaterFish"
                  )
                )
-               expect_equal(session$returned()[1:3, ],
+               expect_equal(session$returned()[["sources.xlsx"]][1:3, ],
                             structure(
                               c(
                                 -25,

@@ -1018,7 +1018,6 @@ fruitsMatrix <- function(input, output, session,
   checkColNamesCov <- reactive({
     logDebug("Updating checkColNamesCov")
     function(data) {
-      browser()
       batchFilter <- unlist(lapply(filterCov, function(x) isTRUE(x$batch)))
       choices <- filterCov[batchFilter][[1]]$choices()
       batchNames <- if (attr(data, "includeRownames")) rownames(data) else unique(data[, 1])
@@ -1037,7 +1036,6 @@ fruitsMatrix <- function(input, output, session,
   checkRowNamesCov <- reactive({
     logDebug("Updating checkRowNamesCov")
     function(data) {
-      browser()
       if (attr(data, "includeRownames")) {
         names <- data[, 1]
         if (!setequal(unique(names), namesCovVar())) {
