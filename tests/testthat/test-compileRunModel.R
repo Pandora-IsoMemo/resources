@@ -290,11 +290,6 @@ test_that("test compileRunModel - dataWithPriors with default inputs", {
   testResultsVec[1] <-
     suppressWarnings(compileTestModels(testData, testModelTypes[1], priors = testPriors))
   
-  for (typeName in c("Update model (all info shared)")) {
-    print(paste("Testing modelType:", typeName))
-    expect_true(inherits(testResultsVec[[typeName]], "try-error"))
-  }
-  
   # expect success:
   testResultsVec[2] <-
     compileTestModels(testData, testModelTypes[2], priors = testPriors)
@@ -304,6 +299,13 @@ test_that("test compileRunModel - dataWithPriors with default inputs", {
     compileTestModels(testData, testModelTypes[4], priors = testPriors)
   testResultsVec[5] <-
     compileTestModels(testData, testModelTypes[5], priors = testPriors)
+  
+  names(testResultsVec) <- names(testModelTypes)
+  
+  for (typeName in c("Update model (all info shared)")) {
+    print(paste("Testing modelType:", typeName))
+    expect_true(inherits(testResultsVec[[typeName]], "try-error"))
+  }
   
   for (typeName in c(
     "Individual targets (partially shared info)",
