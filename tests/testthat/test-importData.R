@@ -97,6 +97,7 @@ test_that("Test module importData", {
                  openPopup = TRUE,
                  source = "file",
                  type = "xlsx",
+                 sheet = "1",
                  withRownames = TRUE,
                  colSep = ",",
                  decSep = ".",
@@ -153,8 +154,8 @@ test_that("Test module importData", {
                               dim = c(3L, 6L),
                               dimnames = list(
                                 c("Plants", "Plants", "Plants"),
-                                c("13C", "unc", "15N", "unc.1",
-                                  "34S", "unc.2")
+                                c("x13C", "unc", "x15N", "unc.1",
+                                  "x34S", "unc.2")
                               )
                             ))
              })
