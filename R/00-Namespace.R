@@ -6,6 +6,7 @@
 #' @importFrom car ellipse
 #' @importFrom coda mcmc raftery.diag gelman.diag geweke.diag heidel.diag
 #' @importFrom colourpicker colourInput
+#' @importFrom DataTools importDataUI importDataServer
 #' @importFrom DT dataTableOutput renderDataTable datatable coerceValue renderDT DTOutput
 #' @importFrom futile.logger flog.warn
 #' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density
@@ -19,8 +20,6 @@
 #' @importFrom openxlsx read.xlsx write.xlsx
 #' @importFrom plotly plot_ly layout add_trace renderPlotly plotlyOutput
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom readr guess_encoding
-#' @importFrom readxl read_excel
 #' @importFrom shiny actionButton callModule checkboxInput column conditionalPanel debounce div
 #'  downloadButton downloadHandler eventReactive exportTestValues fileInput fluidRow helpText
 #'  hideTab HTML includeHTML invalidateLater isolate is.reactive 
@@ -43,7 +42,7 @@
 #' @importFrom templates tmpl tmplEval
 #' @importFrom tibble add_row add_column
 #' @importFrom tidyr gather
-#' @importFrom utils read.csv data packageVersion head combn compareVersion tail
+#' @importFrom utils data packageVersion head combn compareVersion tail
 #' installed.packages write.table capture.output read.table
 #' @importFrom zip zipr
 NULL

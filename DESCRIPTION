@@ -1,6 +1,6 @@
 Package: ReSources
 Title: Food Reconstruction Using Isotopic Transferred Signals
-Version: 23.02.1
+Version: 23.02.2
 Authors@R: c(
     person("Marcus", "Gross", email = "marcus.gross@inwt-statistics.de", role = c("aut", "cre")),
     person("Ricardo", "Fernandes", email = "ldv1452@gmail.com", role = c("aut")),
@@ -16,6 +16,7 @@ Imports:
   car,
   coda,
   colourpicker,
+  DataTools (>= 23.02.5.1),
   dplyr,
   DT,
   jsonlite,
@@ -27,8 +28,6 @@ Imports:
   openxlsx,
   plotly,
   RColorBrewer,
-  readxl,
-  readr,
   rgl,
   shiny,
   shinyalert,
@@ -48,4 +47,4 @@ Suggests:
   lintr,
   testthat,
   MpiIsoApp (>= 1.2.5)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
