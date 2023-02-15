@@ -1,5 +1,10 @@
 # ReSources development version
 
+## ReSources 23.02.3
+
+### Bug fixes
+- fix update of covariate variables (#74)
+
 ## ReSources 23.02.2
 
 ### New Features

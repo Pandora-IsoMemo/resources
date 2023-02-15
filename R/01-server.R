@@ -116,6 +116,11 @@ fruitsTab <- function(input,
     for (name in names(uploadedValues())) {
       values[[name]] <- uploadedValues()[[name]]
     }
+    
+    if (ncol(values$targetValuesCovariates) > 0) {
+      updatePickerInput(session, "categoricalVars", selected = values$categoricalVars)
+      updatePickerInput(session, "numericVars", selected = values$numericVars)
+    }
   })
   
   ## status ----
@@ -349,35 +354,22 @@ fruitsTab <- function(input,
         potentialCat <- extractPotentialCat(values$targetValuesCovariates)
         selectedCatVars <- intersect(values$categoricalVars, potentialCat)
         
-        updatePickerInput(
-          session,
-          inputId = "categoricalVars",
-          choices = potentialCat,
-          selected = selectedCatVars
-        )
+        updatePickerInput(session,
+                          inputId = "categoricalVars",
+                          choices = potentialCat,
+                          selected = selectedCatVars)
         
         potentialNumerics <- extractPotentialNumerics(values$targetValuesCovariates)
         selectedNumVars <- intersect(values$numericVars, potentialNumerics)
         
-        updatePickerInput(
-          session,
-          inputId = "numericVars",
-          choices = potentialNumerics,
-          selected = selectedNumVars
-        )
+        updatePickerInput(session,
+                          inputId = "numericVars",
+                          choices = potentialNumerics,
+                          selected = selectedNumVars)
       }
     }
-  })
-  
-  observeEvent(values$categoricalVars, {
-    logDebug("Entering observeEvent(input$categoricalVars)")
-    
-    if (!identical(input$categoricalVars, values$categoricalVars) &
-        ncol(values$targetValuesCovariates) > 0) {
-      updatePickerInput(session, "categoricalVars", selected = values$categoricalVars)
-    }
-  })
-  
+  }) %>%
+    bindEvent(values$targetValuesCovariates)
   
   observeEvent(input$categoricalVars, {
     logDebug("Entering observeEvent(input$categoricalVars)")
@@ -388,17 +380,12 @@ fruitsTab <- function(input,
       
       values$numericVars <-
         values$numericVars[!(potentialNumerics %in% values$categoricalVars)]
+      
+      if (!identical(input$numericVars, values$numericVars)) {
+        updatePickerInput(session, "numericVars", selected = values$numericVars)
+      }
     }
   })
-  
-  observeEvent(values$numericVars, {
-    logDebug("Entering observeEvent(input$numericVars)")
-    if (!identical(input$numericVars, values$numericVars) &
-        ncol(values$targetValuesCovariates) > 0) {
-      updatePickerInput(session, "numericVars", selected = values$numericVars)
-    }
-  })
-  
   
   observeEvent(input$numericVars, {
     logDebug("Entering observeEvent(input$numericVars)")
@@ -409,6 +396,10 @@ fruitsTab <- function(input,
       
       values$categoricalVars <-
         values$categoricalVars[!(potentialCat %in% values$numericVars)]
+      
+      if (!identical(input$categoricalVars, values$categoricalVars)) {
+        updatePickerInput(session, "categoricalVars", selected = values$categoricalVars)
+      }
     }
   })
   
@@ -424,10 +415,7 @@ fruitsTab <- function(input,
     } else {
       selected <- input$modelType
     }
-    
-    updateRadioButtons(session, "modelType",
-                       selected = selected
-    )
+    updateRadioButtons(session, "modelType", selected = selected)
   })
   
   observeEvent(values$includeSourceOffset, {
