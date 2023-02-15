@@ -118,8 +118,21 @@ fruitsTab <- function(input,
     }
     
     if (ncol(values$targetValuesCovariates) > 0) {
-      updatePickerInput(session, "categoricalVars", selected = values$categoricalVars)
-      updatePickerInput(session, "numericVars", selected = values$numericVars)
+      potentialCat <- extractPotentialCat(values$targetValuesCovariates)
+      selectedCatVars <- intersect(values$categoricalVars, potentialCat)
+      
+      updatePickerInput(session, 
+                        inputId = "categoricalVars",
+                        choices = potentialCat,
+                        selected = selectedCatVars)
+      
+      potentialNumerics <- extractPotentialNumerics(values$targetValuesCovariates)
+      selectedNumVars <- intersect(values$numericVars, potentialNumerics)
+      
+      updatePickerInput(session,
+                        inputId = "numericVars",
+                        choices = potentialNumerics,
+                        selected = selectedNumVars)
     }
   })
   
