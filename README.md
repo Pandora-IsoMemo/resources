@@ -13,3 +13,4 @@ Folder with example data: `inst/app/predefinedModels`
 - 02-: sub-modules/tabs/popups for shiny
 - 03-: helper functions for Shiny
 - 04-: model (create, validate, run)
+
