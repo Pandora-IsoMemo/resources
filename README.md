@@ -7,8 +7,8 @@
 ### Folder with example models
 - `inst/app/predefinedModels`
 
-### Help and installation Instructions:
+### Help and installation instructions:
 - https://github.com/Pandora-IsoMemo/resources/wiki
 
-### Release Notes:
+### Release notes:
 - see `NEWS.md`
