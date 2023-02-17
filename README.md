@@ -1,15 +1,14 @@
 # ReSources
 
-Access App: https://isomemoapp.com/app/resources
+### Access to online version:
+- MAIN version: https://isomemoapp.com/app/resources
+- BETA version: https://isomemoapp.com/app/resources-beta
 
-Folder with example data: `inst/app/predefinedModels`
+### Folder with example models
+- `inst/app/predefinedModels`
 
-## File structure
+### Help and installation Instructions:
+- https://github.com/Pandora-IsoMemo/resources/wiki
 
-### `R/`
-
-- 00-: configuration, functions to start the app
-- 01-: server/UI functions for `fruits` shiny-module
-- 02-: sub-modules/tabs/popups for shiny
-- 03-: helper functions for Shiny
-- 04-: model (create, validate, run)
+### Release Notes:
+- see `NEWS.md`
