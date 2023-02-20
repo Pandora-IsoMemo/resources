@@ -6,7 +6,7 @@
 #' @importFrom car ellipse
 #' @importFrom coda mcmc raftery.diag gelman.diag geweke.diag heidel.diag
 #' @importFrom colourpicker colourInput
-#' @importFrom DataTools importDataUI importDataServer
+#' @importFrom DataTools importDataUI importDataServer tryCatchWithWarningsAndErrors
 #' @importFrom DT dataTableOutput renderDataTable datatable coerceValue renderDT DTOutput
 #' @importFrom futile.logger flog.warn
 #' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density
@@ -18,7 +18,7 @@
 #' @importFrom nimble calculateWAIC nimbleOptions nimbleModel configureMCMC buildMCMC compileNimble runMCMC
 #' nimbleFunction registerDistributions rmulti
 #' @importFrom openxlsx read.xlsx write.xlsx
-#' @importFrom plotly plot_ly layout add_trace renderPlotly plotlyOutput
+#' @importFrom plotly plot_ly layout add_trace renderPlotly plotlyOutput save_image
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom shiny actionButton callModule checkboxInput column conditionalPanel debounce div
 #'  downloadButton downloadHandler eventReactive exportTestValues fileInput fluidRow helpText

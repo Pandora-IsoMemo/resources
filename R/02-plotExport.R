@@ -1,10 +1,5 @@
 plotExport <- function(input, output, session, plotFun, type = "plot", plotly = FALSE) {
   observeEvent(input$export, {
-    test <- try(plotly:::orca_available())
-    if (inherits(test, "try-error")) {
-      alert("The orca command-line utility is required for this functionality.\n\nPlease follow the installation instructions here -- https://github.com/plotly/orca#installation")
-      return()
-    }
     plotOutputElement <- if (plotly) {
       plotlyOutput(session$ns("plotly"))
     } else {
@@ -47,7 +42,8 @@ plotExport <- function(input, output, session, plotFun, type = "plot", plotly = 
     content = function(file) {
       if (plotly) {
         tmpfile <- paste0("plot.", input$exportType)
-        plotly::orca(plotFun()(), file = tmpfile)
+        save_image(plotFun()(), file = tmpfile) %>%
+          tryCatchWithWarningsAndErrors(errorTitle = "Export failed", alertStyle = "shinyalert")
         file.copy(tmpfile, file)
       } else {
         switch(input$exportType,

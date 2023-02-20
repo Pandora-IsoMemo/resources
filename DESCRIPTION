@@ -28,6 +28,7 @@ Imports:
   openxlsx,
   plotly,
   RColorBrewer,
+  reticulate,
   rgl,
   shiny,
   shinyalert,
