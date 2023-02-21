@@ -1,6 +1,6 @@
 # ReSources development version
 
-## ReSources 23.02.3
+## ReSources 23.02.4
 
 ### Bug fixes
 - switch to kaleido package instead of orca for plotly export (#76)
