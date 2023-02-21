@@ -3,6 +3,11 @@
 ## ReSources 23.02.3
 
 ### Bug fixes
+- switch to kaleido package instead of orca for plotly export (#76)
+
+## ReSources 23.02.3
+
+### Bug fixes
 - fix update of covariate variables (#74)
 
 ## ReSources 23.02.2
