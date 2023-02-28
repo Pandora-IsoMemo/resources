@@ -42,6 +42,10 @@ plotExport <- function(input, output, session, plotFun, type = "plot", plotly = 
     content = function(file) {
       if (plotly) {
         tmpfile <- paste0("plot.", input$exportType)
+        # Workaround for Export image bug - https://github.com/Pandora-IsoMemo/resources/issues/76
+        # See original issue in plotly repo - https://github.com/plotly/plotly.R/issues/2179
+        # Shouldn't be necessary in a newer plotly version!
+        reticulate::py_run_string("import sys")
         save_image(plotFun()(), file = tmpfile) %>%
           tryCatchWithWarningsAndErrors(errorTitle = "Export failed", alertStyle = "shinyalert")
         file.copy(tmpfile, file)
