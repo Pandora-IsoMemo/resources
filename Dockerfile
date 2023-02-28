@@ -12,6 +12,5 @@ RUN installPackage
 RUN Rscript -e "reticulate::install_miniconda()"
 RUN Rscript -e "reticulate::conda_install('r-reticulate', 'python-kaleido')"
 RUN Rscript -e "reticulate::conda_install('r-reticulate', 'plotly', channel = 'plotly')"
-RUN Rscript -e "reticulate::use_miniconda('r-reticulate')"
 
-CMD ["Rscript", "-e", "library(shiny); ReSources::startApplication(3838, '0.0.0.0')"]
+CMD ["Rscript", "-e", "library(shiny); reticulate::use_miniconda('r-reticulate'); ReSources::startApplication(3838, '0.0.0.0')"]
