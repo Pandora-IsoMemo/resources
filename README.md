@@ -11,4 +11,4 @@
 - https://github.com/Pandora-IsoMemo/resources/wiki
 
 ### Release notes:
-- see `NEWS.md`
+- see `NEWS.md` 
