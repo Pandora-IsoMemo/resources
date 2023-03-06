@@ -261,6 +261,7 @@ fruitsMatrix <- function(input, output, session,
   observeEvent(input$showCov, {
     logDebug("ObserveEvent input$showCov")
     if (meanId == "source") {
+      req(input$term)
       values$sourceDistCovRep[[input$term]] <- input$showCov == "TRUE"
     }
     if (meanId == "concentration") {
@@ -269,6 +270,7 @@ fruitsMatrix <- function(input, output, session,
   })
 
   observe({
+    req(input$term)
     if (meanId == "source") {
       updateRadioButtons(session, "showCov", selected = values$sourceDistCovRep[[input$term]])
     }
@@ -731,6 +733,7 @@ fruitsMatrix <- function(input, output, session,
     updateMatrixInput(session, "covariance", covarianceData())
   })
 
+  # input$copy / input$copyCov ----
   observeEvent(input$copy, {
     logDebug("ObserveEvent input$copy")
     if (is.null(sdId)) {
@@ -770,7 +773,7 @@ fruitsMatrix <- function(input, output, session,
     "))
   })
   
-  # input$pasted ----
+  # input$pasted / input$pastedCov ----
   observeEvent(input$pasted, {
     logDebug("ObserveEvent input$pasted")
     
@@ -801,7 +804,6 @@ fruitsMatrix <- function(input, output, session,
     }
   })
 
-# input$pastedCov ----
   observeEvent(input$pastedCov, {
     logDebug("ObserveEvent input$pastedCov")
     m <- readStringWrapper(content = input$pastedCov$content, mode = input$pasteModeCov, class = class)
@@ -1139,6 +1141,7 @@ fruitsMatrix <- function(input, output, session,
     })
   })
 
+  # input$copyTarget: "Copy data to other targets" button ----
   observeEvent(input$copyTarget, {
     logDebug("ObserveEvent input$copyTarget")
     batchFilter <- unlist(lapply(filter, function(x) isTRUE(x$batch)))
