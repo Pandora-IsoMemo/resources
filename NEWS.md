@@ -1,5 +1,10 @@
 # ReSources development version
 
+## ReSources 23.03.1
+
+### Bug fixes
+- use most recent version of the shinyMatrix package (#73)
+
 ## ReSources 23.02.4
 
 ### Bug fixes
