@@ -3,3 +3,4 @@ libWin/*
 libMac/*
 .git
 .Rprofile
+.Rproj*
