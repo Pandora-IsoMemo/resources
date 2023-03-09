@@ -98,7 +98,7 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
   )
   if (inherits(model, "try-error")) {
     stop(paste0(
-      "Model building failed: ",
+      "nimble::nimbleModel(): Model building failed\n",
       as.character(model)
     ))
   }
