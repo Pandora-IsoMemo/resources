@@ -449,13 +449,24 @@ fruitsMatrix <- function(input, output, session,
   # # Get input from shiny matrix ----
   inputData <- eventReactive(input$table, {
     logDebug("Get input from shiny matrix for mean and sd (%s)", meanId)
+    #if (meanId == "weightOffset") browser()
     
-    # If a row was deleted, nrow will differ
-    # Do not overwrite values, this leads to loop because of conflicts with pagination
-    # Wait for the update from values -> input, than nrows will be equal
-    if (nrow(input$table) != nrow(meanDataPage())) return()
+    if (nrow(input$table) < nrow(meanDataPage())) {
+      # If a row was deleted, nrow will differ
+      # see -> input$tabledelete
+      # Do not overwrite values, this leads to loop because of conflicts with pagination
+      # Wait for the update from values -> input, than nrows will be equal
+      return()
+    }
     
     m <- input$table
+    
+    if (nrow(m) > nrow(meanDataPage())) {
+      # remove empty last line
+      if (all(is.na(m[nrow(m), ])) && rownames(m)[nrow(m)] == "")
+        m <- m[-nrow(m), ]
+    }
+    
     storage.mode(m) <- class
     m <- minimalMatrix(m)
 
@@ -580,7 +591,7 @@ fruitsMatrix <- function(input, output, session,
   # Process input data -> values ----
   observeEvent(inputData(), {
     logDebug("Process input data -> values for mean + sd (%s)", meanId)
-    #if (meanId == "obsvn") browser()
+    #if (meanId == "weightOffset") browser()
     if (!is.null(sdId)) {
       inputMean <- inputData()[[1]]
       inputSd <- inputData()[[2]]
