@@ -895,6 +895,9 @@ replaceValues <- function(data, modelOptions, valueNames) {
   })
 
   if ((length(data$concentration) > 1 | modelOptions$modelType %in% c("3", "5")) & modelOptions$modelConcentrations) {
+    if (!all(sapply(data$concentration, function(x) length(x) == length(data$concentration[[1]])))) {
+      stop("Dimensions of concentrations tables differ. Please provide concentrations tables with the same number of columns and the same number of rows!")
+    }
     data$concentration <- abind::abind(data$concentration, along = 3)
   } else {
     data$concentration <- data$concentration[[1]]

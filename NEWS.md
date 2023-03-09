@@ -1,5 +1,10 @@
 # ReSources development version
 
+## ReSources 23.03.1
+
+### Bug fixes
+- forward more specific error messages to the user if conditions to run a model are not met (#81, #83)
+
 ## ReSources 23.02.4
 
 ### Bug fixes
