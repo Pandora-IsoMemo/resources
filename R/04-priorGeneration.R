@@ -683,7 +683,7 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
         },
         silent = TRUE
       )
-      if (class(replacements2) == "try-error") {
+      if (inherits(replacements2, "try-error")) {
         stop(paste0("Prior or User Estimate Name not found in:", priors[[x]]))
       }
       replacements <- replacements2
