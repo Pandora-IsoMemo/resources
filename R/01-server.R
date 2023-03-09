@@ -1204,31 +1204,23 @@ fruitsTab <- function(input,
       )
     }
     
-    withProgress(
-      {
-        modelResults <-
-          try(
-            {
-              compileRunModel(
-                fruitsObj,
-                progress = TRUE,
-                userDefinedAlphas = values$userDefinedAlphas
-              )
-            },
-            silent = TRUE
-          )
-        if (inherits(modelResults, "try-error")) {
-          alert(paste0(
-            "Could not run model. Received the following error: ",
-            as.character(modelResults)
-          ))
-          values$status <- "ERROR"
-          return()
-        }
-      },
-      value = 0,
-      message = ""
-    )
+    withProgress({
+      modelResults <- compileRunModel(
+        fruitsObj,
+        progress = TRUE,
+        userDefinedAlphas = values$userDefinedAlphas
+      ) %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Could not run model",
+                                      alertStyle = "shinyalert")
+    },
+    value = 0,
+    message = "")
+    
+    if (is.null(modelResults)) {
+      values$status <- "ERROR"
+      return()
+    }
+    
     values$status <- "COMPLETED"
     if (!inherits(modelResults, "try-error")) {
       withProgress({
@@ -1311,33 +1303,26 @@ fruitsTab <- function(input,
       return()
     }
     
-    withProgress(
-      {
-        modelResults <- try(
-          {
-            compileRunModel(
-              fruitsObj,
-              progress = TRUE,
-              onlySim = TRUE,
-              userDefinedAlphas = values$userDefinedAlphas,
-              seqSim = 1 / input$seqSim,
-              simSourceNames = input$simSpecSources
-            )
-          },
-          silent = TRUE
-        )
-        if (inherits(modelResults, "try-error")) {
-          alert(paste0(
-            "Could not run model. Received the following error: ",
-            as.character(modelResults)
-          ))
-          values$statusSim <- "ERROR"
-          return()
-        }
-      },
-      value = 0,
-      message = ""
-    )
+    withProgress({
+      modelResults <- compileRunModel(
+        fruitsObj,
+        progress = TRUE,
+        onlySim = TRUE,
+        userDefinedAlphas = values$userDefinedAlphas,
+        seqSim = 1 / input$seqSim,
+        simSourceNames = input$simSpecSources
+      ) %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Could not run model",
+                                      alertStyle = "shinyalert")
+    },
+    value = 0,
+    message = "")
+    
+    if (is.null(modelResults)) {
+      values$statusSim <- "ERROR"
+      return()
+    }
+    
     values$statusSim <- "COMPLETED"
     if (any(is.nan(modelResults$simSources$simSources[[1]]) |
             any(is.na(

@@ -85,16 +85,22 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
     fruitsObj$data$hierMatch <- rep(0, nrow(simGrid))
   }
 
-  model <- nimbleModel(
+  model <- try(
+    {
+      nimbleModel(
         code = fruitsObj$modelCode,
         name = "FRUITS",
         constants = fruitsObj$constants,
         data = fruitsObj$data[!(names(fruitsObj$data) %in% c("covariates"))]
-      ) %>% 
-    tryCatchWithWarningsAndErrors(errorTitle = "Model building failed.", alertStyle = "shinyalert")
-  
-  if (is.null(model)) {
-    return()
+      )
+    },
+    silent = TRUE
+  )
+  if (inherits(model, "try-error")) {
+    stop(paste0(
+      "Model building failed: ",
+      as.character(model)
+    ))
   }
   
   if (onlySim == TRUE) {
