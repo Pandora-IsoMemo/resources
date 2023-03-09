@@ -1118,24 +1118,20 @@ fruitsTab <- function(input,
     model(NULL)
     modelCharacteristics(NULL)
     valuesList <- reactiveValuesToList(values)
-    fruitsObj <- try({
-      shinyInputToClass(
+    
+    fruitsObj <- shinyInputToClass(
         valuesList,
         as.list(input$priors),
         as.list(input$userEstimate)
-      )
-    })
+      ) %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Could not create model object: ",
+                                    alertStyle = "shinyalert")
     
-    if (inherits(fruitsObj, "try-error")) {
-      alert(
-        paste0(
-          "Could not create model object. Received the following error: ",
-          as.character(fruitsObj)
-        )
-      )
+    if (is.null(fruitsObj)) {
       values$status <- "ERROR"
       return()
     }
+    
     # check user estimates groups
     userEstimatesGroupNames <-
       sapply(values$userEstimateGroups, function(x) {
@@ -1301,26 +1297,17 @@ fruitsTab <- function(input,
     if (valuesList[["modelType"]] == "1") {
       valuesList[["modelType"]] <- "2"
     }
-    fruitsObj <- try(
-      {
-        shinyInputToClass(
+    
+    fruitsObj <- shinyInputToClass(
           valuesList,
           as.list(input$priors),
           as.list(input$userEstimate)
-        )
-      },
-      silent = TRUE
-    )
+        ) %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Could not create model object: ",
+                                    alertStyle = "shinyalert")
     
-    
-    if (inherits(fruitsObj, "try-error")) {
-      alert(
-        paste0(
-          "Could not create model object. Received the following error: ",
-          as.character(fruitsObj)
-        )
-      )
-      values$statusSim <- "ERROR"
+    if (is.null(fruitsObj)) {
+      values$status <- "ERROR"
       return()
     }
     
