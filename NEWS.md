@@ -1,5 +1,10 @@
 # ReSources development version
 
+## ReSources 23.03.1
+
+### Bug Fixes
+- fix update of tables after using enter to submit values (#82)
+
 ## ReSources 23.02.4
 
 ### Bug fixes
