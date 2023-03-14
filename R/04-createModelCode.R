@@ -315,7 +315,7 @@ createModelCode <- function(priors, userEstimates, valueNames,
     },
     silent = TRUE
   )
-  if (class(code) == "try-error") {
+  if (inherits(code, "try-error")) {
     stop("Error while creating model code. The definition of priors or user estimate definition might be erroneous. Please also check that in naming estimates or model parameters no spaces or special characters are used and that no parenthesis are missing.")
   }
   return(code)

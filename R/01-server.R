@@ -1118,24 +1118,20 @@ fruitsTab <- function(input,
     model(NULL)
     modelCharacteristics(NULL)
     valuesList <- reactiveValuesToList(values)
-    fruitsObj <- try({
-      shinyInputToClass(
+    
+    fruitsObj <- shinyInputToClass(
         valuesList,
         as.list(input$priors),
         as.list(input$userEstimate)
-      )
-    })
+      ) %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Could not create model object: ",
+                                    alertStyle = "shinyalert")
     
-    if (inherits(fruitsObj, "try-error")) {
-      alert(
-        paste0(
-          "Could not create model object. Received the following error: ",
-          as.character(fruitsObj)
-        )
-      )
+    if (is.null(fruitsObj)) {
       values$status <- "ERROR"
       return()
     }
+    
     # check user estimates groups
     userEstimatesGroupNames <-
       sapply(values$userEstimateGroups, function(x) {
@@ -1208,31 +1204,23 @@ fruitsTab <- function(input,
       )
     }
     
-    withProgress(
-      {
-        modelResults <-
-          try(
-            {
-              compileRunModel(
-                fruitsObj,
-                progress = TRUE,
-                userDefinedAlphas = values$userDefinedAlphas
-              )
-            },
-            silent = TRUE
-          )
-        if (inherits(modelResults, "try-error")) {
-          alert(paste0(
-            "Could not run model. Received the following error: ",
-            as.character(modelResults)
-          ))
-          values$status <- "ERROR"
-          return()
-        }
-      },
-      value = 0,
-      message = ""
-    )
+    withProgress({
+      modelResults <- compileRunModel(
+        fruitsObj,
+        progress = TRUE,
+        userDefinedAlphas = values$userDefinedAlphas
+      ) %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Could not run model",
+                                      alertStyle = "shinyalert")
+    },
+    value = 0,
+    message = "")
+    
+    if (is.null(modelResults)) {
+      values$status <- "ERROR"
+      return()
+    }
+    
     values$status <- "COMPLETED"
     if (!inherits(modelResults, "try-error")) {
       withProgress({
@@ -1301,56 +1289,40 @@ fruitsTab <- function(input,
     if (valuesList[["modelType"]] == "1") {
       valuesList[["modelType"]] <- "2"
     }
-    fruitsObj <- try(
-      {
-        shinyInputToClass(
+    
+    fruitsObj <- shinyInputToClass(
           valuesList,
           as.list(input$priors),
           as.list(input$userEstimate)
-        )
-      },
-      silent = TRUE
-    )
+        ) %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Could not create model object: ",
+                                    alertStyle = "shinyalert")
     
+    if (is.null(fruitsObj)) {
+      values$status <- "ERROR"
+      return()
+    }
     
-    if (inherits(fruitsObj, "try-error")) {
-      alert(
-        paste0(
-          "Could not create model object. Received the following error: ",
-          as.character(fruitsObj)
-        )
-      )
+    withProgress({
+      modelResults <- compileRunModel(
+        fruitsObj,
+        progress = TRUE,
+        onlySim = TRUE,
+        userDefinedAlphas = values$userDefinedAlphas,
+        seqSim = 1 / input$seqSim,
+        simSourceNames = input$simSpecSources
+      ) %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Could not run model",
+                                      alertStyle = "shinyalert")
+    },
+    value = 0,
+    message = "")
+    
+    if (is.null(modelResults)) {
       values$statusSim <- "ERROR"
       return()
     }
     
-    withProgress(
-      {
-        modelResults <- try(
-          {
-            compileRunModel(
-              fruitsObj,
-              progress = TRUE,
-              onlySim = TRUE,
-              userDefinedAlphas = values$userDefinedAlphas,
-              seqSim = 1 / input$seqSim,
-              simSourceNames = input$simSpecSources
-            )
-          },
-          silent = TRUE
-        )
-        if (inherits(modelResults, "try-error")) {
-          alert(paste0(
-            "Could not run model. Received the following error: ",
-            as.character(modelResults)
-          ))
-          values$statusSim <- "ERROR"
-          return()
-        }
-      },
-      value = 0,
-      message = ""
-    )
     values$statusSim <- "COMPLETED"
     if (any(is.nan(modelResults$simSources$simSources[[1]]) |
             any(is.na(
