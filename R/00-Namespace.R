@@ -1,28 +1,28 @@
 #' @importFrom abind adrop abind
 #' @importFrom alphahull ashape
 #' @importFrom dplyr mutate_ filter_all any_vars tibble select_if as_tibble bind_rows
-#' mutate_all bind_cols select slice pull all_vars "%>%" arrange_ left_join filter_ group_by group_by_ n
-#' summarise ungroup
+#' mutate_all bind_cols select slice pull all_vars "%>%" arrange_ left_join filter_ group_by 
+#' group_by_ n summarise ungroup
 #' @importFrom car ellipse
 #' @importFrom coda mcmc raftery.diag gelman.diag geweke.diag heidel.diag
 #' @importFrom colourpicker colourInput
 #' @importFrom DataTools importDataUI importDataServer tryCatchWithWarningsAndErrors
 #' @importFrom DT dataTableOutput renderDataTable datatable coerceValue renderDT DTOutput
 #' @importFrom futile.logger flog.warn
-#' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density
-#' geom_histogram geom_line theme element_text scale_fill_brewer labs ylim scale_fill_manual scale_color_manual
+#' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density geom_histogram geom_line
+#' theme element_text scale_fill_brewer labs ylim scale_fill_manual scale_color_manual
 #' geom_point scale_color_brewer xlim aes geom_errorbar geom_smooth
 #' @importFrom grDevices dev.off pdf png svg tiff chull pdfFonts postscriptFonts colorRampPalette
 #' @importFrom htmltools save_html withTags
 #' @importFrom jsonlite fromJSON toJSON
-#' @importFrom nimble calculateWAIC nimbleOptions nimbleModel configureMCMC buildMCMC compileNimble runMCMC
-#' nimbleFunction registerDistributions rmulti
+#' @importFrom nimble calculateWAIC nimbleOptions nimbleModel configureMCMC buildMCMC compileNimble 
+#' runMCMC nimbleFunction registerDistributions rmulti
 #' @importFrom openxlsx read.xlsx write.xlsx
 #' @importFrom plotly plot_ly layout add_trace renderPlotly plotlyOutput save_image
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom shiny actionButton callModule checkboxInput column conditionalPanel debounce div
-#'  downloadButton downloadHandler eventReactive exportTestValues fileInput fluidRow helpText
-#'  hideTab HTML includeHTML invalidateLater isolate is.reactive 
+#' @importFrom shiny actionButton bindEvent callModule checkboxInput column conditionalPanel 
+#'  debounce div downloadButton downloadHandler eventReactive exportTestValues fileInput fluidRow
+#'  helpText hideTab HTML includeHTML invalidateLater isolate is.reactive 
 #'  mainPanel modalButton modalDialog moduleServer 
 #'  navbarMenu NS numericInput observe observeEvent outputOptions plotOutput 
 #'  reactive reactiveValues renderText radioButtons reactiveVal reactiveValuesToList removeModal 
@@ -37,8 +37,8 @@
 #' @importFrom shinyjs reset useShinyjs alert show hide
 #' @importFrom shinyMatrix matrixInput updateMatrixInput
 #' @importFrom shinyWidgets pickerInput updatePickerInput
-#' @importFrom stats setNames runif acf na.omit qnorm cov pnorm rbeta dbeta pchisq dnorm
-#' var sd cov2cor p.adjust var.test t.test shapiro.test median quantile manova rnorm pbeta qbeta qchisq dist
+#' @importFrom stats dist setNames runif acf na.omit qnorm cov pnorm rbeta dbeta pchisq dnorm manova
+#' var sd cov2cor p.adjust var.test t.test shapiro.test median quantile rnorm pbeta qbeta qchisq 
 #' @importFrom templates tmpl tmplEval
 #' @importFrom tibble add_row add_column
 #' @importFrom tidyr gather
