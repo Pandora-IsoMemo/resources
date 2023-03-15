@@ -1,5 +1,11 @@
 # ReSources development version
 
+## ReSources 23.03.2
+
+### Bug Fixes
+- use most recent version of the shinyMatrix package (#73)
+- fix update of tables after using enter to submit values (#82)
+
 ## ReSources 23.03.1
 
 ### Bug fixes
