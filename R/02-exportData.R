@@ -91,7 +91,7 @@ exportCSV <- function(file, dat, colseparator, decseparator) {
 #' @param dat data.frame
 #' @export
 exportXLSX <- function(file, dat) {
-  write.xlsx(dat, file)
+  write.xlsx(dat %>% as.data.frame(), file)
 }
 
 #' Export to json

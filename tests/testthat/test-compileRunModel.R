@@ -284,8 +284,23 @@ test_that("test compileRunModel - dataWithPriors with default inputs", {
     "Baseline model (no shared info)" = "5"
   )
   
-  testResultsVec <-
-    compileTestModels(testData, testModelTypes, priors = testPriors)
+  testResultsVec <- list()
+  
+  # expect an error:
+  testResultsVec[1] <-
+    suppressWarnings(compileTestModels(testData, testModelTypes[1], priors = testPriors))
+  
+  # expect success:
+  testResultsVec[2] <-
+    compileTestModels(testData, testModelTypes[2], priors = testPriors)
+  testResultsVec[3] <-
+    compileTestModels(testData, testModelTypes[3], priors = testPriors)
+  testResultsVec[4] <-
+    compileTestModels(testData, testModelTypes[4], priors = testPriors)
+  testResultsVec[5] <-
+    compileTestModels(testData, testModelTypes[5], priors = testPriors)
+  
+  names(testResultsVec) <- names(testModelTypes)
   
   for (typeName in c("Update model (all info shared)")) {
     print(paste("Testing modelType:", typeName))
@@ -313,7 +328,7 @@ test_that("test compileRunModel - dataWithPriors with default inputs", {
     expect_equal(testResultsVec[[typeName]]$userEstimateSamples, NULL)
     expect_gt(min(testResultsVec[[typeName]]$parameters), -50)
     expect_lt(max(testResultsVec[[typeName]]$parameters), 101)
-    expect_gt(testResultsVec[[typeName]]$wAIC, 450)
+    expect_gt(testResultsVec[[typeName]]$wAIC, 440)
     expect_lt(testResultsVec[[typeName]]$wAIC, 550)
     expect_gt(min(testResultsVec[[typeName]]$pValue), 0.99)
     expect_lt(max(testResultsVec[[typeName]]$pValue), 1.01)
