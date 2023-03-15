@@ -12,8 +12,8 @@ RUN Rscript -e "reticulate::install_miniconda(); \
 
 RUN installPackage MpiIsoApp
 
-RUN installPackage
-
 ADD . .
+
+RUN installPackage
 
 CMD ["Rscript", "-e", "library(shiny); ReSources::startApplication(3838, '0.0.0.0')"]
