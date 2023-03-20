@@ -94,14 +94,7 @@ uploadModelUI <- function(id) {
   
   tagList(
     fileInput(ns("uploadModel"), label = "Load local model"),
-    selectInput(
-      ns("remoteModel"),
-      label = "Load online model",
-      choices = dir(file.path(settings$pathToSavedModels)) %>%
-        sub(pattern = '\\.zip$', replacement = ''),
-      selected = NULL
-    ),
-    actionButton(ns("loadRemoteModel"), "Load"),
+    remoteModelsUI(ns("remoteModels")),
     tags$br(),
     tags$br()
   )
@@ -148,17 +141,15 @@ uploadModel <-
       pathToModel(NULL)
     })
     
-    observeEvent(input$loadRemoteModel, {
-      logDebug(paste0(
-        "Entering ",
-        session$ns(""),
-        "observeEvent(input$loadRemoteModel)"
-      ))
-      
-      pathToModel(file.path(
-        settings$pathToSavedModels,
-        paste0(input$remoteModel, ".zip")
-      ))
+    pathToRemote <- remoteModelsServer("remoteModels",
+                                       githubRepo = "resources",
+                                       rPackageName = "ReSources",
+                                       rPackageVersion = "ReSources" %>%
+                                         packageVersion() %>%
+                                         as.character())
+    
+    observeEvent(pathToRemote(), {
+      pathToModel(pathToRemote())
     })
     
     observeEvent(pathToModel(), {
@@ -238,9 +229,9 @@ uploadModel <-
       
       # clean up
       rm(modelImport)
-      file.remove("model.rds")
-      file.remove("README.txt")
-      file.remove("help.html")
+      if (file.exists("model.rds")) file.remove("model.rds")
+      if (file.exists("README.txt")) file.remove("README.txt")
+      if (file.exists("help.html")) file.remove("help.html")
       
       dataLoadedAlert(warningInputs, warningModel, uploadedVersion, alertType)
     })

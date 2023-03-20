@@ -1,6 +1,6 @@
 Package: ReSources
 Title: Food Reconstruction Using Isotopic Transferred Signals
-Version: 23.03.2
+Version: 23.03.3
 Authors@R: c(
     person("Marcus", "Gross", email = "marcus.gross@inwt-statistics.de", role = c("aut", "cre")),
     person("Ricardo", "Fernandes", email = "ldv1452@gmail.com", role = c("aut")),
@@ -18,7 +18,7 @@ Imports:
   car,
   coda,
   colourpicker,
-  DataTools (>= 23.03.1),
+  DataTools (>= 23.03.2),
   dplyr,
   DT,
   jsonlite,
