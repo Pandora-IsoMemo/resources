@@ -133,20 +133,13 @@ uploadModel <-
       pathToModel(input$uploadModel$datapath)
     })
     
-    observeEvent(reset(), {
-      logDebug(paste0("Entering ", session$ns(""), "observeEvent(reset())"))
-      
-      req(reset())
-      updateSelectInput(session, "remoteModel", selected = list())
-      pathToModel(NULL)
-    })
-    
     pathToRemote <- remoteModelsServer("remoteModels",
                                        githubRepo = "resources",
                                        rPackageName = "ReSources",
                                        rPackageVersion = "ReSources" %>%
                                          packageVersion() %>%
-                                         as.character())
+                                         as.character(),
+                                       resetSelected = reactive(reset() == 1))
     
     observeEvent(pathToRemote(), {
       pathToModel(pathToRemote())
