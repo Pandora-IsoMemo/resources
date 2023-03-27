@@ -1,5 +1,10 @@
 # ReSources development version
 
+## Version 23.03.4
+
+### Updates
+- Fix for baseline models when only one proxy present
+
 ## Version 23.03.3
 
 ### Updates
