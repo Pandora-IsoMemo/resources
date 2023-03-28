@@ -5,7 +5,7 @@
 - BETA version: https://isomemoapp.com/app/resources-beta
 
 ### Folder with example models
-- `inst/app/predefinedModels`
+- [`inst/app/predefinedModels`](https://github.com/Pandora-IsoMemo/resources/tree/main/inst/app/predefinedModels)
 
 ### Help and installation instructions:
 - https://github.com/Pandora-IsoMemo/resources/wiki
