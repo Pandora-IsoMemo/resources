@@ -258,7 +258,7 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
       p <- p + scale_color_manual(values = colorPalette(p$data$group %>% unique() %>% length()))
     }
   }
-  if (plotType == "AutoCor") {
+  if (plotType == "AutoCorr") {
     if (xlabel == "") {
       xlabel <- "lag"
     }
