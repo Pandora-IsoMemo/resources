@@ -84,7 +84,6 @@ compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
     fruitsObj$data$obsvnCovT3 <- matrix(0, ncol = nrow(simGrid), nrow = nrow(simGrid))
     fruitsObj$data$hierMatch <- rep(0, nrow(simGrid))
   }
-
   model <- try(
     {
       nimbleModel(
@@ -478,11 +477,19 @@ bugfixFraction1 <- function(data, constant) {
     }
   }
 
-  data$concentration <-
-    cbind(data$concentration, rep(0, constant$nSources))
-  data$concentrationUncert <-
-    cbind(data$concentrationUncert, rep(1E-6, constant$nSources))
-
+  if(length(dim(data$concentration)) == 3){
+    data$concentration <-
+      abind(data$concentration, matrix(0, nrow = constant$nSources, ncol = constant$nTargets), along = 2)
+    data$concentrationUncert <-
+      abind(data$concentrationUncert, matrix(1E-6, nrow = constant$nSources, ncol = constant$nTargets), along = 2)
+  } else {
+    data$concentration <-
+      cbind(data$concentration, rep(0, constant$nSources))
+    data$concentrationUncert <-
+      cbind(data$concentrationUncert, rep(1E-6, constant$nSources))
+  }
+  
+  
   data$weights <- cbind(data$weights, rep(0, constant$nProxies))
   data$weightsUncert <-
     cbind(data$weightsUncert, rep(0, constant$nProxies))
