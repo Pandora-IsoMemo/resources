@@ -3,7 +3,7 @@
 ## Version 23.03.4
 
 ### Bug Fixes
-- Fix for baseline models when only one proxy present
+- Fix for baseline models when only one proxy present (#83)
 
 ## Version 23.03.3
 
