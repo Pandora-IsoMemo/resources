@@ -49,7 +49,7 @@ modelDiagnosticsPlotUI <- function(id) {
       selectInput(
         inputId = ns("plotTypeDiag"),
         label = "Select plot type:",
-        choices = c("Trace", "AutoCor")
+        choices = c("Trace", "AutoCorr")
       ),
       checkboxInput(
         inputId = ns("showLegendDiag"),

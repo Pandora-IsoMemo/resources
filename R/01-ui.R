@@ -982,8 +982,9 @@ fruitsUI <- function(id, title = "FRUITS") {
             "Model Diagnostics",
             menuName = "modelDiagnostics",
             tabPanel(
-              "Model diagnostics plots",
+              "Convergence plots",
               value = "modelDiagnosticsTab",
+              tags$h4("Convergence plots"),
               conditionalPanel(
                 condition = "output.status == 'COMPLETED'",
                 ns = ns,
@@ -991,23 +992,10 @@ fruitsUI <- function(id, title = "FRUITS") {
               )
             ),
             tabPanel(
-              "Goodness-of-Fit measures",
-              tags$h4("Goodness-of-Fit measures"),
+              "Convergence tests",
+              tags$h4("Convergence tests"),
               tabsetPanel(
                 id = ns("Convergence"),
-                tabPanel(
-                  "wAIC",
-                  verbatimTextOutput(ns("wAIC"))
-                ),
-                tabPanel(
-                  "BIC",
-                  verbatimTextOutput(ns("BIC"))
-                ),
-                tabPanel(
-                  "Bayesian p-value (posterior predictive p-value)",
-                  DT::dataTableOutput(ns("pValue")),
-                  width = 4
-                ),
                 tabPanel(
                   "Geweke",
                   verbatimTextOutput(ns("geweke"))
@@ -1026,6 +1014,26 @@ fruitsUI <- function(id, title = "FRUITS") {
                 )
               ),
               exportDataUI(ns("exportDataChainsAll"), "Export all chains")
+            ),
+            tabPanel(
+              "Information criteria",
+              tags$h4("Information criteria"),
+              tabsetPanel(
+                id = ns("Convergence"),
+                tabPanel(
+                  "wAIC",
+                  verbatimTextOutput(ns("wAIC"))
+                ),
+                tabPanel(
+                  "BIC",
+                  verbatimTextOutput(ns("BIC"))
+                ),
+                tabPanel(
+                  "Bayesian p-value (posterior predictive p-value)",
+                  DT::dataTableOutput(ns("pValue")),
+                  width = 4
+                )
+              )
             )
           ),
           ## Output ----
