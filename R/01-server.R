@@ -60,10 +60,9 @@ fruitsTab <- function(input,
     }
     
     values$status <- values$statusSim <- "INITIALIZE"
-    
     values$reset <- runif(1)
-    
     events$name <- list()
+    uploadedNotes(character(0))
   })
   
   
