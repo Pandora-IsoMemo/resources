@@ -95,7 +95,8 @@ fruitsMatrixInput <- function(scope, row, col, cov = FALSE, fixedCols = FALSE, d
           if (cov) ns("batchImportCov") else ns("batchImport"), "Batch Import"
         ),
         actionButton(if (cov) ns("copyTargetCov") else ns("copyTarget"), "Copy data to other targets")
-      )
+      ),
+      actionButton(ns("resetMatrixValues"), "Reset")
     ),
     matrixInput(
       inputId = if (cov) ns("covariance") else ns("table"),
@@ -1189,6 +1190,31 @@ fruitsMatrix <- function(input, output, session,
       }
     }
   })
+  
+  ## reset table ----
+  observe({
+    logDebug("ObserveEvent input$resetMatrixValues")
+    req(meanData())
+    
+    if (is.null(sdId)) {
+      m <- matrix(nrow = nrow(meanData()), ncol = ncol(meanData()),
+                  dimnames = list(rownames(meanData()), colnames(meanData())))
+      m <- fixMatrixCols(m, colnames(meanData()), fixedCols, rowVar(), colVar())
+      m <- defaultMatrixNames(m, sampleName(rowVar()), sampleName(colVar()))
+      
+      setList(values[[meanId]], filterValues(), m)
+    } else {
+      meanDat <- matrix(nrow = nrow(meanData()), ncol = ncol(meanData()),
+                        dimnames = list(rownames(meanData()), colnames(meanData())))
+      sdDat <- matrix(nrow = nrow(sdData()), ncol = ncol(sdData()),
+                      dimnames = list(rownames(sdData()), colnames(sdData())))
+      meanDat <- defaultMatrixNames(meanDat, sampleName(rowVar()), sampleName(colVar()))
+      
+      setList(values[[meanId]], filterValues(), meanDat)
+      setList(values[[sdId]], filterValues(), sdDat)
+    }
+  }) %>%
+    bindEvent(input$resetMatrixValues)
 
 
   ## -- Export ----
