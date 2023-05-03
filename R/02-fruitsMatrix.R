@@ -88,6 +88,8 @@ fruitsMatrixInput <- function(scope, row, col, cov = FALSE, fixedCols = FALSE, d
         if (cov) ns("exportCov") else ns("export"),
         "Export Data"
       ),
+      actionButton(if (cov) ns("resetMatrixCov") else ns("resetMatrix"),
+                   label = if (cov) "Default" else "Reset"),
       span(
         id = if (cov) ns("batchImportContainerCov") else ns("batchImportContainer"),
         style = "display:none;",
@@ -95,8 +97,7 @@ fruitsMatrixInput <- function(scope, row, col, cov = FALSE, fixedCols = FALSE, d
           if (cov) ns("batchImportCov") else ns("batchImport"), "Batch Import"
         ),
         actionButton(if (cov) ns("copyTargetCov") else ns("copyTarget"), "Copy data to other targets")
-      ),
-      actionButton(ns("resetMatrixValues"), "Reset")
+      )
     ),
     matrixInput(
       inputId = if (cov) ns("covariance") else ns("table"),
@@ -1193,9 +1194,8 @@ fruitsMatrix <- function(input, output, session,
   
   ## reset table ----
   observe({
-    logDebug("ObserveEvent input$resetMatrixValues")
+    logDebug("ObserveEvent input$resetMatrix")
     req(meanData())
-    
     if (is.null(sdId)) {
       m <- matrix(nrow = nrow(meanData()), ncol = ncol(meanData()),
                   dimnames = list(rownames(meanData()), colnames(meanData())))
@@ -1213,8 +1213,26 @@ fruitsMatrix <- function(input, output, session,
       setList(values[[meanId]], filterValues(), meanDat)
       setList(values[[sdId]], filterValues(), sdDat)
     }
+    
+    if (meanId == "targetValuesCovariates") {
+      setList(values[["categoricalVars"]], NULL, list())
+      setList(values[["numericVars"]], NULL, list())
+    }
   }) %>%
-    bindEvent(input$resetMatrixValues)
+    bindEvent(input$resetMatrix)
+  
+  observe({
+    logDebug("ObserveEvent input$resetMatrixCov")
+    req(covarianceData())
+
+    m <- matrix(nrow = nrow(covarianceData()), ncol = ncol(covarianceData()),
+                dimnames = list(rownames(covarianceData()), colnames(covarianceData())))
+    m <- fixMatrixCols(m, colnames(covarianceData()), fixedCols, rowVar(), colVar())
+    m <- defaultMatrixNames(m, sampleName(rowVar()), sampleName(colVar()))
+    
+    setList(values[[covarianceId]], filterValuesCov(), m)
+  }) %>%
+    bindEvent(input$resetMatrixCov)
 
 
   ## -- Export ----
@@ -1274,6 +1292,7 @@ fruitsMatrix <- function(input, output, session,
     fun("exportCov-export")
     fun("importCov-openPopup")
     fun("pasteModeCov")
+    fun("resetMatrixCov")
 
     lapply(ff, fun)
   })
