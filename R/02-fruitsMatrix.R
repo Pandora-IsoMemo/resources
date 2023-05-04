@@ -1197,18 +1197,23 @@ fruitsMatrix <- function(input, output, session,
     logDebug("ObserveEvent input$resetMatrix")
     req(meanData())
     if (is.null(sdId)) {
-      m <- matrix(nrow = nrow(meanData()), ncol = ncol(meanData()),
-                  dimnames = list(rownames(meanData()), colnames(meanData())))
-      m <- fixMatrixCols(m, colnames(meanData()), fixedCols, rowVar(), colVar())
-      m <- defaultMatrixNames(m, sampleName(rowVar()), sampleName(colVar()))
+      m <- meanData() %>%
+        getResetedMatrix() %>%
+        fixMatrixCols(oldNames = colnames(meanData()), 
+                      fixedCols = fixedCols, 
+                      row = rowVar(),
+                      col = colVar()) %>%
+        defaultMatrixNames(prefixRow = sampleName(rowVar()),
+                           prefixCol = sampleName(colVar()))
       
       setList(values[[meanId]], filterValues(), m)
     } else {
-      meanDat <- matrix(nrow = nrow(meanData()), ncol = ncol(meanData()),
-                        dimnames = list(rownames(meanData()), colnames(meanData())))
-      sdDat <- matrix(nrow = nrow(sdData()), ncol = ncol(sdData()),
-                      dimnames = list(rownames(sdData()), colnames(sdData())))
-      meanDat <- defaultMatrixNames(meanDat, sampleName(rowVar()), sampleName(colVar()))
+      meanDat <- meanData() %>%
+        getResetedMatrix() %>%
+        defaultMatrixNames(prefixRow = sampleName(rowVar()), 
+                           prefixCol = sampleName(colVar()))
+      sdDat <- sdData() %>%
+        getResetedMatrix()
       
       setList(values[[meanId]], filterValues(), meanDat)
       setList(values[[sdId]], filterValues(), sdDat)
@@ -1225,10 +1230,14 @@ fruitsMatrix <- function(input, output, session,
     logDebug("ObserveEvent input$resetMatrixCov")
     req(covarianceData())
 
-    m <- matrix(nrow = nrow(covarianceData()), ncol = ncol(covarianceData()),
-                dimnames = list(rownames(covarianceData()), colnames(covarianceData())))
-    m <- fixMatrixCols(m, colnames(covarianceData()), fixedCols, rowVar(), colVar())
-    m <- defaultMatrixNames(m, sampleName(rowVar()), sampleName(colVar()))
+    m <- covarianceData() %>%
+      getResetedMatrix() %>%
+      fixMatrixCols(oldNames = colnames(covarianceData()), 
+                    fixedCols = fixedCols, 
+                    row = rowVar(), 
+                    col = colVar()) %>%
+      defaultMatrixNames(prefixRow = sampleName(rowVar()),
+                         prefixCol = sampleName(colVar()))
     
     setList(values[[covarianceId]], filterValuesCov(), m)
   }) %>%
