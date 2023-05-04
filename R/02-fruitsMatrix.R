@@ -1202,9 +1202,7 @@ fruitsMatrix <- function(input, output, session,
         fixMatrixCols(oldNames = colnames(meanData()), 
                       fixedCols = fixedCols, 
                       row = rowVar(),
-                      col = colVar()) %>%
-        defaultMatrixNames(prefixRow = sampleName(rowVar()),
-                           prefixCol = sampleName(colVar()))
+                      col = colVar())
       
       setList(values[[meanId]], filterValues(), m)
     } else {
@@ -1235,9 +1233,7 @@ fruitsMatrix <- function(input, output, session,
       fixMatrixCols(oldNames = colnames(covarianceData()), 
                     fixedCols = fixedCols, 
                     row = rowVar(), 
-                    col = colVar()) %>%
-      defaultMatrixNames(prefixRow = sampleName(rowVar()),
-                         prefixCol = sampleName(colVar()))
+                    col = colVar())
     
     setList(values[[covarianceId]], filterValuesCov(), m)
   }) %>%
