@@ -4,7 +4,8 @@ Version: 23.05.1
 Authors@R: c(
     person("Marcus", "Gross", email = "marcus.gross@inwt-statistics.de", role = c("aut", "cre")),
     person("Ricardo", "Fernandes", email = "ldv1452@gmail.com", role = c("aut")),
-    person("Andreas", "Neudecker", email = "andreas.neudecker@inwt-statistics.de", role = c("ctb"))
+    person("Andreas", "Neudecker", email = "andreas.neudecker@inwt-statistics.de", role = c("ctb")),
+    person("Antonia", "Runge", email = "antonia.runge@inwt-statistics.de", role = c("ctb", "cre"))
     )
 Maintainer: Marcus Gross <marcus.gross@inwt-statistics.de>
 Description: Food Reconstruction Using Isotopic Transferred Signals (FRUITS): A Bayesian Model for Diet Reconstruction (<doi:10.1371/journal.pone.0087436>).
@@ -50,4 +51,4 @@ Suggests:
   lintr,
   testthat,
   MpiIsoApp (>= 1.2.5)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
