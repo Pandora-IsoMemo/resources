@@ -1,5 +1,10 @@
 # ReSources development version
 
+## Version 23.05.1
+
+### New Features
+- button to reset a single table (#3)
+
 ## Version 23.03.4
 
 ### Bug Fixes

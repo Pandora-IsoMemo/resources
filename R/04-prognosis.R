@@ -1442,7 +1442,7 @@ prepareSimSourcesExport <- function(simSources) {
 }
 
 getAllCovariateInteractions <- function(covariates, vars = NULL) {
-  if (is.null(covariates) | is.null(vars) | all(covariates == "")) {
+  if (is.null(covariates) || is.null(vars) || all(covariates == "") || all(is.na(covariates))) {
     return(c())
   }
   covariates <- covariates[, vars, drop = FALSE]

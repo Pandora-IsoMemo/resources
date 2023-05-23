@@ -139,9 +139,11 @@ uploadModel <-
                                        rPackageVersion = "ReSources" %>%
                                          packageVersion() %>%
                                          as.character(),
-                                       resetSelected = reactive(reset() == 1))
+                                       resetSelected = reactive(reset() >= 1))
     
     observeEvent(pathToRemote(), {
+      # reset values
+      uploadedValues(list())
       pathToModel(pathToRemote())
     })
     
