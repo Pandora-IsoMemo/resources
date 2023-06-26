@@ -1,5 +1,10 @@
 # ReSources development version
 
+## Version 23.06.0
+
+## New Features
+- _Import Model_ button: additional option to import a model from pandora or url
+
 ## Version 23.05.1
 
 ### New Features
