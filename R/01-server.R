@@ -1207,7 +1207,8 @@ fruitsTab <- function(input,
       modelResults <- compileRunModel(
         fruitsObj,
         progress = TRUE,
-        userDefinedAlphas = values$userDefinedAlphas
+        userDefinedAlphas = values$userDefinedAlphas,
+        onlyShowNimbleInput = input$onlyShowNimbleInput
       ) %>%
         tryCatchWithWarningsAndErrors(errorTitle = "Could not run model",
                                       alertStyle = "shinyalert")
@@ -1221,6 +1222,18 @@ fruitsTab <- function(input,
     }
     
     values$status <- "COMPLETED"
+    
+    # nimble in here <--  ----
+    if (input$onlyShowNimbleInput) {
+      # update fruits object after final data preparation
+      fruitsObj$data <- modelResults$data
+      fruitsObj$constants <- modelResults$constants
+      fruitsObj$modelCode <- modelResults$code
+      # return only fruits object since there are no real model results
+      model(list(fruitsObj = fruitsObj))
+      return()
+    }
+    
     if (!inherits(modelResults, "try-error")) {
       withProgress({
         setProgress(message = "Check convergence", value = 0.85)
@@ -1414,7 +1427,7 @@ fruitsTab <- function(input,
   
   observe({
     logDebug("Entering observe(sourceSelectMix2)")
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     
     updatePickerInput(
       session,
@@ -1468,7 +1481,7 @@ fruitsTab <- function(input,
   
   
   plotFunCharacteristics <- reactive({
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     function() {
       sourceTargetPlot(
         simSources = modelCharacteristics()$modelResults$simSources$simSources,
@@ -1490,7 +1503,7 @@ fruitsTab <- function(input,
   })
   
   plotFunCharacteristicsMix <- reactive({
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     function() {
       sourceTargetPlot(
         simSources = modelCharacteristics()$modelResults$simSources$simSources,
@@ -1603,7 +1616,7 @@ fruitsTab <- function(input,
   callModule(OxCalOutput, "oxcal", model = model, values$exportCoordinates)
   
   expChains <- reactive({
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     function() {
       getResultStatistics(
         model()$modelResults$parameters,
@@ -1617,12 +1630,12 @@ fruitsTab <- function(input,
   callModule(exportData, "exportDataChainsAll", expChains)
   
   output$pValue <- DT::renderDT({
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     model()$modelResults$pValue
   })
   
   output$SummaryResults <- DT::renderDT({
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     getResultStatistics(
       model()$modelResults$parameters,
       model()$modelResults$userEstimateSamples,
@@ -1641,7 +1654,7 @@ fruitsTab <- function(input,
   })
   
   output$zScores <- DT::renderDT({
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     getZScores(modelCharacteristics()$modelResults$simSources$simSources)
   })
   
@@ -1652,7 +1665,7 @@ fruitsTab <- function(input,
   }))
   
   output$mahaDist <- DT::renderDT({
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     getSourceMahaDist(modelCharacteristics()$modelResults$simSources$simSources)
   })
   
@@ -1663,7 +1676,7 @@ fruitsTab <- function(input,
   )
   
   output$scoreSep <- DT::renderDT({
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     getSourceScoreSep(modelCharacteristics()$modelResults$simSources$simSources)
   })
   
@@ -1707,7 +1720,7 @@ fruitsTab <- function(input,
   
   
   output$SourceCharacteristicsPlot <- renderPlotly({
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     plotFunCharacteristics()()
   })
   
@@ -1721,7 +1734,7 @@ fruitsTab <- function(input,
   
   # observeEvent(input$updateMix, {
   output$SourceCharacteristicsPlot2 <- renderPlotly({
-    validate(validInput(modelCharacteristics()))
+    validate(validModelOutput(modelCharacteristics()))
     plotFunCharacteristicsMix()()
   })
   # })
