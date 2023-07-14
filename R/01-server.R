@@ -103,17 +103,32 @@ fruitsTab <- function(input,
              model = model,
              uploadedNotes = uploadedNotes)
 
-  uploadedValues <- callModule(uploadModel, "modelUpload", session = session,
-                               model = model,
-                               uploadedNotes = uploadedNotes,
-                               reset = reactive(input$reset))
+  uploadedValues <- importDataServer("modelUpload",
+                                     title = "Import Model",
+                                     defaultSource = "file",
+                                     importType = "model",
+                                     rPackageName = "ReSources",
+                                     ignoreWarnings = TRUE)
   
   observeEvent(uploadedValues(), {
     logDebug("Entering observeEvent(uploadedValues())")
-    req(length(uploadedValues()) > 0)
+    req(length(uploadedValues()) > 0, !is.null(uploadedValues()[[1]][["data"]]))
+
+    valuesDat <- uploadedValues()[[1]][["data"]]
     
-    for (name in names(uploadedValues())) {
-      values[[name]] <- uploadedValues()[[name]]
+    emptyTables <- checkForEmptyTables(valuesDat)
+    if (length(emptyTables) > 0) {
+      warningInputs <- paste(
+        "Following tables contain no values: \n",
+        paste0(emptyTables, collapse = ", "),
+        " ")
+      shinyalert(title = "Empty tables",
+                 text = warningInputs,
+                 type = "warning")
+    }
+    
+    for (name in names(valuesDat)) {
+      values[[name]] <- valuesDat[[name]]
     }
     
     if (ncol(values$targetValuesCovariates) > 0) {
@@ -132,6 +147,10 @@ fruitsTab <- function(input,
                         inputId = "numericVars",
                         choices = potentialNumerics,
                         selected = selectedNumVars)
+    }
+    
+    if (!is.null(uploadedValues()[[1]][["model"]])) {
+      model(uploadedValues()[[1]][["model"]])
     }
   })
   

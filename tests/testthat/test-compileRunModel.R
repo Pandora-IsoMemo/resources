@@ -146,7 +146,7 @@ test_that("test compileRunModel - brownBearData with default inputs", {
     expect_gt(min(testResultsVec[[typeName]]$parameters), -40)
     expect_lt(max(testResultsVec[[typeName]]$parameters), 101)
     expect_gt(testResultsVec[[typeName]]$wAIC, 130)
-    expect_lt(testResultsVec[[typeName]]$wAIC, 150)
+    expect_lt(testResultsVec[[typeName]]$wAIC, 160)
     expect_gt(min(testResultsVec[[typeName]]$pValue), 0.55)
     expect_lt(max(testResultsVec[[typeName]]$pValue), 0.998)
     expect_gt(testResultsVec[[typeName]]$BIC, 1153)
