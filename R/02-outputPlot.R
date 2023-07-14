@@ -234,7 +234,7 @@ outputPlot <- function(input, output, session, model, values) {
   }) %>% debounce(100)
   
   plotFunTarget <- reactive({
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     function() {
       params <- c(plotParams())
       do.call(
@@ -245,7 +245,7 @@ outputPlot <- function(input, output, session, model, values) {
   })
   
   dataFunTarget <- reactive({
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     function() {
       params <- c(plotParams(),
                   returnType = "data"
@@ -259,7 +259,7 @@ outputPlot <- function(input, output, session, model, values) {
   
   output$SourcePlot <- renderCachedPlot(
     {
-      validate(validInput(model()))
+      validate(validModelOutput(model()))
       plotFunTarget()()
     },
     cacheKeyExpr = {

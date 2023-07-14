@@ -10,7 +10,8 @@ compileRunModel(
   onlySim = FALSE,
   userDefinedAlphas = NULL,
   seqSim = 0.2,
-  simSourceNames = NULL
+  simSourceNames = NULL,
+  onlyShowNimbleInput = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ compileRunModel(
 \item{seqSim}{numeric grid of mixture steps}
 
 \item{simSourceNames}{names of sources to simulate}
+
+\item{onlyShowNimbleInput}{boolean: run the model if FALSE, only show input for nimbleModel() if
+TRUE}
 }
 \description{
 Run model on ReSources object

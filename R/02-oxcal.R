@@ -159,7 +159,7 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
       updateTextAreaInput(session, inputId = "OxCalText", value = "")
     }
     
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     # parEstimates$Name is always the same for bins = TRUE/FALSE no matter which input$bins we have,
     # but bins == FALSE calculates much faster
     parEstimatesNames <-
@@ -200,7 +200,7 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
   })
 
   observeEvent(input$GenerateOxCal, {
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
 
     withProgress(
       {
