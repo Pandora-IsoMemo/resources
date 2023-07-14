@@ -3,8 +3,8 @@
 ## Version 23.07.0
 
 ## New Features
-- checkbox for optionally only displaying the input for nimbleModel() instead of running the model when 
-pressing _Run_
+- checkbox for optionally only displaying the input for nimbleModel() instead of running the model
+when pressing _Run_ (#96)
 
 ## Version 23.06.0
 
