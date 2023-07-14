@@ -16,7 +16,8 @@ fruitsUI <- function(id, title = "FRUITS") {
       sidebarPanel(
         style = "position:fixed; width:15%; max-width:350px; overflow-y:auto; height:85%",
         width = 2,
-        uploadModelUI(ns("modelUpload")),
+        importDataUI(ns("modelUpload"), label = "Import Model"),
+        tags$br(), tags$br(),
         downloadModelUI(ns("modelDownload"), NULL),
         # selectInput(
         #   ns("exampleData"),

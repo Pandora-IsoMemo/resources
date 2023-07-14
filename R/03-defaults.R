@@ -34,6 +34,12 @@ defaultMatrixNames <- function(m, prefixRow, prefixCol, sep = "_") {
   m
 }
 
+getResetedMatrix <- function(currentData) {
+  matrix(nrow = nrow(currentData),
+         ncol = ncol(currentData),
+         dimnames = list(rownames(currentData), colnames(currentData)))
+}
+
 defaultValues <- function() {
   list(
     status = "INITIALIZE",
