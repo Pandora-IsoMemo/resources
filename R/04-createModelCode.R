@@ -309,9 +309,21 @@ createModelCode <- function(priors, userEstimates, valueNames,
     userDefinedPriors = userDefinedPriors,
     userDefinedEstimates = userDefinedEstimates
   )
+  
+  templateEvaluated <- tmplEval(templateFilled)
+  
+  if (any(grepl(pattern = "NA", templateEvaluated))) {
+    nNA <- grep(x = templateEvaluated, pattern = "NA") %>%
+      length()
+    warning(sprintf("%1.0f NA value(s) were produced while creating priors. NA values had been removed. Please check your priors.",
+                    nNA))
+    # remove NA values
+    templateEvaluated <- templateEvaluated[grep(x = templateEvaluated, pattern = "NA", invert = TRUE)]
+  }
+  
   code <- try(
     {
-      tmplEval(templateFilled)
+      templateEvaluated
     },
     silent = TRUE
   )
