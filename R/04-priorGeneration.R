@@ -229,7 +229,9 @@ translatePriors <- function(priors, valueNames, constants, individualNames, mode
 
 
     priorTypes <- matchPriorTypes(priorParameters, valueNames)
-
+    if(any(sapply(1:length(priorTypes), function(y) identical(priorTypes[[y]],character(0))))){
+      stop(paste0("Prior or User Estimate name mismatch / not found in:", priors[[x]]))
+    }
     sourceParameters <- priorParameters[which(priorTypes == "sources")]
     fractionParameters <- priorParameters[which(priorTypes == "fractions")]
     targetParameters <- priorParameters[which(priorTypes == "targets")]

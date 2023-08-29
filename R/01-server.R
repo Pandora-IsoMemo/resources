@@ -1313,7 +1313,6 @@ fruitsTab <- function(input,
   observeEvent(input$runModelChar, {
     logDebug("Entering observeEvent(input$runModelChar)")
     values$statusSim <- "RUNNING"
-    
     modelCharacteristics(NULL)
     
     valuesList <- reactiveValuesToList(values)
