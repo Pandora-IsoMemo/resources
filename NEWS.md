@@ -1,5 +1,10 @@
 # ReSources development version
 
+## Version 23.07.1
+
+## Bug Fixes
+- error message when prior names are not found or do mismatch (#100)
+
 ## Version 23.07.0
 
 ## New Features
