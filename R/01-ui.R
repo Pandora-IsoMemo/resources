@@ -32,9 +32,20 @@ fruitsUI <- function(id, title = "FRUITS") {
         # ),
         # actionButton(ns("exampleModel"), "Load selected model"),
         tags$hr(),
-        actionButton(ns("reset"), "Reset"),
-        tags$br(), tags$br(),
-        actionButton(ns("run"), "Run"),
+        checkboxInput(ns("onlyShowNimbleInput"),
+                      "Only show nimbleModel() input", 
+                      width = "100%"),
+        conditionalPanel(
+          ns = ns,
+          condition = "input.onlyShowNimbleInput == true",
+          helpText("After 'Run': Check in 'Results Report' the sections 'Model code' and 'Model inputs'.")
+        ),
+        fluidRow(
+          actionButton(ns("run"), "Run", width = "100%") %>%
+            column(width = 5),
+          actionButton(ns("reset"), "Reset", width = "100%") %>%
+            column(width = 5, align = "right", offset = 2)
+        ),
         #checkboxInput(ns("adaptiveNames"), "Adaptive Names", value = FALSE),
         tags$hr(),
         dbContentSelectUI(ns("popUpTables"), label = "Data table"),

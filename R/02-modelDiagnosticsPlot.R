@@ -123,7 +123,7 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
 
   ## Plot Function
   plotFunTargetDiagnostics <- reactive({
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     function() {
       do.call(
         plotTargets,
@@ -135,7 +135,7 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
   ## Render Plot
   output$DiagnosticsPlot <- renderCachedPlot(
     {
-      validate(validInput(model()))
+      validate(validModelOutput(model()))
       plotFunTargetDiagnostics()()
     },
     cacheKeyExpr = {
@@ -148,7 +148,7 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
 
   ## Export Data Function
   dataFunTargetDiag <- reactive({
-    validate(validInput(model()))
+    validate(validModelOutput(model()))
     function() {
       params <- c(
         plotParams(),
