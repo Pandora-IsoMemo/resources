@@ -288,7 +288,7 @@ fruitsTab <- function(input,
         })
       }
       
-      # first keep old value
+      # first, keep old value
       newValue <- values$fractionNames
       
       # check fractionNames
@@ -311,7 +311,7 @@ fruitsTab <- function(input,
         values$fractionNames <- values$targetNames
       }
       
-      # first keep old value
+      # first, keep old value
       newValue <- values$sourceNames
       
       # check sourceNames
