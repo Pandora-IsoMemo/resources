@@ -288,23 +288,40 @@ fruitsTab <- function(input,
         })
       }
       
-      if (input$modelWeights) {
+      if (input$modelWeights) { # "Include components" == TRUE
         if (input$modelConcentrations) {
-          values$fractionNames <- unique(colnames(values$concentration[[1]]))
+          if (length(values$concentration) > 0 && 
+              !identical(values$fractionNames, unique(colnames(values$concentration[[1]])))) {
+            values$fractionNames <- unique(colnames(values$concentration[[1]]))
+            # reset if no length??
+          }
         }
         else {
-          values$fractionNames <- unique(colnames(values$weights))
+          if (length(values$weights) > 0 &&
+              !identical(values$fractionNames, unique(colnames(values$weights)))) {
+            values$fractionNames <- unique(colnames(values$weights))
+            # reset if no length??
+          }
         }
       }
       else {
-        values$fractionNames <- values$targetNames
+        if (!identical(values$fractionNames, values$targetNames)) {
+          values$fractionNames <- values$targetNames
+        }
       }
       
-      if (input$modelConcentrations) {
-        values$sourceNames <- unique(rownames(values$concentration[[1]]))
-      } else {
+      if (input$modelConcentrations) { # "Include concentrations" == TRUE
+        if (length(values$concentration) > 0 && 
+            !identical(values$sourceNames, unique(rownames(values$concentration[[1]])))) {
+          values$sourceNames <- unique(rownames(values$concentration[[1]]))
+          # reset if no length??
+        }
+      } else if (length(values$source) > 0 && 
+                 length(values$source[[1]]) > 1 &&
+                 !identical(values$sourceNames, unique(rownames(values$source[[1]][[1]][[1]])))) {
         values$sourceNames <-
           unique(rownames(values$source[[1]][[1]][[1]]))
+        # reset if no length??
       }
       
       values$offsetNames <- "Offset"
