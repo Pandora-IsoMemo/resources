@@ -93,7 +93,6 @@ deleteTableFromList <- function(entryContent, depth, namesList) {
       # there is only one entry for all elements -> do not remove anything
       entryContent
     }
-    
   } else {
     depth <- depth - 1
     lapply(entryContent, function(elem) {
@@ -128,7 +127,7 @@ updateListNames <- function(entryContent, depth, namesList) {
 
 #' Get Depth And Table
 #'
-#' Get the list depth and the content of the table.
+#' Get the depth of the nested list and the content of the most inner table.
 #'
 #' @param entryContent (list) list to look for names
 #' @param isEntryFun (function) function that checks for the correct level in the list hierarchy
@@ -165,6 +164,7 @@ getDepthAndTable <-
 #' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
 #'  values$sourceOffset, values$sourceOffsetUncert
 isDeepestEntry <- function(entryContent) {
+  (length(entryContent) == 0) ||
   !is.null(ncol(entryContent[[1]])) && 
     is.null(names(entryContent[[1]][[1]]))
 }
@@ -177,6 +177,7 @@ isDeepestEntry <- function(entryContent) {
 #' @param entryContent (list) element of values, e.g. values$source, values$sourceUncert,
 #'  values$sourceOffset, values$sourceOffsetUncert
 isPreDeepestEntry <- function(entryContent) {
-  !is.null(ncol(entryContent[[1]][[1]])) && 
+  (length(entryContent[[1]]) == 0) ||
+    !is.null(ncol(entryContent[[1]][[1]])) && 
     is.null(names(entryContent[[1]][[1]][[1]]))
 }

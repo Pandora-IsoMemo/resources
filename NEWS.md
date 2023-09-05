@@ -1,5 +1,10 @@
 # ReSources development version
 
+## Version 23.07.2
+
+## Bug Fixes
+- catch definition of source and concentration names when respective data is missing (#99)
+
 ## Version 23.07.1
 
 ## Bug Fixes

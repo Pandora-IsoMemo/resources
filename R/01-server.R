@@ -260,7 +260,7 @@ fruitsTab <- function(input,
         })
       }
       
-      # update list entries that depend on obsvnNames
+      # update list entries that depend on obsvnNames (rownames of values$obsvn)
       if (!identical(unique(rownames(values$obsvn[["default"]])), values$obsvnNames)) {
         isolate({
           oldObsvnNames <- values$obsvnNames
@@ -288,23 +288,44 @@ fruitsTab <- function(input,
         })
       }
       
-      if (input$modelWeights) {
+      # first, keep old value
+      newValue <- values$fractionNames
+      
+      # check fractionNames
+      if (input$modelWeights) { # "Include components" == TRUE
         if (input$modelConcentrations) {
-          values$fractionNames <- unique(colnames(values$concentration[[1]]))
+          if (length(values$concentration) > 0) {
+            newValue <- unique(colnames(values$concentration[[1]]))
+          } # reset if no length??
+        } else {
+          if (length(values$weights) > 0) {
+            newValue <- unique(colnames(values$weights))
+          } # reset if no length??
         }
-        else {
-          values$fractionNames <- unique(colnames(values$weights))
-        }
+      } else {
+        newValue <- values$targetNames
       }
-      else {
+      
+      # update fractionNames
+      if (!identical(values$fractionNames, newValue)) {
         values$fractionNames <- values$targetNames
       }
       
-      if (input$modelConcentrations) {
-        values$sourceNames <- unique(rownames(values$concentration[[1]]))
-      } else {
-        values$sourceNames <-
-          unique(rownames(values$source[[1]][[1]][[1]]))
+      # first, keep old value
+      newValue <- values$sourceNames
+      
+      # check sourceNames
+      if (input$modelConcentrations) { # "Include concentrations" == TRUE
+        if (length(values$concentration) > 0) {
+          newValue <- unique(rownames(values$concentration[[1]]))
+        } # reset if no length??
+      } else if (length(values$source) > 0 && length(values$source[[1]]) > 1) {
+        newValue <- unique(rownames(values$source[[1]][[1]][[1]]))
+      } # reset if no length??
+      
+      # update sourceNames
+      if (!identical(values$sourceNames, newValue)) {
+        values$sourceNames <- newValue
       }
       
       values$offsetNames <- "Offset"
