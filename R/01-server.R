@@ -260,7 +260,7 @@ fruitsTab <- function(input,
         })
       }
       
-      # update list entries that depend on obsvnNames
+      # update list entries that depend on obsvnNames (rownames of values$obsvn)
       if (!identical(unique(rownames(values$obsvn[["default"]])), values$obsvnNames)) {
         isolate({
           oldObsvnNames <- values$obsvnNames
