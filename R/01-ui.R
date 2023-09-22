@@ -18,7 +18,7 @@ fruitsUI <- function(id, title = "FRUITS") {
         width = 2,
         importDataUI(ns("modelUpload"), label = "Import Model"),
         tags$br(), tags$br(),
-        downloadModelUI(ns("modelDownload"), NULL),
+        downloadModelUI(ns("modelDownload"), label = "Save Model"),
         # selectInput(
         #   ns("exampleData"),
         #   label = "Select example models",

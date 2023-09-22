@@ -98,17 +98,25 @@ fruitsTab <- function(input,
 
   # Download/Upload Model ----
   uploadedNotes <- reactiveVal()
-  callModule(downloadModel, "modelDownload", session = session,
-             values = values, 
-             model = model,
-             uploadedNotes = uploadedNotes)
+  # callModule(downloadModel, "modelDownload", session = session,
+  #            values = values, 
+  #            model = model,
+  #            uploadedNotes = uploadedNotes)
+  downloadModelServer("modelDownload",
+                      dat = reactiveVal(reactiveValuesToList(values)),
+                      inputs = reactiveValues(),
+                      model = model,
+                      rPackageName = "ReSources",
+                      fileExtension = "resources",
+                      modelNotes = reactive(uploadedNotes()))
 
   uploadedValues <- importDataServer("modelUpload",
                                      title = "Import Model",
                                      defaultSource = "file",
                                      importType = "model",
                                      rPackageName = "ReSources",
-                                     ignoreWarnings = TRUE)
+                                     ignoreWarnings = TRUE,
+                                     fileExtension = "resources")
   
   observeEvent(uploadedValues(), {
     logDebug("Entering observeEvent(uploadedValues())")
