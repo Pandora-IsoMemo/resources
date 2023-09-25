@@ -22,3 +22,8 @@
 }
 
 .First()
+
+if (interactive()) {
+  library(futile.logger)
+  futile.logger::flog.threshold(DEBUG)
+}
