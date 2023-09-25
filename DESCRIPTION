@@ -19,7 +19,7 @@ Imports:
   car,
   coda,
   colourpicker,
-  DataTools (>= 23.09.0),
+  DataTools (>= 23.09.1),
   dplyr,
   DT,
   jsonlite,
