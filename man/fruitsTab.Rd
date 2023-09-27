@@ -13,7 +13,8 @@ fruitsTab(
  },
   isoDataExport = function() {
      list(data = NULL, event = NULL)
- }
+ },
+  config
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ fruitsTab(
 \item{isoMemoData}{data from IsoMemo App}
 
 \item{isoDataExport}{data to export to IsoMemo App}
+
+\item{config}{(list) list of configuration parameters}
 }
 \description{
 Server Function for the FRUITS Module / Tab

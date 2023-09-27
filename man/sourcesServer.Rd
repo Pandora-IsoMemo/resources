@@ -4,10 +4,12 @@
 \alias{sourcesServer}
 \title{Sources Server}
 \usage{
-sourcesServer(id, values, events, termChoices)
+sourcesServer(id, config, values, events, termChoices)
 }
 \arguments{
 \item{id}{id of module}
+
+\item{config}{(list) list of configuration parameters}
 
 \item{values}{values}
 

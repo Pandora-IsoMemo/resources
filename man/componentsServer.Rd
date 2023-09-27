@@ -4,10 +4,12 @@
 \alias{componentsServer}
 \title{Components Server}
 \usage{
-componentsServer(id, values, events)
+componentsServer(id, config, values, events)
 }
 \arguments{
 \item{id}{id of module}
+
+\item{config}{(list) list of configuration parameters}
 
 \item{values}{values}
 
