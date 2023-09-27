@@ -98,23 +98,30 @@ fruitsTab <- function(input,
 
   # Download/Upload Model ----
   uploadedNotes <- reactiveVal()
-  callModule(downloadModel, "modelDownload", session = session,
-             values = values, 
-             model = model,
-             uploadedNotes = uploadedNotes)
+  downloadModelServer("modelDownload",
+                      dat = reactiveVal(NULL),
+                      inputs = values,
+                      model = model,
+                      rPackageName = "ReSources",
+                      fileExtension = "resources",
+                      modelNotes = uploadedNotes,
+                      triggerUpdate = reactive(TRUE))
 
   uploadedValues <- importDataServer("modelUpload",
                                      title = "Import Model",
                                      defaultSource = "file",
                                      importType = "model",
                                      rPackageName = "ReSources",
-                                     ignoreWarnings = TRUE)
+                                     ignoreWarnings = TRUE,
+                                     fileExtension = "resources")
   
   observeEvent(uploadedValues(), {
     logDebug("Entering observeEvent(uploadedValues())")
-    req(length(uploadedValues()) > 0, !is.null(uploadedValues()[[1]][["data"]]))
+    
+    req(length(uploadedValues()) > 0, !is.null(uploadedValues()[[1]][["inputs"]]))
 
-    valuesDat <- uploadedValues()[[1]][["data"]]
+    uploadedNotes(uploadedValues()[[1]][["notes"]])
+    valuesDat <- uploadedValues()[[1]][["inputs"]]
     
     emptyTables <- checkForEmptyTables(valuesDat)
     if (length(emptyTables) > 0) {
