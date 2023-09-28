@@ -1160,7 +1160,7 @@ fruitsTab <- function(input,
     values$userEstimateGroups <- userEstimateGroups()
   })
   
-  ## Run model
+  ## Run model ----
   model <- reactiveVal(NULL)
   
   observeEvent(input$run, {
@@ -1300,7 +1300,9 @@ fruitsTab <- function(input,
           return()
         } else {
           diagnostic <-
-            convergenceDiagnostics(modelResults$parameters, fruitsObj)$geweke[[1]]
+            convergenceDiagnostics(modelResults$parameters, fruitsObj)$geweke[[1]] %>%
+            tryCatchWithWarningsAndErrors(errorTitle = "Could not create Diagnostics",
+                                          alertStyle = "shinyalert")
           if (any(is.nan(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
               any(is.na(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
               any(is.infinite(diagnostic[which(grepl("alpha", names(diagnostic)))]))) {
@@ -1312,7 +1314,9 @@ fruitsTab <- function(input,
             diagnostic[is.na(diagnostic)] <- 0
             return()
           }
-          outText <- produceOutText(fruitsObj, diagnostic)
+          outText <- produceOutText(fruitsObj, diagnostic) %>%
+            tryCatchWithWarningsAndErrors(errorTitle = "Could not create output",
+                                          alertStyle = "shinyalert")
         }
       })
       
@@ -1325,7 +1329,9 @@ fruitsTab <- function(input,
           model()$fruitsObj,
           DT = FALSE,
           agg = FALSE
-        )
+        ) %>%
+          tryCatchWithWarningsAndErrors(errorTitle = "Could not compute statistics",
+                                        alertStyle = "shinyalert")
         values$status <- "COMPLETED"
       })
       
