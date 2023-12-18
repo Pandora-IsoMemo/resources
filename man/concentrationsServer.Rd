@@ -4,12 +4,10 @@
 \alias{concentrationsServer}
 \title{Concentrations Server}
 \usage{
-concentrationsServer(id, config, values, events)
+concentrationsServer(id, values, events)
 }
 \arguments{
 \item{id}{id of module}
-
-\item{config}{(list) list of configuration parameters}
 
 \item{values}{values}
 

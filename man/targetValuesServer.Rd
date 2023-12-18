@@ -4,12 +4,10 @@
 \alias{targetValuesServer}
 \title{Target Values Server}
 \usage{
-targetValuesServer(id, config, values, events, termChoices, modelType)
+targetValuesServer(id, values, events, termChoices, modelType)
 }
 \arguments{
 \item{id}{id of module}
-
-\item{config}{(list) list of configuration parameters}
 
 \item{values}{values}
 

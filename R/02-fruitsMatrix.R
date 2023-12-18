@@ -133,7 +133,7 @@ fruitsMatrixDistribution <- function(scope, choices = c("constant", "normal", "m
   )
 }
 
-fruitsMatrix <- function(input, output, session, config,
+fruitsMatrix <- function(input, output, session,
                          values, events, meanId, sdId = NULL, distributionId = NULL, covarianceId = NULL,
                          class = "numeric", 
                          row, col, namesCov = NULL,
@@ -845,8 +845,8 @@ fruitsMatrix <- function(input, output, session, config,
         rep(values[[colVar()]], each = 2)
       }
     }),
-    defaultSource = config$defaultSourceData,
-    rPackageName = config$rPackageName,
+    defaultSource = config()[["defaultSourceData"]],
+    rPackageName = config()[["rPackageName"]],
     outputAsMatrix = TRUE,
     customWarningChecks = list(
       function() {
@@ -893,8 +893,8 @@ fruitsMatrix <- function(input, output, session, config,
     "importCov",
     rowNames = reactive(namesCovVar()),
     colNames = reactive(namesCovVar()),
-    defaultSource = config$defaultSourceData,
-    rPackageName = config$rPackageName,
+    defaultSource = config()[["defaultSourceData"]],
+    rPackageName = config()[["rPackageName"]],
     outputAsMatrix = TRUE,
     customWarningChecks = list(
       function() {
@@ -969,8 +969,8 @@ fruitsMatrix <- function(input, output, session, config,
     "batchImport",
     rowNames = reactive(values[[rowVar()]]),
     colNames = reactive(character(0)),
-    defaultSource = config$defaultSourceData,
-    rPackageName = config$rPackageName,
+    defaultSource = config()[["defaultSourceData"]],
+    rPackageName = config()[["rPackageName"]],
     batch = TRUE,
     outputAsMatrix = TRUE,
     customWarningChecks = list(
@@ -1108,8 +1108,8 @@ fruitsMatrix <- function(input, output, session, config,
     "batchImportCov",
     rowNames = namesCovVar,
     colNames = namesCovVar,
-    defaultSource = config$defaultSourceData,
-    rPackageName = config$rPackageName,
+    defaultSource = config()[["defaultSourceData"]],
+    rPackageName = config()[["rPackageName"]],
     batch = TRUE,
     outputAsMatrix = TRUE,
     customWarningChecks = list(

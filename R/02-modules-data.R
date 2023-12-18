@@ -79,14 +79,12 @@ targetValuesUI <- function(id, title = NULL) {
 #'
 #' Server function of the data - target values
 #' @param id id of module
-#' @param config (list) list of configuration parameters
 #' @param values values
 #' @param events events
 #' @param termChoices termChoices
 #' @param modelType (reactive) character id, e.g. "1"
 targetValuesServer <-
   function(id,
-           config,
            values,
            events,
            termChoices,
@@ -97,7 +95,6 @@ targetValuesServer <-
                    callModule(
                      fruitsMatrix,
                      "targetValues",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "obsvn",
@@ -136,7 +133,6 @@ targetValuesServer <-
                    callModule(
                      fruitsMatrix,
                      "weightOffset",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "weightOffset",
@@ -173,7 +169,6 @@ targetValuesServer <-
                    callModule(
                      fruitsMatrix,
                      "targetValuesCovariates",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "targetValuesCovariates",
@@ -214,7 +209,6 @@ targetValuesServer <-
                    callModule(
                      fruitsMatrix,
                      "exportCoordinates",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "exportCoordinates",
@@ -256,12 +250,10 @@ componentsUI <- function(id, title = NULL) {
 #'
 #' Server function of the data - components
 #' @param id id of module
-#' @param config (list) list of configuration parameters
 #' @param values values
 #' @param events events
 componentsServer <-
   function(id,
-           config,
            values,
            events) {
     moduleServer(id,
@@ -270,7 +262,6 @@ componentsServer <-
                    callModule(
                      fruitsMatrix,
                      "weights",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "weights",
@@ -352,13 +343,11 @@ sourcesUI <- function(id, title = NULL) {
 #'
 #' Server function of the data - sources
 #' @param id id of module
-#' @param config (list) list of configuration parameters
 #' @param values values
 #' @param events events
 #' @param termChoices termChoices
 sourcesServer <-
   function(id,
-           config,
            values,
            events,
            termChoices) {
@@ -381,7 +370,6 @@ sourcesServer <-
                    callModule(
                      fruitsMatrix,
                      "source",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "source",
@@ -462,7 +450,6 @@ sourcesServer <-
                    callModule(
                      fruitsMatrix,
                      "sourceOffset",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "sourceOffset",
@@ -532,12 +519,10 @@ concentrationsUI <- function(id, title = NULL) {
 #'
 #' Server function of the data - concentrations
 #' @param id id of module
-#' @param config (list) list of configuration parameters
 #' @param values values
 #' @param events events
 concentrationsServer <-
   function(id,
-           config,
            values,
            events
            ) {
@@ -547,7 +532,6 @@ concentrationsServer <-
                    callModule(
                      fruitsMatrix,
                      "concentration",
-                     config = config,
                      values = values,
                      events = events,
                      meanId = "concentration",
