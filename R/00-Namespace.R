@@ -45,6 +45,5 @@
 #' @importFrom tidyr gather
 #' @importFrom utils data packageVersion head combn compareVersion tail
 #' installed.packages write.table capture.output read.table
-#' @importFrom yaml yaml.load_file
-#' @importFrom zip zipr
+#' @importFrom yaml read_yaml
 NULL
