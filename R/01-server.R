@@ -5,7 +5,6 @@
 #' @param session session
 #' @param isoMemoData data from IsoMemo App
 #' @param isoDataExport data to export to IsoMemo App
-#' @param config (list) list of configuration parameters
 #'
 #' @export
 fruitsTab <- function(input,
@@ -16,8 +15,7 @@ fruitsTab <- function(input,
                       },
                       isoDataExport = function() {
                         list(data = NULL, event = NULL)
-                      },
-                      config) {
+                      }) {
   ns <- session$ns
   
   values <- do.call(
@@ -104,18 +102,20 @@ fruitsTab <- function(input,
                       dat = reactiveVal(NULL),
                       inputs = values,
                       model = model,
-                      rPackageName = config$rPackageName,
-                      fileExtension = config$fileExtension,
+                      rPackageName = config()[["rPackageName"]],
+                      fileExtension = config()[["fileExtension"]],
                       modelNotes = uploadedNotes,
                       triggerUpdate = reactive(TRUE))
 
   uploadedValues <- importDataServer("modelUpload",
                                      title = "Import Model",
                                      importType = "model",
-                                     defaultSource = config$defaultSourceModel,
-                                     rPackageName = config$rPackageName,
-                                     fileExtension = config$fileExtension,
-                                     ignoreWarnings = TRUE)
+                                     ckanFileTypes = config()[["ckanModelTypes"]],
+                                     ignoreWarnings = TRUE,
+                                     defaultSource = config()[["defaultSourceModel"]],
+                                     mainFolder = config()[["mainFolder"]],
+                                     fileExtension = config()[["fileExtension"]],
+                                     rPackageName = config()[["rPackageName"]])
   
   observeEvent(uploadedValues(), {
     logDebug("Entering observeEvent(uploadedValues())")
@@ -359,7 +359,6 @@ fruitsTab <- function(input,
   })
   
   targetValuesServer("targetVals",
-                     config = config,
                      values = values,
                      events = events,
                      termChoices = termChoices,
@@ -378,18 +377,15 @@ fruitsTab <- function(input,
   outputOptions(output, "targetValuesShowCoordinates", suspendWhenHidden = FALSE)
   
   componentsServer("components",
-                   config = config,
                    values = values,
                    events = events)
   
   sourcesServer("sources",
-                config = config,
                 values = values,
                 events = events,
                 termChoices = termChoices)
   
   concentrationsServer("concentration",
-                       config = config,
                        values = values,
                        events = events
                        )

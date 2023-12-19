@@ -12,7 +12,7 @@
 compileRunModel <- function(fruitsObj, progress = FALSE, onlySim = FALSE,
                             userDefinedAlphas = NULL, seqSim = 0.2, simSourceNames = NULL,
                             onlyShowNimbleInput = FALSE) {
-  if (class(fruitsObj) != "fruits") {
+  if (!inherits(fruitsObj, "fruits")) {
     stop('fruitsObj must be class "fruits"')
   }
   if (progress) setProgress(message = "Create model", value = 0.05)

@@ -3,10 +3,6 @@ library(yaml)
 
 options(shiny.maxRequestSize = 200*1024^2)
 
-# load config variables
-configFile <- system.file("config.yaml", package = "ReSources")
-appConfig <- yaml::read_yaml(configFile)
-
 server <- function(input, output, session) {
   savedMaps <- reactiveVal(list())
   fruitsData <- reactiveVal(list(event = NULL, data = NULL))
@@ -22,7 +18,7 @@ server <- function(input, output, session) {
     showTab("tab", "model2D", select = TRUE)
   })
 
-  shiny::callModule(fruitsTab, "fruits", isoDataExport = isoDataExport, config = appConfig)
+  shiny::callModule(fruitsTab, "fruits", isoDataExport = isoDataExport)
 
   if (isoInstalled()) {
     callModule(MpiIsoApp::modelResults2D, "model2D", isoData = isoData,
