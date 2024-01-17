@@ -146,8 +146,8 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
       userEstimateNames <- sapply(fruitsObj$userEstimates[[2]], function(x) x$name)
       userEstimateNames <- userEstimateNames[userEstimateNames != ""]
       newResultUsers <- do.call(rbind, lapply(userEstimateNames, function(x) {
-        newResultUsers[sapply(newResultUsers$Estimate, function(y) strsplit(y, "\\.")[[1]][1]) == x, ]$`Group` <- paste("User estimate", x)
-        newResultUsers[sapply(newResultUsers$Estimate, function(y) strsplit(y, "\\.")[[1]][1]) == x, ]
+        newResultUsers[splitLast(newResultUsers$Estimate) == x, ]$`Group` <- paste("User estimate", x)
+        newResultUsers[splitLast(newResultUsers$Estimate) == x, ]
       }))
       resultMatrix <- resultMatrix[resultMatrix$`Group` != "userEstimates", ]
       resultMatrix <- rbind(resultMatrix, newResultUsers)
@@ -178,6 +178,11 @@ getResultStatistics <- function(parameters, userEstimates, fruitsObj,
   } else {
     resultMatrix
   }
+}
+
+splitLast <- function(x, splitter = "\\."){
+  lastdelim = tail(gregexpr(splitter,x)[[1]],n=1)
+  sapply(x,function(y) {substr(y,1,lastdelim-1)})
 }
 
 transformUIStatNames <- function(statistics) {

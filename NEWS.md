@@ -1,5 +1,10 @@
 # ReSources App
 
+## Version 23.12.1
+
+### Bug Fixes
+- fixes an issue with a missing case when splitting user estimate samples into groups (#109)
+
 ## Version 23.12.0
 
 ### New Features
