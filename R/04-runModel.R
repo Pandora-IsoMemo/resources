@@ -274,16 +274,20 @@ normalizeUserEstimates <- function(userEstimateSamples, userEstimatesGroups, ind
       est <- userEstimateSamples[, matchedNameCols[[x]], drop = FALSE]
       colnames(est) <- paste0(groupNames[[x]], ".", colnames(est))
       if (userEstimatesGroups[[x]]$normalize == TRUE & !is.null(indNames)) {
-        splits <- split(1:ncol(est), rep(1:length(indNames),
-          times = length(namesUserEstGroup[[x]])
-        ))
-        estNew <- do.call("cbind", lapply(
-          splits,
-          function(x) {
-            return(est[, x] / rowSums(est[, x]))
-          }
-        ))
-        est <- estNew[, colnames(est)]
+        names_ind <- rep(1:length(indNames),
+                         times = length(namesUserEstGroup[[x]]))
+        if(ncol(est) == length(names_ind)){
+          splits <- split(1:ncol(est), names_ind)
+          estNew <- do.call("cbind", lapply(
+            splits,
+            function(x) {
+              return(est[, x] / rowSums(est[, x]))
+            }
+          ))
+          est <- estNew[, colnames(est)]
+        } else {
+          return(est / rowSums(est))
+        }
       } else {
         if(userEstimatesGroups[[x]]$normalize == TRUE){
           return(est / rowSums(est))
