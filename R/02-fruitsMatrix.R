@@ -133,7 +133,7 @@ fruitsMatrixDistribution <- function(scope, choices = c("constant", "normal", "m
   )
 }
 
-fruitsMatrix <- function(input, output, session, 
+fruitsMatrix <- function(input, output, session,
                          values, events, meanId, sdId = NULL, distributionId = NULL, covarianceId = NULL,
                          class = "numeric", 
                          row, col, namesCov = NULL,
@@ -845,7 +845,9 @@ fruitsMatrix <- function(input, output, session,
         rep(values[[colVar()]], each = 2)
       }
     }),
-    defaultSource = "file",
+    defaultSource = config()[["defaultSourceData"]],
+    ckanFileTypes = config()[["ckanFileTypes"]],
+    rPackageName = config()[["rPackageName"]],
     outputAsMatrix = TRUE,
     customWarningChecks = list(
       function() {
@@ -892,7 +894,9 @@ fruitsMatrix <- function(input, output, session,
     "importCov",
     rowNames = reactive(namesCovVar()),
     colNames = reactive(namesCovVar()),
-    defaultSource = "file",
+    defaultSource = config()[["defaultSourceData"]],
+    ckanFileTypes = config()[["ckanFileTypes"]],
+    rPackageName = config()[["rPackageName"]],
     outputAsMatrix = TRUE,
     customWarningChecks = list(
       function() {
@@ -967,7 +971,9 @@ fruitsMatrix <- function(input, output, session,
     "batchImport",
     rowNames = reactive(values[[rowVar()]]),
     colNames = reactive(character(0)),
-    defaultSource = "file",
+    defaultSource = config()[["defaultSourceData"]],
+    ckanFileTypes = config()[["ckanFileTypes"]],
+    rPackageName = config()[["rPackageName"]],
     batch = TRUE,
     outputAsMatrix = TRUE,
     customWarningChecks = list(
@@ -1105,7 +1111,9 @@ fruitsMatrix <- function(input, output, session,
     "batchImportCov",
     rowNames = namesCovVar,
     colNames = namesCovVar,
-    defaultSource = "file",
+    defaultSource = config()[["defaultSourceData"]],
+    ckanFileTypes = config()[["ckanFileTypes"]],
+    rPackageName = config()[["rPackageName"]],
     batch = TRUE,
     outputAsMatrix = TRUE,
     customWarningChecks = list(

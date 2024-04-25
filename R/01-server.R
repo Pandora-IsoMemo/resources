@@ -98,23 +98,32 @@ fruitsTab <- function(input,
 
   # Download/Upload Model ----
   uploadedNotes <- reactiveVal()
-  callModule(downloadModel, "modelDownload", session = session,
-             values = values, 
-             model = model,
-             uploadedNotes = uploadedNotes)
+  downloadModelServer("modelDownload",
+                      dat = reactiveVal(NULL),
+                      inputs = values,
+                      model = model,
+                      rPackageName = config()[["rPackageName"]],
+                      fileExtension = config()[["fileExtension"]],
+                      modelNotes = uploadedNotes,
+                      triggerUpdate = reactive(TRUE))
 
   uploadedValues <- importDataServer("modelUpload",
                                      title = "Import Model",
-                                     defaultSource = "file",
                                      importType = "model",
-                                     rPackageName = "ReSources",
-                                     ignoreWarnings = TRUE)
+                                     ckanFileTypes = config()[["ckanModelTypes"]],
+                                     ignoreWarnings = TRUE,
+                                     defaultSource = config()[["defaultSourceModel"]],
+                                     mainFolder = config()[["mainFolder"]],
+                                     fileExtension = config()[["fileExtension"]],
+                                     rPackageName = config()[["rPackageName"]])
   
   observeEvent(uploadedValues(), {
     logDebug("Entering observeEvent(uploadedValues())")
-    req(length(uploadedValues()) > 0, !is.null(uploadedValues()[[1]][["data"]]))
+    
+    req(length(uploadedValues()) > 0, !is.null(uploadedValues()[[1]][["inputs"]]))
 
-    valuesDat <- uploadedValues()[[1]][["data"]]
+    uploadedNotes(uploadedValues()[[1]][["notes"]])
+    valuesDat <- uploadedValues()[[1]][["inputs"]]
     
     emptyTables <- checkForEmptyTables(valuesDat)
     if (length(emptyTables) > 0) {
@@ -260,7 +269,7 @@ fruitsTab <- function(input,
         })
       }
       
-      # update list entries that depend on obsvnNames
+      # update list entries that depend on obsvnNames (rownames of values$obsvn)
       if (!identical(unique(rownames(values$obsvn[["default"]])), values$obsvnNames)) {
         isolate({
           oldObsvnNames <- values$obsvnNames
@@ -288,23 +297,44 @@ fruitsTab <- function(input,
         })
       }
       
-      if (input$modelWeights) {
+      # first, keep old value
+      newValue <- values$fractionNames
+      
+      # check fractionNames
+      if (input$modelWeights) { # "Include components" == TRUE
         if (input$modelConcentrations) {
-          values$fractionNames <- unique(colnames(values$concentration[[1]]))
+          if (length(values$concentration) > 0) {
+            newValue <- unique(colnames(values$concentration[[1]]))
+          } # reset if no length??
+        } else {
+          if (length(values$weights) > 0) {
+            newValue <- unique(colnames(values$weights))
+          } # reset if no length??
         }
-        else {
-          values$fractionNames <- unique(colnames(values$weights))
-        }
+      } else {
+        newValue <- values$targetNames
       }
-      else {
+      
+      # update fractionNames
+      if (!identical(values$fractionNames, newValue)) {
         values$fractionNames <- values$targetNames
       }
       
-      if (input$modelConcentrations) {
-        values$sourceNames <- unique(rownames(values$concentration[[1]]))
-      } else {
-        values$sourceNames <-
-          unique(rownames(values$source[[1]][[1]][[1]]))
+      # first, keep old value
+      newValue <- values$sourceNames
+      
+      # check sourceNames
+      if (input$modelConcentrations) { # "Include concentrations" == TRUE
+        if (length(values$concentration) > 0) {
+          newValue <- unique(rownames(values$concentration[[1]]))
+        } # reset if no length??
+      } else if (length(values$source) > 0 && length(values$source[[1]]) > 1) {
+        newValue <- unique(rownames(values$source[[1]][[1]][[1]]))
+      } # reset if no length??
+      
+      # update sourceNames
+      if (!identical(values$sourceNames, newValue)) {
+        values$sourceNames <- newValue
       }
       
       values$offsetNames <- "Offset"
@@ -1126,7 +1156,7 @@ fruitsTab <- function(input,
     values$userEstimateGroups <- userEstimateGroups()
   })
   
-  ## Run model
+  ## Run model ----
   model <- reactiveVal(NULL)
   
   observeEvent(input$run, {
@@ -1266,7 +1296,9 @@ fruitsTab <- function(input,
           return()
         } else {
           diagnostic <-
-            convergenceDiagnostics(modelResults$parameters, fruitsObj)$geweke[[1]]
+            convergenceDiagnostics(modelResults$parameters, fruitsObj)$geweke[[1]] %>%
+            tryCatchWithWarningsAndErrors(errorTitle = "Could not create Diagnostics",
+                                          alertStyle = "shinyalert")
           if (any(is.nan(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
               any(is.na(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
               any(is.infinite(diagnostic[which(grepl("alpha", names(diagnostic)))]))) {
@@ -1278,7 +1310,9 @@ fruitsTab <- function(input,
             diagnostic[is.na(diagnostic)] <- 0
             return()
           }
-          outText <- produceOutText(fruitsObj, diagnostic)
+          outText <- produceOutText(fruitsObj, diagnostic) %>%
+            tryCatchWithWarningsAndErrors(errorTitle = "Could not create output",
+                                          alertStyle = "shinyalert")
         }
       })
       
@@ -1291,7 +1325,9 @@ fruitsTab <- function(input,
           model()$fruitsObj,
           DT = FALSE,
           agg = FALSE
-        )
+        ) %>%
+          tryCatchWithWarningsAndErrors(errorTitle = "Could not compute statistics",
+                                        alertStyle = "shinyalert")
         values$status <- "COMPLETED"
       })
       

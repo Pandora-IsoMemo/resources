@@ -15,5 +15,5 @@ getDepthAndTable(entryContent, isEntryFun = isDeepestEntry, n = NULL)
 of values}
 }
 \description{
-Get the list depth and the content of the table.
+Get the depth of the nested list and the content of the most inner table.
 }

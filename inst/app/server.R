@@ -1,4 +1,5 @@
 library(ReSources)
+library(yaml)
 
 options(shiny.maxRequestSize = 200*1024^2)
 

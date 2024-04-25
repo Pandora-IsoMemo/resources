@@ -6,7 +6,7 @@
 #' @importFrom car ellipse
 #' @importFrom coda mcmc raftery.diag gelman.diag geweke.diag heidel.diag
 #' @importFrom colourpicker colourInput
-#' @importFrom DataTools importDataUI importDataServer remoteModelsUI remoteModelsServer 
+#' @importFrom DataTools importDataUI importDataServer downloadModelUI downloadModelServer 
 #'  tryCatchWithWarningsAndErrors
 #' @importFrom DT dataTableOutput renderDataTable datatable coerceValue renderDT DTOutput
 #' @importFrom futile.logger flog.warn
@@ -45,5 +45,5 @@
 #' @importFrom tidyr gather
 #' @importFrom utils data packageVersion head combn compareVersion tail
 #' installed.packages write.table capture.output read.table
-#' @importFrom zip zipr
+#' @importFrom yaml read_yaml
 NULL
