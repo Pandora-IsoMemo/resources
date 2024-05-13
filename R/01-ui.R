@@ -729,6 +729,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 id = ns("MCharResults"),
                 tabPanel(
                   "Target values plot",
+                  ### Target values plot ----
                   pickerInput(
                     inputId = ns("targetSelect"),
                     label = "Select up to three proxies",
@@ -755,22 +756,25 @@ fruitsUI <- function(id, title = "FRUITS") {
                 ),
                 tabPanel(
                   "Concentrations plot",
+                  ### Concentrations plot ----
                   value = "concentrationsPlot",
-                  pickerInput(
-                    inputId = ns("concentrationsSelect"),
-                    label = "Select up to three fractions",
-                    choices = NULL,
-                    selected = NULL,
-                    multiple = TRUE
-                  ),
-                  plotlyOutput(outputId = ns("concentrationsPlot")),
-                  plotExportButton(ns("exportConcentrationsPlot")),
-                  helpText(
-                    "Please export plot using the camera symbol at the top-right of the plot."
-                  )
+                  plotlyPlotUI(id = ns("concentrationsPlotly"), label = "fractions")
+                  # pickerInput(
+                  #   inputId = ns("concentrationsSelect"),
+                  #   label = "Select up to three fractions",
+                  #   choices = NULL,
+                  #   selected = NULL,
+                  #   multiple = TRUE
+                  # ),
+                  # plotlyOutput(outputId = ns("concentrationsPlot")),
+                  # plotExportButton(ns("exportConcentrationsPlot")),
+                  # helpText(
+                  #   "Please export plot using the camera symbol at the top-right of the plot."
+                  # )
                 ),
                 tabPanel(
                   "Source Plot",
+                  ### Source plot ----
                   value = "sourcePlot",
                   pickerInput(
                     inputId = ns("sourceSelect"),
@@ -804,6 +808,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 ),
                 tabPanel(
                   "Source Mixture Plot",
+                  ### Source Mixture plot ----
                   value = "sourceMixPlot",
                   pickerInput(
                     inputId = ns("sourceSelectMix"),
@@ -872,23 +877,27 @@ fruitsUI <- function(id, title = "FRUITS") {
                 ),
                 tabPanel(
                   "Z-Scores sources",
+                  ### Z-Scores sources ----
                   value = "zScorePlot",
                   DT::dataTableOutput(ns("zScores")),
                   exportDataUI(ns("exportZScores"), "Export Data")
                 ),
                 tabPanel(
                   "Source separation test (MANOVA)",
+                  ### Source separation test (MANOVA) ----
                   value = "scoreSepTest",
                   verbatimTextOutput(ns("scoreSep"), download = TRUE)
                 ),
                 tabPanel(
                   "Mahalanobis-Distance sources",
+                  ### Mahalanobis-Distance sources ----
                   value = "mahaPlot",
                   DT::dataTableOutput(ns("mahaDist")),
                   exportDataUI(ns("exportMahaDist"), "Export Data")
                 ),
                 tabPanel(
                   "Target & Source summary",
+                  ### Target & Source summary ----
                   value = "corrPlot",
                   verbatimTextOutput(ns("corrMat"), download = TRUE)
                 )

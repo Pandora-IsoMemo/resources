@@ -1764,13 +1764,13 @@ fruitsTab <- function(input,
     plotFunCharacteristicsConc()()
   })
   
-  callModule(
-    plotExport,
-    "exportConcentrationsPlot",
-    plotFun = plotFunCharacteristicsConc,
-    type = "sourceCharacteristics",
-    plotly = TRUE
-  )
+  # callModule(
+  #   plotExport,
+  #   "exportConcentrationsPlot",
+  #   plotFun = plotFunCharacteristicsConc,
+  #   type = "sourceCharacteristics",
+  #   plotly = TRUE
+  # )
   
   
   output$SourceCharacteristicsPlot <- renderPlotly({
