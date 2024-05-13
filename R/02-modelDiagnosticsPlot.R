@@ -51,6 +51,10 @@ modelDiagnosticsPlotUI <- function(id) {
         label = "Select plot type:",
         choices = c("Trace", "AutoCorr")
       ),
+      tags$hr(),
+      plotRangesUI(id = ns("plotRangesDiag"), title = "Axis Ranges"),
+      actionButton(ns("applyRangesDiag"), "Apply"),
+      tags$hr(),
       checkboxInput(
         inputId = ns("showLegendDiag"),
         label = "Show Legend",
@@ -117,18 +121,32 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
       xAxisSize = input$sizeAxisXDiag,
       yAxisSize = input$sizeAxisYDiag,
       contributionLimit = input$contributionLimitDiag,
-      colorPalette = input$colorPaletteDiag
+      colorPalette = input$colorPaletteDiag,
+      applyRanges = input$applyRangesDiag
     )
   }) %>% debounce(100)
 
+  userRangesDiag <- plotRangesServer("plotRangesDiag",
+                                     type = "ggplot",
+                                     initRanges = list(xAxis = config()[["plotRange"]],
+                                                       yAxis = config()[["plotRange"]]))
+  
   ## Plot Function
   plotFunTargetDiagnostics <- reactive({
     validate(validModelOutput(model()))
     function() {
-      do.call(
+      p <- do.call(
         plotTargets,
         plotParams()
       )
+      
+      # we need to trigger the update after pressing "Apply", that's why we use the if condition
+      if (input$applyRangesDiag > 0) {
+        p <- p %>%
+          formatRangesOfGGplot(ranges = userRangesDiag) 
+      }
+      
+      p
     }
   })
 
