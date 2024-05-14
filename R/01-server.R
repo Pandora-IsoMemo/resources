@@ -637,20 +637,46 @@ fruitsTab <- function(input,
     }
   })
   
-  
-  observeEvent(values$alphaHyper, {
+  defaultAlphaHyper <- reactiveVal()
+  observe({
     logDebug("Entering observeEvent(values$alphaHyper)")
-    if (!identical(input$alphaHyper, values$alphaHyper)) {
-      updateNumericInput(session, "alphaHyper", value = values$alphaHyper)
+    if (length(values$alphaHyper) == 1 && length(values$sourceNames) > 1) {
+      # catch case of depricated alphaHyper (single numeric value for all sources)
+      # when e.g. loading an older model
+      newValues <- getAlphaHyperVec(sourceNames = values$sourceNames,
+                                    singleAlphaHyper = values$alphaHyper)
+    } else {
+      # update to new values from values$alphaHyper
+      # when e.g. loading a recent model
+      newValues <- values$alphaHyper
     }
-  })
+    
+    req(!identical(unname(defaultAlphaHyper()), unname(newValues)), 
+        any(defaultAlphaHyper() != newValues))
+    
+    defaultAlphaHyper(newValues)
+  }) %>%
+    bindEvent(values$alphaHyper)
   
-  observeEvent(input$alphaHyper, {
+  observe({
+    # reset values to "1" only if the number of food sources is changed
+    req(length(defaultAlphaHyper()) != length(values$sourceNames)) 
+    logDebug("Entering update (defaultAlphaHyper)")
+    
+    newValues <- getAlphaHyperVec(sourceNames = values$sourceNames)
+    defaultAlphaHyper(newValues)
+  }) %>%
+    bindEvent(values$sourceNames)
+  
+  alphaHyperReactive <- vectorInputServer("alphaHyper", defaultInputs = defaultAlphaHyper)
+  
+  observe({
     logDebug("Entering observeEvent(input$alphaHyper)")
-    if (!identical(input$alphaHyper, values$alphaHyper)) {
-      values$alphaHyper <- input$alphaHyper
-    }
-  })
+    req(!identical(unname(alphaHyperReactive()), unname(values$alphaHyper)))
+    
+    values$alphaHyper <- alphaHyperReactive()
+  }) %>%
+    bindEvent(alphaHyperReactive())
   
   observeEvent(values$oxcalCheck, {
     logDebug("Entering observeEvent(values$oxcalCheck)")
