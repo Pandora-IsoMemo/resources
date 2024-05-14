@@ -52,7 +52,7 @@ modelDiagnosticsPlotUI <- function(id) {
         choices = c("Trace", "AutoCorr")
       ),
       tags$hr(),
-      plotRangesUI(id = ns("plotRangesDiag"), title = "Axis Ranges"),
+      plotRangesUI(id = ns("plotRangesDiag"), title = "Axis Ranges", titleTag = "strong"),
       actionButton(ns("applyRangesDiag"), "Apply"),
       tags$hr(),
       checkboxInput(

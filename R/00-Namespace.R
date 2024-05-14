@@ -6,7 +6,7 @@
 #' @importFrom car ellipse
 #' @importFrom coda mcmc raftery.diag gelman.diag geweke.diag heidel.diag
 #' @importFrom colourpicker colourInput
-#' @importFrom DataTools importDataUI importDataServer downloadModelUI downloadModelServer 
+#' @importFrom DataTools has_internet importDataUI importDataServer downloadModelUI downloadModelServer 
 #'  tryCatchWithWarningsAndErrors
 #' @importFrom DT dataTableOutput renderDataTable datatable coerceValue renderDT DTOutput
 #' @importFrom futile.logger flog.warn

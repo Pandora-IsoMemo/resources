@@ -51,7 +51,7 @@ OxCalOutputUI <- function(id) {
           numericInput(ns("mixMax"), "Mix Max", 1)
         )
       ),
-      column(width = 1, offset = 2, actionButton(ns("help"), "Help"))
+      column(width = 1, offset = 2, align = "right", actionButton(ns("help"), "Help"))
     ),
     fluidRow(
       column(width = 3, selectInput(ns("aquaticCurve1"),
@@ -104,7 +104,19 @@ OxCalOutputUI <- function(id) {
         ))
       )
     ),
-    actionButton(ns("GenerateOxCal"), "Generate Oxcal code"),
+    fluidRow(
+      column(2,
+             actionButton(ns("GenerateOxCal"), "Generate Oxcal code")
+             ),
+      column(5,
+             offset = 4,
+             align = "right",
+             uiOutput(ns("internetStatus"))),
+      column(1, 
+             align = "right",
+             actionButton(ns("reconnectButton"), "Reconnect")
+      )
+    ),
     tags$hr(),
     textAreaInput(ns("OxCalText"), "Oxcal Output",
       width = "100%", height = "400px"
@@ -116,31 +128,42 @@ OxCalOutputUI <- function(id) {
 }
 
 OxCalOutput <- function(input, output, session, model, exportCoordinates) {
+  isInternet <- reactiveVal(has_internet())
+  
   terrestrialCurvesXlsx <- reactive({
+    if (!isInternet()) return(data.frame())
+    
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/b7732618-7764-460a-b1fa-c614f4cdbe95/download/terrestrial.xlsx"
     read.xlsx(file)
   })
   
   aquaticCurves1Xlsx <- reactive({
+    if (!isInternet()) return(data.frame())
+    
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/2037632f-f984-4834-8e25-4af5498df163/download/aquatic1.xlsx"
     read.xlsx(file)
   })
   
   aquaticCurves2Xlsx <- reactive({
+    if (!isInternet()) return(data.frame())
+    
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/120d810e-ff7d-49b7-80b8-e9791e2980b3/download/aquatic2.xlsx"
     read.xlsx(file)
   })
   
   oxCalBasicCode <- reactive({
+    if (!isInternet()) return(data.frame())
+    
     file <-
       "https://pandoradata.earth/dataset/46fe7fc7-55a4-493d-91e8-c9abffbabcca/resource/f4b0a2b4-8f65-463d-aff4-2a31490abc78/download/oxcal_basic_code.txt"
     readLines(file, warn = FALSE)
   })
 
   observe({
+    logDebug("Oxcal: Update curves")
     updateSelectInput(session,
                       "terrestrialCurve",
                       choices = getCurveTitlesXlsx(terrestrialCurvesXlsx()))
@@ -153,6 +176,36 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
   })
 
   observe({
+    logDebug("Oxcal: Reconnect clicked")
+    isInternet(has_internet())
+  }) %>%
+    bindEvent(input$reconnectButton)
+  
+  output$internetStatus <- renderUI({
+    if (!isInternet()) {
+      text <- "No connection to internet!"
+      } else {
+      text <- "Connected to internet!"
+      }
+    
+    tagList(
+      helpText(text)
+    )
+  })
+  
+  observe({
+    logDebug("Oxcal: Update inputs")
+    if (!isInternet()) {
+      updateSelectInput(session, "OxCalA", choices = c(), selected = "")
+      updateSelectInput(session, "OxCalB", choices = c(), selected = "")
+      updateTextAreaInput(session, inputId = "OxCalText", value = "",
+                          placeholder = "No internet connection. Check your internet and reconnect!")
+      
+      return()
+    } else {
+      updateTextAreaInput(session, inputId = "OxCalText", value = "", placeholder = "")
+    }
+    
     if (is.null(model())) {
       updateSelectInput(session, "OxCalA", choices = c(), selected = "")
       updateSelectInput(session, "OxCalB", choices = c(), selected = "")
@@ -188,7 +241,7 @@ OxCalOutput <- function(input, output, session, model, exportCoordinates) {
 
   observe({
     req(input$terrestrialCurve == "3")
-
+    logDebug("Oxcal: Update terrestrialParams")
     terrestrialParams(
       switch(input$mixType,
         "Option point" = c(input$mixPoint, 0),
