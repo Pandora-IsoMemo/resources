@@ -45,6 +45,7 @@
 #' @importFrom templates tmpl tmplEval
 #' @importFrom tibble add_row add_column
 #' @importFrom tidyr gather
+#' @importFrom tools file_path_sans_ext
 #' @importFrom utils data packageVersion head combn compareVersion tail
 #' installed.packages write.table capture.output read.table
 #' @importFrom yaml read_yaml

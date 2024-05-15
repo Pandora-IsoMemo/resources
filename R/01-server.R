@@ -51,6 +51,7 @@ fruitsTab <- function(input,
   })
   
   ## Reset Input ----
+  uploadedNotes <- reactiveVal()
   observeEvent(input$reset, {
     logDebug("Entering observeEvent(input$reset)")
     vars <- defaultValues()
@@ -64,7 +65,6 @@ fruitsTab <- function(input,
     events$name <- list()
     uploadedNotes(character(0))
   })
-  
   
   ## Load Example Model
   # observeEvent(input$exampleModel,
@@ -97,12 +97,14 @@ fruitsTab <- function(input,
   
 
   # Download/Upload Model ----
-  uploadedNotes <- reactiveVal()
+  model <- reactiveVal(NULL)
+  modelUploadBaseFileName <- reactiveVal("")
   downloadModelServer("modelDownload",
                       dat = reactiveVal(NULL),
                       inputs = values,
                       model = model,
                       rPackageName = config()[["rPackageName"]],
+                      fileName = modelUploadBaseFileName,
                       fileExtension = config()[["fileExtension"]],
                       modelNotes = uploadedNotes,
                       triggerUpdate = reactive(TRUE))
@@ -120,7 +122,11 @@ fruitsTab <- function(input,
     logDebug("Entering observeEvent(uploadedValues())")
     
     req(length(uploadedValues()) > 0, !is.null(uploadedValues()[[1]][["inputs"]]))
-
+    
+    uploadedFileName <- names(uploadedValues())[1] %>%
+      file_path_sans_ext()
+    modelUploadBaseFileName(uploadedFileName)
+    
     uploadedNotes(uploadedValues()[[1]][["notes"]])
     valuesDat <- uploadedValues()[[1]][["inputs"]]
     
@@ -1182,8 +1188,6 @@ fruitsTab <- function(input,
   })
   
   ## Run model ----
-  model <- reactiveVal(NULL)
-  
   observeEvent(input$run, {
     logDebug("Entering observeEvent(input$run)")
     values$status <- "RUNNING"
