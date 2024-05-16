@@ -10,7 +10,11 @@ ckanModelTypes:
   - "zip"
   - "resources"
 githubRepo: "resources"        # for import of models
-mainFolder: "predefinedModels"  # for import of models
 defaultSourceModel: "file"           # for import of models
 fileExtension: "resources"      # for download of models
 rPackageName: "ReSources"       # for download and import of models
+# default range of axis for ggplots
+plotRange:
+  min: 0
+  max: 1
+  fromData: true

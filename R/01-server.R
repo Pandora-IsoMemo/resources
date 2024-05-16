@@ -113,7 +113,6 @@ fruitsTab <- function(input,
                                      ckanFileTypes = config()[["ckanModelTypes"]],
                                      ignoreWarnings = TRUE,
                                      defaultSource = config()[["defaultSourceModel"]],
-                                     mainFolder = config()[["mainFolder"]],
                                      fileExtension = config()[["fileExtension"]],
                                      rPackageName = config()[["rPackageName"]])
   
@@ -1480,8 +1479,8 @@ fruitsTab <- function(input,
   })
   
   observe({
-    logDebug("Entering observe(sourceSelectMix2)")
     validate(validModelOutput(modelCharacteristics()))
+    logDebug("Entering observe(sourceSelectMix2)")
     
     updatePickerInput(
       session,
@@ -1667,7 +1666,9 @@ fruitsTab <- function(input,
     type = "gelman"
   )
   
-  callModule(OxCalOutput, "oxcal", model = model, values$exportCoordinates)
+  callModule(OxCalOutput, "oxcal",
+             model = model, 
+             exportCoordinates = values$exportCoordinates)
   
   expChains <- reactive({
     validate(validModelOutput(model()))

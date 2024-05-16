@@ -9,7 +9,7 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
                         pointDat = data.frame(), histBins = 50,
                         binSize = NULL,
                         fontFamily = NULL, whiskerMultiplier = 0.95, boxQuantile = 0.68,
-                        numCov = FALSE) {
+                        numCov = FALSE, ...) {
   if (length(groupVars) == 0 && numCov == FALSE) {
     return(NULL)
   }
