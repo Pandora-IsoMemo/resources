@@ -1048,6 +1048,7 @@ fruitsUI <- function(id, title = "FRUITS") {
           navbarMenu(
             "Output",
             menuName = "Output",
+            ### Output Plots ----
             tabPanel(
               "Output Plots",
               value = "output",
@@ -1057,6 +1058,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 outputPlotUI(ns("outputPlot"))
               )
             ),
+            ### Export Output to IsoMemo-App ----
             tabPanel(
               "Export Output to IsoMemo-App",
               value = "isomemo",

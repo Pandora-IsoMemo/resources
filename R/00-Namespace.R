@@ -37,8 +37,8 @@
 #' @importFrom shinyalert shinyalert
 #' @importFrom shinyjs reset useShinyjs alert show hide
 #' @importFrom shinyMatrix matrixInput updateMatrixInput
-#' @importFrom shinyTools formatRangesOfGGplot plotRangesUI plotRangesServer vectorInputServer
-#'  vectorInputUI
+#' @importFrom shinyTools formatRangesOfGGplot formatTitlesOfGGplot plotRangesUI plotRangesServer 
+#'  plotTitlesServer plotTitlesUI vectorInputServer vectorInputUI
 #' @importFrom shinyWidgets pickerInput updatePickerInput
 #' @importFrom stats dist setNames runif acf na.omit qnorm cov pnorm rbeta dbeta pchisq dnorm manova
 #' var sd cov2cor p.adjust var.test t.test shapiro.test median quantile rnorm pbeta qbeta qchisq 
