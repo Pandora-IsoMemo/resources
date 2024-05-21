@@ -126,12 +126,14 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
       # we need to trigger the update after pressing "Apply", that's why we use the if condition
       if (input$applyRangesDiag > 0) {
         p <- p %>%
-          formatRangesOfGGplot(ranges = userRangesDiag) 
+          formatRangesOfGGplot(ranges = userRangesDiag) %>%
+          tryCatchWithWarningsAndErrors(errorTitle = "Error in plot ranges", alertStyle = "shinyalert")
       }
       
       if (input$applyTitlesDiag > 0) {
         p <- p %>% 
-          formatTitlesOfGGplot(text = plotTitlesDiag)
+          formatTitlesOfGGplot(text = plotTitlesDiag) %>%
+          tryCatchWithWarningsAndErrors(errorTitle = "Error in plot texts", alertStyle = "shinyalert")
       }
       
       p
@@ -150,7 +152,7 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
   )
 
   ## Export Plot
-  plotExportServer("exportCredIntTimePlot",
+  plotExportServer("exportDiagnosticsPlot",
                    plotFun = plotFunTargetDiagnostics,
                    filename = paste0(gsub("-", "", Sys.Date()), "_diagnostics"),
                    initText = plotTitlesDiag,
