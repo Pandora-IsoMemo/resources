@@ -75,50 +75,6 @@ outputPlotUI <- function(id) {
           value = 50
         )
       ),
-      checkboxInput(
-        inputId = ns("Teaser"),
-        label = "Show header",
-        value = FALSE
-      ),
-      conditionalPanel(
-        condition = "input.Teaser == true",
-        ns = ns,
-        textAreaInput(
-          inputId = ns("headerLabel"),
-          label = "Header",
-          value = ""
-        )
-      ),
-      textAreaInput(
-        inputId = ns("xlabel"),
-        label = "Title x-axis",
-        value = ""
-      ),
-      textAreaInput(
-        inputId = ns("ylabel"),
-        label = "Title y-axis",
-        value = ""
-      ),
-      numericInput(
-        inputId = ns("sizeTextX"),
-        label = "Font size x-axis title",
-        value = 24
-      ),
-      numericInput(
-        inputId = ns("sizeTextY"),
-        label = "Font size y-axis title",
-        value = 24
-      ),
-      numericInput(
-        inputId = ns("sizeAxisX"),
-        label = "Font size x-axis",
-        value = 18
-      ),
-      numericInput(
-        inputId = ns("sizeAxisY"),
-        label = "Font size y-axis",
-        value = 18
-      ),
       selectInput(
         inputId = ns("colorPalette"),
         label = "Color Palette",
@@ -156,12 +112,20 @@ outputPlotUI <- function(id) {
         min = 0.5,
         max = 1,
         step = 0.001
-      )
+      ),
+      tags$hr(),
+      plotRangesUI(id = ns("outputPlotRanges"), title = "Axis Ranges", titleTag = "strong"),
+      actionButton(ns("applyOutputPlotRanges"), "Apply"),
+      tags$hr(),
+      plotTitlesUI(id = ns("outputPlotTitles"), type = "ggplot"),
+      actionButton(ns("applyOutputPlotTitles"), "Apply")
     )
   )
 }
 
 outputPlot <- function(input, output, session, model, values) {
+  
+  # we need to add our export!
   callModule(plotExport,
              "exportSourcePlot",
              plotFun = plotFunTarget,
@@ -215,32 +179,48 @@ outputPlot <- function(input, output, session, model, values) {
       showLegend = input$showLegend,
       histBins = input$histBins,
       binSize = binSize,
-      Teaser = input$Teaser,
-      headerLabel = input$headerLabel,
-      ylabel = input$ylabel,
-      xlabel = input$xlabel,
-      xTextSize = input$sizeTextX,
-      yTextSize = input$sizeTextY,
-      xAxisSize = input$sizeAxisX,
-      yAxisSize = input$sizeAxisY,
       colorPalette = input$colorPalette,
       contributionLimit = input$contributionLimit,
       pointDat = na.omit(pointDat()),
       fontFamily = input$fontFamily,
       boxQuantile = input$boxQuantile,
       whiskerMultiplier = input$whiskerMultiplier,
-      numCov = numCov
+      numCov = numCov,
+      applyRanges = input$applyOutputPlotRanges,
+      applyTitles = input$applyOutputPlotTitles
     )
   }) %>% debounce(100)
+  
+  userRangesOutputPlot <- plotRangesServer("outputPlotRanges",
+                                     type = "ggplot",
+                                     initRanges = list(xAxis = config()[["plotRange"]],
+                                                       yAxis = config()[["plotRange"]]))
+  
+  plotTitlesOutputPlot <- plotTitlesServer("outputPlotTitles",
+                                 type = "ggplot",
+                                 availableElements = c("title", "axis"))
   
   plotFunTarget <- reactive({
     validate(validModelOutput(model()))
     function() {
       params <- c(plotParams())
-      do.call(
+      p <- do.call(
         plotTargets,
         params
       )
+      
+      # we need to trigger the update after pressing "Apply", that's why we use the if condition
+      if (input$applyOutputPlotRanges > 0) {
+        p <- p %>%
+          formatRangesOfGGplot(ranges = userRangesOutputPlot) 
+      }
+      
+      if (input$applyOutputPlotTitles > 0) {
+        p <- p %>% 
+          formatTitlesOfGGplot(text = plotTitlesOutputPlot)
+      }
+      
+      p
     }
   })
   
@@ -250,10 +230,12 @@ outputPlot <- function(input, output, session, model, values) {
       params <- c(plotParams(),
                   returnType = "data"
       )
+      # here only data is returned, no need to format titles or ranges
       do.call(
         plotTargets,
         params
       )
+      
     }
   })
   

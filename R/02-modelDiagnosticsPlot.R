@@ -51,10 +51,6 @@ modelDiagnosticsPlotUI <- function(id) {
         label = "Select plot type:",
         choices = c("Trace", "AutoCorr")
       ),
-      tags$hr(),
-      plotRangesUI(id = ns("plotRangesDiag"), title = "Axis Ranges", titleTag = "strong"),
-      actionButton(ns("applyRangesDiag"), "Apply"),
-      tags$hr(),
       checkboxInput(
         inputId = ns("showLegendDiag"),
         label = "Show Legend",
@@ -68,22 +64,6 @@ modelDiagnosticsPlotUI <- function(id) {
           label = "Nmber of histogram bins", min = 5, max = 200, value = 50
         )
       ),
-      textAreaInput(
-        inputId = ns("headerLabelDiag"),
-        label = "Header", value = ""
-      ),
-      textAreaInput(
-        inputId = ns("xlabelDiag"),
-        label = "Title x-axis", value = ""
-      ),
-      textAreaInput(
-        inputId = ns("ylabelDiag"),
-        label = "Title y-axis", value = ""
-      ),
-      numericInput(inputId = ns("sizeTextXDiag"), label = "Font size x-axis title", value = 24),
-      numericInput(inputId = ns("sizeTextYDiag"), label = "Font size y-axis title", value = 24),
-      numericInput(inputId = ns("sizeAxisXDiag"), label = "Font size x-axis", value = 18),
-      numericInput(inputId = ns("sizeAxisYDiag"), label = "Font size y-axis", value = 18),
       selectInput(
         inputId = ns("contributionLimitDiag"),
         label = "Limit contribution axis", choices = c("None", "0-1", "0-100%"),
@@ -92,7 +72,13 @@ modelDiagnosticsPlotUI <- function(id) {
       selectInput(
         inputId = ns("colorPaletteDiag"), label = "Color Palette",
         choices = c("default", RColorBrewer::brewer.pal.info %>% row.names())
-      )
+      ),
+      tags$hr(),
+      plotRangesUI(id = ns("plotRangesDiag"), title = "Axis Ranges", titleTag = "strong"),
+      actionButton(ns("applyRangesDiag"), "Apply"),
+      tags$hr(),
+      plotTitlesUI(id = ns("diagPlotTitles"), type = "ggplot"),
+      actionButton(ns("applyTitlesDiag"), "Apply")
     )
   )
 }
@@ -110,19 +96,12 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
       # filterType2 = input$filterType2Diag,
       individual = input$individualsDiag,
       plotType = input$plotTypeDiag,
-      Teaser = FALSE,
       showLegend = input$showLegendDiag,
       histBins = input$histBinsDiag,
-      headerLabel = input$headerLabelDiag,
-      ylabel = input$ylabelDiag,
-      xlabel = input$xlabelDiag,
-      xTextSize = input$sizeTextXDiag,
-      yTextSize = input$sizeTextYDiag,
-      xAxisSize = input$sizeAxisXDiag,
-      yAxisSize = input$sizeAxisYDiag,
       contributionLimit = input$contributionLimitDiag,
       colorPalette = input$colorPaletteDiag,
-      applyRanges = input$applyRangesDiag
+      applyRanges = input$applyRangesDiag,
+      applyTitles = input$applyTitlesDiag
     )
   }) %>% debounce(100)
 
@@ -132,6 +111,10 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
                                                        yAxis = config()[["plotRange"]]))
   
   ## Plot Function
+  plotTitles <- plotTitlesServer("diagPlotTitles",
+                                 type = "ggplot",
+                                 availableElements = c("title", "axis"))
+  
   plotFunTargetDiagnostics <- reactive({
     validate(validModelOutput(model()))
     function() {
@@ -144,6 +127,11 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
       if (input$applyRangesDiag > 0) {
         p <- p %>%
           formatRangesOfGGplot(ranges = userRangesDiag) 
+      }
+      
+      if (input$applyTitlesDiag > 0) {
+        p <- p %>% 
+          formatTitlesOfGGplot(text = plotTitles)
       }
       
       p
@@ -172,6 +160,7 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
         plotParams(),
         returnType = "data"
       )
+      # here only data is returned, no need to format titles or ranges
       do.call(
         plotTargets,
         params
