@@ -143,8 +143,10 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
   output$DiagnosticsPlot <- renderCachedPlot(
     {
       validate(validModelOutput(model()))
-      plotFunTargetDiagnostics()() %>%
-        tryCatchWithWarningsAndErrors(errorTitle = "Error in plot", alertStyle = "shinyalert")
+      # we need to catch errors when printing the plot
+      # this only works with ggplots when print() is used 
+      print(plotFunTargetDiagnostics()()) %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Error in plot")
     },
     cacheKeyExpr = {
       plotParams()

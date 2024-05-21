@@ -1787,7 +1787,8 @@ fruitsTab <- function(input,
   callModule(verbatimText, "corrMat", model = modelCharacteristics, class = "corrMat")
   
   output$targetPlot <- renderPlotly({
-    plotFunCharacteristicsTarget()()
+    plotFunCharacteristicsTarget()() %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Error in plot")
   })
   
   plotExportServer("exportTargetPlot",
@@ -1797,7 +1798,8 @@ fruitsTab <- function(input,
   )
   
   output$concentrationsPlot <- renderPlotly({
-    plotFunCharacteristicsConc()()
+    plotFunCharacteristicsConc()() %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Error in plot")
   })
   
   plotExportServer("exportConcentrationsPlot",
@@ -1808,7 +1810,8 @@ fruitsTab <- function(input,
   
   output$SourceCharacteristicsPlot <- renderPlotly({
     validate(validModelOutput(modelCharacteristics()))
-    plotFunCharacteristics()()
+    plotFunCharacteristics()() %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Error in plot")
   })
   
   plotExportServer("exportSourceCharacteristicsPlot",
@@ -1820,7 +1823,8 @@ fruitsTab <- function(input,
   # observeEvent(input$updateMix, {
   output$SourceCharacteristicsPlot2 <- renderPlotly({
     validate(validModelOutput(modelCharacteristics()))
-    plotFunCharacteristicsMix()()
+    plotFunCharacteristicsMix()() %>%
+      tryCatchWithWarningsAndErrors(errorTitle = "Error in plot")
   })
   # })
   

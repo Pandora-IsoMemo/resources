@@ -206,7 +206,7 @@ outputPlot <- function(input, output, session, model, values) {
       # we need to trigger the update after pressing "Apply", that's why we use the if condition
       if (input$applyOutputPlotRanges > 0) {
         p <- p %>%
-            formatRangesOfGGplot(ranges = userRangesOutputPlot)
+          formatRangesOfGGplot(ranges = userRangesOutputPlot)
       }
       
       if (input$applyOutputPlotTitles > 0) {
@@ -243,8 +243,10 @@ outputPlot <- function(input, output, session, model, values) {
   output$SourcePlot <- renderCachedPlot(
     {
       validate(validModelOutput(model()))
-      plotFunTarget()() %>%
-        tryCatchWithWarningsAndErrors(errorTitle = "Error in plot", alertStyle = "shinyalert")
+      # we need to catch errors when printing the plot
+      # this only works with ggplots when print() is used 
+      print(plotFunTarget()()) %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Error in plot")
     },
     cacheKeyExpr = {
       plotParams()
