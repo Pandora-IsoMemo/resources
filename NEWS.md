@@ -12,6 +12,8 @@
   - when saving a model its default name is "model.resources" (#54)
   - if a model was previously loaded the default name is that of the loaded model (#54)
   - a reset returns the default name to "model.resources" (#54)
+  - _Plot Export_:
+    - apply export module from ShinyTools to keep specified ranges in plots also for the export (#54)
 
 # ReSources 24.05.0
 

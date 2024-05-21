@@ -1523,6 +1523,9 @@ fruitsTab <- function(input,
   
   plotFunCharacteristicsTarget <- reactive({
     function() {
+      req(values$obsvn, values$obsvnError, input$targetSelect)
+      req(input$targetSelect %in% values$targetNames)
+      
       sourceTargetPlot(
         simSources = NULL,
         simGrid = NULL,
@@ -1544,6 +1547,9 @@ fruitsTab <- function(input,
   
   plotFunCharacteristicsConc <- reactive({
     function() {
+      req(values$concentration, values$concentrationUncert, input$concentrationsSelect)
+      req(input$concentrationsSelect %in% values$fractionNames)
+      
       sourceTargetPlot(
         simSources = NULL,
         simGrid = NULL,
@@ -1784,38 +1790,31 @@ fruitsTab <- function(input,
     plotFunCharacteristicsTarget()()
   })
   
-  callModule(
-    plotExport,
-    "exportTargetPlot",
-    plotFun = plotFunCharacteristicsTarget,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportTargetPlot",
+                   plotFun = plotFunCharacteristicsTarget,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
   
   output$concentrationsPlot <- renderPlotly({
     plotFunCharacteristicsConc()()
   })
   
-  callModule(
-    plotExport,
-    "exportConcentrationsPlot",
-    plotFun = plotFunCharacteristicsConc,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportConcentrationsPlot",
+                   plotFun = plotFunCharacteristicsConc,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
-  
   
   output$SourceCharacteristicsPlot <- renderPlotly({
     validate(validModelOutput(modelCharacteristics()))
     plotFunCharacteristics()()
   })
   
-  callModule(
-    plotExport,
-    "exportSourceCharacteristicsPlot",
-    plotFun = plotFunCharacteristics,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportSourceCharacteristicsPlot",
+                   plotFun = plotFunCharacteristics,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
   
   # observeEvent(input$updateMix, {
@@ -1825,14 +1824,11 @@ fruitsTab <- function(input,
   })
   # })
   
-  callModule(
-    plotExport,
-    "exportSourceCharacteristicsPlot2",
-    plotFun = plotFunCharacteristicsMix,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportSourceCharacteristicsPlot2",
+                   plotFun = plotFunCharacteristicsMix,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
-  
   
   #### Model Diagnostics Plot
   callModule(

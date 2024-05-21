@@ -111,9 +111,9 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
                                                        yAxis = config()[["plotRange"]]))
   
   ## Plot Function
-  plotTitles <- plotTitlesServer("diagPlotTitles",
-                                 type = "ggplot",
-                                 availableElements = c("title", "axis"))
+  plotTitlesDiag <- plotTitlesServer("diagPlotTitles",
+                                     type = "ggplot",
+                                     availableElements = c("title", "axis"))
   
   plotFunTargetDiagnostics <- reactive({
     validate(validModelOutput(model()))
@@ -131,7 +131,7 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
       
       if (input$applyTitlesDiag > 0) {
         p <- p %>% 
-          formatTitlesOfGGplot(text = plotTitles)
+          formatTitlesOfGGplot(text = plotTitlesDiag)
       }
       
       p
@@ -150,8 +150,14 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
   )
 
   ## Export Plot
-  callModule(plotExport, "exportDiagnosticsPlot", plotFun = plotFunTargetDiagnostics, type = "diagnostics")
-
+  plotExportServer("exportCredIntTimePlot",
+                   plotFun = plotFunTargetDiagnostics,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_diagnostics"),
+                   initText = plotTitlesDiag,
+                   initRanges = userRangesDiag
+  )
+  
+  
   ## Export Data Function
   dataFunTargetDiag <- reactive({
     validate(validModelOutput(model()))

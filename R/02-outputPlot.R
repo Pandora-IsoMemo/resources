@@ -124,13 +124,6 @@ outputPlotUI <- function(id) {
 }
 
 outputPlot <- function(input, output, session, model, values) {
-  
-  # we need to add our export!
-  callModule(plotExport,
-             "exportSourcePlot",
-             plotFun = plotFunTarget,
-             type = "output"
-  )
   options(deparse.max.lines = 1)
   pointDat <- reactiveVal({
     data.frame(
@@ -223,6 +216,13 @@ outputPlot <- function(input, output, session, model, values) {
       p
     }
   })
+  
+  plotExportServer("exportSourcePlot",
+                   plotFun = plotFunTarget,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_output"),
+                   initText = plotTitlesOutputPlot,
+                   initRanges = userRangesOutputPlot
+  )
   
   dataFunTarget <- reactive({
     validate(validModelOutput(model()))
