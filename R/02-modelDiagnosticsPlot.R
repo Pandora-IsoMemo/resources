@@ -116,6 +116,7 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
                                      availableElements = c("title", "axis"))
   
   plotFunTargetDiagnostics <- reactive({
+    logDebug("Entering reactive plotFunTargetDiagnostics")
     validate(validModelOutput(model()))
     function() {
       p <- do.call(
@@ -126,14 +127,12 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
       # we need to trigger the update after pressing "Apply", that's why we use the if condition
       if (input$applyRangesDiag > 0) {
         p <- p %>%
-          formatRangesOfGGplot(ranges = userRangesDiag) %>%
-          tryCatchWithWarningsAndErrors(errorTitle = "Error in plot ranges", alertStyle = "shinyalert")
+          formatRangesOfGGplot(ranges = userRangesDiag)
       }
       
       if (input$applyTitlesDiag > 0) {
         p <- p %>% 
-          formatTitlesOfGGplot(text = plotTitlesDiag) %>%
-          tryCatchWithWarningsAndErrors(errorTitle = "Error in plot texts", alertStyle = "shinyalert")
+          formatTitlesOfGGplot(text = plotTitlesDiag)
       }
       
       p
@@ -144,7 +143,8 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
   output$DiagnosticsPlot <- renderCachedPlot(
     {
       validate(validModelOutput(model()))
-      plotFunTargetDiagnostics()()
+      plotFunTargetDiagnostics()() %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Error in plot", alertStyle = "shinyalert")
     },
     cacheKeyExpr = {
       plotParams()

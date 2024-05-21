@@ -194,6 +194,7 @@ outputPlot <- function(input, output, session, model, values) {
                                  availableElements = c("title", "axis"))
   
   plotFunTarget <- reactive({
+    logDebug("Entering reactive plotFunTarget")
     validate(validModelOutput(model()))
     function() {
       params <- c(plotParams())
@@ -205,14 +206,12 @@ outputPlot <- function(input, output, session, model, values) {
       # we need to trigger the update after pressing "Apply", that's why we use the if condition
       if (input$applyOutputPlotRanges > 0) {
         p <- p %>%
-          formatRangesOfGGplot(ranges = userRangesOutputPlot) %>%
-          tryCatchWithWarningsAndErrors(errorTitle = "Error in plot ranges", alertStyle = "shinyalert")
+            formatRangesOfGGplot(ranges = userRangesOutputPlot)
       }
       
       if (input$applyOutputPlotTitles > 0) {
         p <- p %>% 
-          formatTitlesOfGGplot(text = plotTitlesOutputPlot) %>%
-          tryCatchWithWarningsAndErrors(errorTitle = "Error in plot texts", alertStyle = "shinyalert")
+          formatTitlesOfGGplot(text = plotTitlesOutputPlot)
       }
       
       p
@@ -244,7 +243,8 @@ outputPlot <- function(input, output, session, model, values) {
   output$SourcePlot <- renderCachedPlot(
     {
       validate(validModelOutput(model()))
-      plotFunTarget()()
+      plotFunTarget()() %>%
+        tryCatchWithWarningsAndErrors(errorTitle = "Error in plot", alertStyle = "shinyalert")
     },
     cacheKeyExpr = {
       plotParams()
