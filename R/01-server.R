@@ -1202,8 +1202,7 @@ fruitsTab <- function(input,
         as.list(input$priors),
         as.list(input$userEstimate)
       ) %>%
-      tryCatchWithWarningsAndErrors(errorTitle = "Could not create model object: ",
-                                    alertStyle = "shinyalert")
+      shinyTryCatch(errorTitle = "Could not create model object: ", alertStyle = "shinyalert")
     
     if (is.null(fruitsObj)) {
       values$status <- "ERROR"
@@ -1289,8 +1288,7 @@ fruitsTab <- function(input,
         userDefinedAlphas = values$userDefinedAlphas,
         onlyShowNimbleInput = input$onlyShowNimbleInput
       ) %>%
-        tryCatchWithWarningsAndErrors(errorTitle = "Could not run model",
-                                      alertStyle = "shinyalert")
+        shinyTryCatch(errorTitle = "Could not run model", alertStyle = "shinyalert")
     },
     value = 0,
     message = "")
@@ -1327,8 +1325,7 @@ fruitsTab <- function(input,
         } else {
           diagnostic <-
             convergenceDiagnostics(modelResults$parameters, fruitsObj)$geweke[[1]] %>%
-            tryCatchWithWarningsAndErrors(errorTitle = "Could not create Diagnostics",
-                                          alertStyle = "shinyalert")
+            shinyTryCatch(errorTitle = "Could not create Diagnostics", alertStyle = "shinyalert")
           if (any(is.nan(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
               any(is.na(diagnostic[which(grepl("alpha", names(diagnostic)))])) |
               any(is.infinite(diagnostic[which(grepl("alpha", names(diagnostic)))]))) {
@@ -1341,8 +1338,7 @@ fruitsTab <- function(input,
             return()
           }
           outText <- produceOutText(fruitsObj, diagnostic) %>%
-            tryCatchWithWarningsAndErrors(errorTitle = "Could not create output",
-                                          alertStyle = "shinyalert")
+            shinyTryCatch(errorTitle = "Could not create output", alertStyle = "shinyalert")
         }
       })
       
@@ -1356,8 +1352,7 @@ fruitsTab <- function(input,
           DT = FALSE,
           agg = FALSE
         ) %>%
-          tryCatchWithWarningsAndErrors(errorTitle = "Could not compute statistics",
-                                        alertStyle = "shinyalert")
+          shinyTryCatch(errorTitle = "Could not compute statistics", alertStyle = "shinyalert")
         values$status <- "COMPLETED"
       })
       
@@ -1391,8 +1386,7 @@ fruitsTab <- function(input,
           as.list(input$priors),
           as.list(input$userEstimate)
         ) %>%
-      tryCatchWithWarningsAndErrors(errorTitle = "Could not create model object: ",
-                                    alertStyle = "shinyalert")
+      shinyTryCatch(errorTitle = "Could not create model object: ", alertStyle = "shinyalert")
     
     if (is.null(fruitsObj)) {
       values$status <- "ERROR"
@@ -1408,8 +1402,7 @@ fruitsTab <- function(input,
         seqSim = 1 / input$seqSim,
         simSourceNames = input$simSpecSources
       ) %>%
-        tryCatchWithWarningsAndErrors(errorTitle = "Could not run model",
-                                      alertStyle = "shinyalert")
+        shinyTryCatch(errorTitle = "Could not run model", alertStyle = "shinyalert")
     },
     value = 0,
     message = "")
@@ -1523,6 +1516,9 @@ fruitsTab <- function(input,
   
   plotFunCharacteristicsTarget <- reactive({
     function() {
+      req(values$obsvn, values$obsvnError, input$targetSelect)
+      req(input$targetSelect %in% values$targetNames)
+      
       sourceTargetPlot(
         simSources = NULL,
         simGrid = NULL,
@@ -1544,6 +1540,9 @@ fruitsTab <- function(input,
   
   plotFunCharacteristicsConc <- reactive({
     function() {
+      req(values$concentration, values$concentrationUncert, input$concentrationsSelect)
+      req(input$concentrationsSelect %in% values$fractionNames)
+      
       sourceTargetPlot(
         simSources = NULL,
         simGrid = NULL,
@@ -1781,58 +1780,52 @@ fruitsTab <- function(input,
   callModule(verbatimText, "corrMat", model = modelCharacteristics, class = "corrMat")
   
   output$targetPlot <- renderPlotly({
-    plotFunCharacteristicsTarget()()
+    plotFunCharacteristicsTarget()() %>%
+      shinyTryCatch(errorTitle = "Error in plot", alertStyle = "shinyalert")
   })
   
-  callModule(
-    plotExport,
-    "exportTargetPlot",
-    plotFun = plotFunCharacteristicsTarget,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportTargetPlot",
+                   plotFun = plotFunCharacteristicsTarget,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
   
   output$concentrationsPlot <- renderPlotly({
-    plotFunCharacteristicsConc()()
+    plotFunCharacteristicsConc()() %>%
+      shinyTryCatch(errorTitle = "Error in plot", alertStyle = "shinyalert")
   })
   
-  callModule(
-    plotExport,
-    "exportConcentrationsPlot",
-    plotFun = plotFunCharacteristicsConc,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportConcentrationsPlot",
+                   plotFun = plotFunCharacteristicsConc,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
-  
   
   output$SourceCharacteristicsPlot <- renderPlotly({
     validate(validModelOutput(modelCharacteristics()))
-    plotFunCharacteristics()()
+    plotFunCharacteristics()() %>%
+      shinyTryCatch(errorTitle = "Error in plot", alertStyle = "shinyalert")
   })
   
-  callModule(
-    plotExport,
-    "exportSourceCharacteristicsPlot",
-    plotFun = plotFunCharacteristics,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportSourceCharacteristicsPlot",
+                   plotFun = plotFunCharacteristics,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
   
   # observeEvent(input$updateMix, {
   output$SourceCharacteristicsPlot2 <- renderPlotly({
     validate(validModelOutput(modelCharacteristics()))
-    plotFunCharacteristicsMix()()
+    plotFunCharacteristicsMix()() %>%
+      shinyTryCatch(errorTitle = "Error in plot", alertStyle = "shinyalert")
   })
   # })
   
-  callModule(
-    plotExport,
-    "exportSourceCharacteristicsPlot2",
-    plotFun = plotFunCharacteristicsMix,
-    type = "sourceCharacteristics",
-    plotly = TRUE
+  plotExportServer("exportSourceCharacteristicsPlot2",
+                   plotFun = plotFunCharacteristicsMix,
+                   filename = paste0(gsub("-", "", Sys.Date()), "_sourceCharacteristics"),
+                   plotly = TRUE
   )
-  
   
   #### Model Diagnostics Plot
   callModule(
