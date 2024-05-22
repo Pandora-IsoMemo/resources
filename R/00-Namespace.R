@@ -37,13 +37,15 @@
 #' @importFrom shinyalert shinyalert
 #' @importFrom shinyjs reset useShinyjs alert show hide
 #' @importFrom shinyMatrix matrixInput updateMatrixInput
-#' @importFrom shinyTools formatRangesOfGGplot plotRangesUI plotRangesServer
+#' @importFrom shinyTools formatRangesOfGGplot formatTitlesOfGGplot plotRangesUI plotRangesServer 
+#'  plotTitlesServer plotTitlesUI vectorInputServer vectorInputUI
 #' @importFrom shinyWidgets pickerInput updatePickerInput
 #' @importFrom stats dist setNames runif acf na.omit qnorm cov pnorm rbeta dbeta pchisq dnorm manova
 #' var sd cov2cor p.adjust var.test t.test shapiro.test median quantile rnorm pbeta qbeta qchisq 
 #' @importFrom templates tmpl tmplEval
 #' @importFrom tibble add_row add_column
 #' @importFrom tidyr gather
+#' @importFrom tools file_path_sans_ext
 #' @importFrom utils data packageVersion head combn compareVersion tail
 #' installed.packages write.table capture.output read.table
 #' @importFrom yaml read_yaml

@@ -51,6 +51,7 @@ fruitsTab <- function(input,
   })
   
   ## Reset Input ----
+  uploadedNotes <- reactiveVal()
   observeEvent(input$reset, {
     logDebug("Entering observeEvent(input$reset)")
     vars <- defaultValues()
@@ -64,7 +65,6 @@ fruitsTab <- function(input,
     events$name <- list()
     uploadedNotes(character(0))
   })
-  
   
   ## Load Example Model
   # observeEvent(input$exampleModel,
@@ -97,12 +97,15 @@ fruitsTab <- function(input,
   
 
   # Download/Upload Model ----
-  uploadedNotes <- reactiveVal()
+  model <- reactiveVal(NULL)
+  modelUploadBaseFileName <- reactiveVal("")
   downloadModelServer("modelDownload",
                       dat = reactiveVal(NULL),
                       inputs = values,
                       model = model,
                       rPackageName = config()[["rPackageName"]],
+                      customFileName = modelUploadBaseFileName,
+                      defaultFileName = "model",
                       fileExtension = config()[["fileExtension"]],
                       modelNotes = uploadedNotes,
                       triggerUpdate = reactive(TRUE))
@@ -120,7 +123,11 @@ fruitsTab <- function(input,
     logDebug("Entering observeEvent(uploadedValues())")
     
     req(length(uploadedValues()) > 0, !is.null(uploadedValues()[[1]][["inputs"]]))
-
+    
+    uploadedFileName <- names(uploadedValues())[1] %>%
+      file_path_sans_ext()
+    modelUploadBaseFileName(uploadedFileName)
+    
     uploadedNotes(uploadedValues()[[1]][["notes"]])
     valuesDat <- uploadedValues()[[1]][["inputs"]]
     
@@ -637,20 +644,46 @@ fruitsTab <- function(input,
     }
   })
   
-  
-  observeEvent(values$alphaHyper, {
+  defaultAlphaHyper <- reactiveVal()
+  observe({
     logDebug("Entering observeEvent(values$alphaHyper)")
-    if (!identical(input$alphaHyper, values$alphaHyper)) {
-      updateNumericInput(session, "alphaHyper", value = values$alphaHyper)
+    if (length(values$alphaHyper) == 1 && length(values$sourceNames) > 1) {
+      # catch case of depricated alphaHyper (single numeric value for all sources)
+      # when e.g. loading an older model
+      newValues <- getAlphaHyperVec(sourceNames = values$sourceNames,
+                                    singleAlphaHyper = values$alphaHyper)
+    } else {
+      # update to new values from values$alphaHyper
+      # when e.g. loading a recent model
+      newValues <- values$alphaHyper
     }
-  })
+    
+    req(!identical(unname(defaultAlphaHyper()), unname(newValues)), 
+        any(defaultAlphaHyper() != newValues))
+    
+    defaultAlphaHyper(newValues)
+  }) %>%
+    bindEvent(values$alphaHyper)
   
-  observeEvent(input$alphaHyper, {
+  observe({
+    # reset values to "1" only if the number of food sources is changed
+    req(length(defaultAlphaHyper()) != length(values$sourceNames)) 
+    logDebug("Entering update (defaultAlphaHyper)")
+    
+    newValues <- getAlphaHyperVec(sourceNames = values$sourceNames)
+    defaultAlphaHyper(newValues)
+  }) %>%
+    bindEvent(values$sourceNames)
+  
+  alphaHyperReactive <- vectorInputServer("alphaHyper", defaultInputs = defaultAlphaHyper)
+  
+  observe({
     logDebug("Entering observeEvent(input$alphaHyper)")
-    if (!identical(input$alphaHyper, values$alphaHyper)) {
-      values$alphaHyper <- input$alphaHyper
-    }
-  })
+    req(!identical(unname(alphaHyperReactive()), unname(values$alphaHyper)))
+    
+    values$alphaHyper <- alphaHyperReactive()
+  }) %>%
+    bindEvent(alphaHyperReactive())
   
   observeEvent(values$oxcalCheck, {
     logDebug("Entering observeEvent(values$oxcalCheck)")
@@ -1156,8 +1189,6 @@ fruitsTab <- function(input,
   })
   
   ## Run model ----
-  model <- reactiveVal(NULL)
-  
   observeEvent(input$run, {
     logDebug("Entering observeEvent(input$run)")
     values$status <- "RUNNING"

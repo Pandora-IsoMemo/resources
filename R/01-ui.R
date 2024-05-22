@@ -161,13 +161,9 @@ fruitsUI <- function(id, title = "FRUITS") {
                     conditionalPanel(
                       condition = "input.optimalPrior == false && input.inflatedBeta == '0'",
                       ns = ns,
-                      numericInput(
-                        ns("alphaHyper"),
-                        "Hyperparameters for alpha/sources",
-                        value = 1,
-                        min = 0.0001,
-                        max = 100
-                      )
+                      vectorInputUI(ns("alphaHyper"),
+                                    "Hyperparameters for alpha/sources",
+                                    newValueRange = c(0.0001, 100))
                     ),
                     checkboxInput(
                       ns("oxcalCheck"),
@@ -1052,6 +1048,7 @@ fruitsUI <- function(id, title = "FRUITS") {
           navbarMenu(
             "Output",
             menuName = "Output",
+            ### Output Plots ----
             tabPanel(
               "Output Plots",
               value = "output",
@@ -1061,6 +1058,7 @@ fruitsUI <- function(id, title = "FRUITS") {
                 outputPlotUI(ns("outputPlot"))
               )
             ),
+            ### Export Output to IsoMemo-App ----
             tabPanel(
               "Export Output to IsoMemo-App",
               value = "isomemo",
