@@ -5,7 +5,8 @@
 #' @param content (character) string from clipboard
 #' @param mode (character) paste mode, one of "auto", "comma-separated", "tab-separated", "semicolon"
 #' @param class (character) class of content, e.g. "numeric", "character"
-readStringWrapper <- function(content, mode, class) {
+#' @param withRownames (logical) should the first column be used as rownames?
+readStringWrapper <- function(content, mode, class, withRownames = TRUE) {
   m <- try(readString(content, mode))
   
   if (inherits(m, "try-error")) {
@@ -13,7 +14,7 @@ readStringWrapper <- function(content, mode, class) {
     return(NULL)
   }
   
-  if (ncol(m) > 0) {
+  if (ncol(m) > 0 && withRownames) {
     rownames(m) <- m[, 1]
     m <- m[, -1, drop = FALSE]
   }
