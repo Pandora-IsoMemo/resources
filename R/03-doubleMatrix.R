@@ -105,6 +105,8 @@ combineColnames <- function(a, b) {
 fixMatrixCols <- function(m, oldNames, fixedCols = FALSE, row, col) {
   colsFixed <- !is.logical(fixedCols)
 
+  # add logic to handle m with/without colnames ----
+  
   m <- dropEmptyRows(m)
   m <- dropEmptyCols(m)
 
