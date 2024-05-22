@@ -4,6 +4,12 @@
 - _Result graphs_:
   - new UI to format titles and axis labels which additionally enables to rotate the axis labels (#54)
 
+## Updates
+- _Plot export_:
+  - apply export module from package ShinyTools for improved error handling
+- _error handling_:
+  - improved error messages for the user with `shinyTools::shinyTryCatch()`
+
 # ReSources 24.05.1
 
 ## New Features
@@ -16,10 +22,6 @@
   - when saving a model its default name is "model.resources" (#54)
   - if a model was previously loaded the default name is that of the loaded model (#54)
   - a reset returns the default name to "model.resources" (#54)
-- _Plot export_:
-  - apply export module from package ShinyTools for improved error handling
-- _error handling_:
-  - improved error messages for the user with `shinyTools::shinyTryCatch()`
 
 # ReSources 24.05.0
 
