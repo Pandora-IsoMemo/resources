@@ -145,8 +145,9 @@ modelDiagnosticsPlot <- function(input, output, session, model, values) {
       validate(validModelOutput(model()))
       # we need to catch errors when printing the plot
       # this only works with ggplots when print() is used 
-      print(plotFunTargetDiagnostics()()) %>%
-        tryCatchWithWarningsAndErrors(errorTitle = "Error in plot")
+      plotFunTargetDiagnostics()() %>%
+        print() %>%
+        shinyTryCatch(errorTitle = "Error in plot", alertStyle = "shinyalert")
     },
     cacheKeyExpr = {
       plotParams()

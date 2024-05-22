@@ -4,16 +4,18 @@
 - _Model options:_
   - new UI to specify individually hyper parameter values for different food sources (#54)
   - if the number of food sources is changed after these are set then reset their values to 1 (#54)
-- _Result graphs_: (_in progress_)
-  - new UI to format titles and axis labels which additionally enables to rotate the axis lables (#54)
+- _Result graphs_:
+  - new UI to format titles and axis labels which additionally enables to rotate the axis labels (#54)
   
 ## Updates
 - _Download and Import of models_:
   - when saving a model its default name is "model.resources" (#54)
   - if a model was previously loaded the default name is that of the loaded model (#54)
   - a reset returns the default name to "model.resources" (#54)
-  - _Plot Export_:
-    - apply export module from ShinyTools to keep specified ranges in plots also for the export (#54)
+- _Plot export_:
+  - apply export module from package ShinyTools for improved error handling
+- _error handling_:
+  - improved error messages for the user with `shinyTools::shinyTryCatch()`
 
 # ReSources 24.05.0
 

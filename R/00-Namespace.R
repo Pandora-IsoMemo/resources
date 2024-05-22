@@ -6,8 +6,8 @@
 #' @importFrom car ellipse
 #' @importFrom coda mcmc raftery.diag gelman.diag geweke.diag heidel.diag
 #' @importFrom colourpicker colourInput
-#' @importFrom DataTools has_internet importDataUI importDataServer downloadModelUI downloadModelServer 
-#'  tryCatchWithWarningsAndErrors
+#' @importFrom DataTools has_internet importDataUI importDataServer downloadModelUI
+#'  downloadModelServer 
 #' @importFrom DT dataTableOutput renderDataTable datatable coerceValue renderDT DTOutput
 #' @importFrom futile.logger flog.warn
 #' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density geom_histogram geom_line
@@ -38,7 +38,7 @@
 #' @importFrom shinyjs reset useShinyjs alert show hide
 #' @importFrom shinyMatrix matrixInput updateMatrixInput
 #' @importFrom shinyTools formatRangesOfGGplot formatTitlesOfGGplot plotExportButton 
-#'  plotExportServer plotRangesUI plotRangesServer plotTitlesServer plotTitlesUI
+#'  plotExportServer plotRangesUI plotRangesServer plotTitlesServer plotTitlesUI shinyTryCatch
 #'  vectorInputServer vectorInputUI
 #' @importFrom shinyWidgets pickerInput updatePickerInput
 #' @importFrom stats dist setNames runif acf na.omit qnorm cov pnorm rbeta dbeta pchisq dnorm manova
