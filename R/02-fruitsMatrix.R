@@ -89,8 +89,8 @@ fruitsMatrixInput <- function(scope, row, col, cov = FALSE, fixedCols = FALSE, d
         class = "inline-select",
         selectInput(if (cov) ns("pasteIncludeNamesCov") else ns("pasteIncludeNames"), NULL, 
                     choices = c("with row & column names" = "withFirstRowCol",
-                                "with row names" = "withFirstRow",
-                                "with column names" = "withFirstCol", 
+                                "with row names" = "withFirstCol",
+                                "with column names" = "withFirstRow", 
                                 "without row & column names" = "withoutFirstRowCol"),
                     width = "200px")
       ),
@@ -790,6 +790,7 @@ fruitsMatrix <- function(input, output, session,
 
   observeEvent(input$copyCov, {
     logDebug("ObserveEvent input$copyCov")
+    
     data <- covarianceData() %>%
       addRowColNames(userSelect = input$copyIncludeNamesCov)
 
@@ -812,7 +813,8 @@ fruitsMatrix <- function(input, output, session,
     m <- readStringWrapper(content = input$pasted$content, 
                            mode = input$pasteMode, 
                            class = class,
-                           withRownames = input$pasteIncludeNames %in% c("withFirstRowCol", "withFirstRow"))
+                           withRownames = input$pasteIncludeNames %in% c("withFirstRowCol", "withFirstCol"),
+                           withColnames = input$pasteIncludeNames %in% c("withFirstRowCol", "withFirstRow"))
     if (is.null(m)) return()
     
     if (is.null(sdId)) {
@@ -826,7 +828,9 @@ fruitsMatrix <- function(input, output, session,
 
       setList(values[[meanId]], filterValues(), m)
     } else {
-      split <- splitDoubleMatrix(m, rownames = !is.null(rownames(m)))
+      split <- splitDoubleMatrix(m, 
+                                 rownames = !is.null(rownames(m)), 
+                                 colnames = !is.null(colnames(m)))
 
       split[[1]] <- defaultMatrixNames(split[[1]], sampleName(rowVar()), sampleName(colVar()))
       events$name <- c(
@@ -844,9 +848,10 @@ fruitsMatrix <- function(input, output, session,
     m <- readStringWrapper(content = input$pastedCov$content,
                            mode = input$pasteModeCov,
                            class = class,
-                           withRownames = input$pasteIncludeNamesCov %in% c("withFirstRowCol", "withFirstRow"))
+                           withRownames = input$pasteIncludeNamesCov %in% c("withFirstRowCol", "withFirstCol"),
+                           withColnames = input$pasteIncludeNamesCov %in% c("withFirstRowCol", "withFirstRow"))
     
-    if(is.null(m)) return()
+    if (is.null(m)) return()
     
     m <- dropEmptyRows(m)
     m <- dropEmptyCols(m)
@@ -1368,7 +1373,9 @@ fruitsMatrix <- function(input, output, session,
 addRowColNames <- function(data, userSelect) {
   if (userSelect %in% c("withFirstRowCol", "withFirstRow")) {
     data <- rbind(colnames(data), data)
-  } else if (userSelect %in% c("withFirstRowCol", "withFirstCol")) {
+  }
+  
+  if (userSelect %in% c("withFirstRowCol", "withFirstCol")) {
     data <- cbind(rownames(data), data)
   }
   

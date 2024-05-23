@@ -4,7 +4,13 @@
 \alias{readStringWrapper}
 \title{Read String Wrapper}
 \usage{
-readStringWrapper(content, mode, class, withRownames = TRUE)
+readStringWrapper(
+  content,
+  mode,
+  class,
+  withRownames = TRUE,
+  withColnames = TRUE
+)
 }
 \arguments{
 \item{content}{(character) string from clipboard}
@@ -14,6 +20,8 @@ readStringWrapper(content, mode, class, withRownames = TRUE)
 \item{class}{(character) class of content, e.g. "numeric", "character"}
 
 \item{withRownames}{(logical) should the first column be used as rownames?}
+
+\item{withColnames}{(logical) should the first row be used as colnames?}
 }
 \description{
 Read and check string from clipboard
