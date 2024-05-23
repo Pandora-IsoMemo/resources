@@ -1,3 +1,10 @@
+# ReSources 24.05.3
+
+## New Features
+- _Data input tables_: new select input for the different tables in data input to signal (#54)
+  - if during the copying of data the first row and/or column are included
+  - if during the pasting of data the first row and/or column are included 
+
 # ReSources 24.05.2
 
 ## New Features
