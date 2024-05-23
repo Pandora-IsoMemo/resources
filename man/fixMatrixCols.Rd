@@ -16,7 +16,7 @@ fixMatrixCols(m, oldNames, fixedCols = FALSE, row, col)
 
 \item{row}{(character) row variable, e.g. "obsvnNames"}
 
-\item{(character)}{column variable, e.g. "targetNames"}
+\item{col}{(character) column variable, e.g. "targetNames"}
 }
 \description{
 Fix columns of a matrix. If fixed colums are specified, they are used as column names otherwise

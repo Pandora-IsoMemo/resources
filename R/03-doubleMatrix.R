@@ -116,7 +116,7 @@ combineColnames <- function(a, b) {
 #' @param fixedCols either FALSE or a character vector of column names to be kept, e.g. "Offset",
 #'  "longitude", "latitude", ...
 #' @param row (character) row variable, e.g. "obsvnNames"
-#' @param (character) column variable, e.g. "targetNames"
+#' @param col (character) column variable, e.g. "targetNames"
 fixMatrixCols <- function(m, oldNames, fixedCols = FALSE, row, col) {
   colsFixed <- !is.logical(fixedCols)
 
