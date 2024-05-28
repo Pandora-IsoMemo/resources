@@ -465,6 +465,11 @@ outputPlot <- function(input, output, session, model, values) {
   outputOptions(output, "n", suspendWhenHidden = FALSE)
 }
 
+#' Extract contribution limit
+#' 
+#' @param estType (character) type of estimates, e.g. "Source contributions", 
+#'  "Component contributions", ...
+#' @param userEstimateGroups (list) list of user estimate groups
 extractContributionLimit <- function(estType, userEstimateGroups) {
   # create general pattern
   pattern <- c("Source contributions", "Component contributions", "Source contributions by proxy")
