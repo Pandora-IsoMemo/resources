@@ -288,24 +288,11 @@ outputPlot <- function(input, output, session, model, values) {
     updateSelectInput(session, "estType", choices = estTypChoices)
     
     updateSelectInput(session, "groupType", choices = groupTypChoices)
-    
-    observeEvent(input$estType, {
-      if (grepl(
-        paste(
-          c(
-            "Source contributions",
-            "Component contributions",
-            "Source contributions by proxy"
-          ),
-          collapse = "|"
-        ),
-        input$estType
-      )) {
-        updateSelectInput(session, "contributionLimit", selected = "0-1")
-      } else {
-        updateSelectInput(session, "contributionLimit", selected = "None")
-      }
-    })
+  })
+  
+  observeEvent(input$estType, {
+    contribLimit <- extractContributionLimit(input$estType, userEstimateGroups = values$userEstimateGroups)
+    updateSelectInput(session, "contributionLimit", selected = contribLimit)
   })
   
   observe({
@@ -476,6 +463,35 @@ outputPlot <- function(input, output, session, model, values) {
   output$pointInput <- renderUI(inputGroup())
   output$n <- reactive(nrow(pointDat()))
   outputOptions(output, "n", suspendWhenHidden = FALSE)
+}
+
+extractContributionLimit <- function(estType, userEstimateGroups) {
+  # create general pattern
+  pattern <- c("Source contributions", "Component contributions", "Source contributions by proxy")
+  
+  if (length(userEstimateGroups) > 0) {
+    # create pattern for user estimates
+    userPattern <- sapply(userEstimateGroups, function(x) x$name) %>%
+      sprintf(fmt = "User estimate %s")
+    
+    # filter only normalized user groups
+    userPattern <- userPattern[sapply(userEstimateGroups, function(x) x$normalize)]
+    
+    # add to general pattern
+    pattern <- c(pattern, userPattern)
+  }
+  
+  # create pattern string
+  pattern <- paste(pattern, collapse = "|")
+  
+  # apply pattern
+  if (grepl(pattern = pattern, estType)) {
+    res <- "0-100%"
+  } else {
+    res <- "None"
+  }
+  
+  return(res)
 }
 
 createPointInputGroup <- function(df, groupChoices, ns) {
