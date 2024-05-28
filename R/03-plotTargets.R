@@ -35,6 +35,7 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
   }
   
   # default header
+  headerLabel <- ""
   if (filterType != "Parameter" & estType == "Source contributions") {
     headerLabel <- getTeaser(fruitsObj, individual, filterType)
   }
