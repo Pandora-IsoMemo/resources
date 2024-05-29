@@ -13,7 +13,7 @@
 #' @importFrom ggplot2 ggplot ylab xlab aes_ geom_boxplot geom_density geom_histogram geom_line
 #' theme element_text scale_fill_brewer labs ylim scale_fill_manual scale_color_manual
 #' geom_point scale_color_brewer xlim aes geom_errorbar geom_smooth
-#' @importFrom grDevices dev.off pdf png svg tiff chull pdfFonts postscriptFonts colorRampPalette
+#' @importFrom grDevices chull colorRampPalette
 #' @importFrom htmltools save_html withTags
 #' @importFrom jsonlite fromJSON toJSON
 #' @importFrom nimble calculateWAIC nimbleOptions nimbleModel configureMCMC buildMCMC compileNimble 
