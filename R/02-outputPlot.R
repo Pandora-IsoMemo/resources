@@ -19,6 +19,7 @@ outputPlotUI <- function(id) {
       )
     ),
     sidebarPanel(
+      style = "position:fixed; width:15%; max-width:350px; overflow-y:auto; height:82%",
       width = 3,
       selectInput(
         inputId = ns("estType"),
@@ -69,7 +70,7 @@ outputPlotUI <- function(id) {
         ns = ns,
         sliderInput(
           inputId = ns("histBins"),
-          label = "Nmber of histogram bins",
+          label = "Number of histogram bins",
           min = 5,
           max = 200,
           value = 50
@@ -190,8 +191,13 @@ outputPlot <- function(input, output, session, model, values) {
                                                        yAxis = config()[["plotRange"]]))
   
   plotTitlesOutputPlot <- plotTitlesServer("outputPlotTitles",
-                                 type = "ggplot",
-                                 availableElements = c("title", "axis"))
+                                           type = "ggplot",
+                                           availableElements = c("title", "axis"),
+                                           initText = list(plotTitle  = config()[["plotTitle"]],
+                                                           xAxisTitle = config()[["plotTitle"]],
+                                                           yAxisTitle = config()[["plotTitle"]],
+                                                           xAxisText  = config()[["plotText"]],
+                                                           yAxisText  = config()[["plotText"]]))
   
   plotFunTarget <- reactive({
     logDebug("Entering reactive plotFunTarget")
@@ -204,12 +210,12 @@ outputPlot <- function(input, output, session, model, values) {
       )
       
       # we need to trigger the update after pressing "Apply", that's why we use the if condition
-      if (input$applyOutputPlotRanges > 0) {
+      if (input$applyOutputPlotRanges >= 0) {
         p <- p %>%
           formatRangesOfGGplot(ranges = userRangesOutputPlot)
       }
       
-      if (input$applyOutputPlotTitles > 0) {
+      if (input$applyOutputPlotTitles >= 0) {
         p <- p %>% 
           formatTitlesOfGGplot(text = plotTitlesOutputPlot)
       }
@@ -222,8 +228,7 @@ outputPlot <- function(input, output, session, model, values) {
                    plotFun = plotFunTarget,
                    filename = paste0(gsub("-", "", Sys.Date()), "_output"),
                    initText = plotTitlesOutputPlot,
-                   initRanges = userRangesOutputPlot
-  )
+                   initRanges = userRangesOutputPlot)
   
   dataFunTarget <- reactive({
     validate(validModelOutput(model()))
