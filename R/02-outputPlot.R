@@ -91,13 +91,14 @@ outputPlotUI <- function(id) {
         choices = c("None", "0-1", "0-100%"),
         selected = "0-1"
       ),
-      selectInput(
-        inputId = ns("fontFamily"),
-        label = "Font",
-        selected = NULL,
-        choices = availableFonts()
-      ),
-      helpText("This will only have an effect on the pdf output"),
+      # removing fontFamily because it has side effects with plotTitles module
+      # selectInput(
+      #   inputId = ns("fontFamily"),
+      #   label = "Font",
+      #   selected = NULL,
+      #   choices = availableFonts()
+      # ),
+      #helpText("This will only have an effect on the pdf output"),
       sliderInput(
         inputId = ns("boxQuantile"),
         label = "Box upper quantile",
@@ -115,7 +116,7 @@ outputPlotUI <- function(id) {
         step = 0.001
       ),
       tags$hr(),
-      plotRangesUI(id = ns("outputPlotRanges"), title = "Axis Ranges", titleTag = "strong"),
+      plotRangesUI(id = ns("outputPlotRanges"), title = "Axis Ranges"),
       actionButton(ns("applyOutputPlotRanges"), "Apply"),
       tags$hr(),
       plotTitlesUI(id = ns("outputPlotTitles"), type = "ggplot"),
@@ -176,7 +177,7 @@ outputPlot <- function(input, output, session, model, values) {
       colorPalette = input$colorPalette,
       contributionLimit = input$contributionLimit,
       pointDat = na.omit(pointDat()),
-      fontFamily = input$fontFamily,
+      #fontFamily = input$fontFamily,
       boxQuantile = input$boxQuantile,
       whiskerMultiplier = input$whiskerMultiplier,
       numCov = numCov,

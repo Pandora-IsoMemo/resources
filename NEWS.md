@@ -5,7 +5,7 @@
 
 ## Bug Fixes
 - _Result graphs_: add missing default (empty) header to fix the crashing of the app when selecting
-  an estimate type different than "Source contributions" (#120)
+  an estimate type different than "Source contributions" (#121)
 
 # ReSources 24.05.3
 

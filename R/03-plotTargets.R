@@ -6,7 +6,8 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
                         contributionLimit = "None",
                         pointDat = data.frame(), histBins = 50,
                         binSize = NULL,
-                        fontFamily = NULL, whiskerMultiplier = 0.95, boxQuantile = 0.68,
+                        #fontFamily = NULL, 
+                        whiskerMultiplier = 0.95, boxQuantile = 0.68,
                         numCov = FALSE, ...) {
   if (length(groupVars) == 0 && numCov == FALSE) {
     return(NULL)
@@ -124,9 +125,9 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
         show.legend = FALSE
       )
     }
-    if (!is.null(fontFamily)) {
-      p <- p + theme(text = element_text(family = fontFamily))
-    }
+    # if (!is.null(fontFamily)) {
+    #   p <- p + theme(text = element_text(family = fontFamily))
+    # }
     if (colorPalette != "default") {
       colorPalette <- brewer.pal(n = 9, name = colorPalette)
       colorPaletteRamp <- colorRampPalette(colorPalette)
