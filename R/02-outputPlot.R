@@ -568,6 +568,7 @@ createPointInput <- function(index,
   )
 }
 
-availableFonts <- function() {
-  intersect(names(postscriptFonts()), names(pdfFonts()))
-}
+# currently disabled feature
+# availableFonts <- function() {
+#   intersect(names(postscriptFonts()), names(pdfFonts()))
+# }
