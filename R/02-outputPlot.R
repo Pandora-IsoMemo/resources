@@ -19,6 +19,7 @@ outputPlotUI <- function(id) {
       )
     ),
     sidebarPanel(
+      style = "position:fixed; width:15%; max-width:350px; overflow-y:auto; height:82%",
       width = 3,
       selectInput(
         inputId = ns("estType"),
@@ -69,7 +70,7 @@ outputPlotUI <- function(id) {
         ns = ns,
         sliderInput(
           inputId = ns("histBins"),
-          label = "Nmber of histogram bins",
+          label = "Number of histogram bins",
           min = 5,
           max = 200,
           value = 50
@@ -90,13 +91,14 @@ outputPlotUI <- function(id) {
         choices = c("None", "0-1", "0-100%"),
         selected = "0-1"
       ),
-      selectInput(
-        inputId = ns("fontFamily"),
-        label = "Font",
-        selected = NULL,
-        choices = availableFonts()
-      ),
-      helpText("This will only have an effect on the pdf output"),
+      # removing fontFamily because it has side effects with plotTitles module
+      # selectInput(
+      #   inputId = ns("fontFamily"),
+      #   label = "Font",
+      #   selected = NULL,
+      #   choices = availableFonts()
+      # ),
+      #helpText("This will only have an effect on the pdf output"),
       sliderInput(
         inputId = ns("boxQuantile"),
         label = "Box upper quantile",
@@ -114,7 +116,7 @@ outputPlotUI <- function(id) {
         step = 0.001
       ),
       tags$hr(),
-      plotRangesUI(id = ns("outputPlotRanges"), title = "Axis Ranges", titleTag = "strong"),
+      plotRangesUI(id = ns("outputPlotRanges"), title = "Axis Ranges"),
       actionButton(ns("applyOutputPlotRanges"), "Apply"),
       tags$hr(),
       plotTitlesUI(id = ns("outputPlotTitles"), type = "ggplot"),
@@ -175,7 +177,7 @@ outputPlot <- function(input, output, session, model, values) {
       colorPalette = input$colorPalette,
       contributionLimit = input$contributionLimit,
       pointDat = na.omit(pointDat()),
-      fontFamily = input$fontFamily,
+      #fontFamily = input$fontFamily,
       boxQuantile = input$boxQuantile,
       whiskerMultiplier = input$whiskerMultiplier,
       numCov = numCov,
@@ -190,8 +192,13 @@ outputPlot <- function(input, output, session, model, values) {
                                                        yAxis = config()[["plotRange"]]))
   
   plotTitlesOutputPlot <- plotTitlesServer("outputPlotTitles",
-                                 type = "ggplot",
-                                 availableElements = c("title", "axis"))
+                                           type = "ggplot",
+                                           availableElements = c("title", "axis"),
+                                           initText = list(plotTitle  = config()[["plotTitle"]],
+                                                           xAxisTitle = config()[["plotTitle"]],
+                                                           yAxisTitle = config()[["plotTitle"]],
+                                                           xAxisText  = config()[["plotText"]],
+                                                           yAxisText  = config()[["plotText"]]))
   
   plotFunTarget <- reactive({
     logDebug("Entering reactive plotFunTarget")
@@ -204,12 +211,12 @@ outputPlot <- function(input, output, session, model, values) {
       )
       
       # we need to trigger the update after pressing "Apply", that's why we use the if condition
-      if (input$applyOutputPlotRanges > 0) {
+      if (input$applyOutputPlotRanges >= 0) {
         p <- p %>%
           formatRangesOfGGplot(ranges = userRangesOutputPlot)
       }
       
-      if (input$applyOutputPlotTitles > 0) {
+      if (input$applyOutputPlotTitles >= 0) {
         p <- p %>% 
           formatTitlesOfGGplot(text = plotTitlesOutputPlot)
       }
@@ -222,8 +229,7 @@ outputPlot <- function(input, output, session, model, values) {
                    plotFun = plotFunTarget,
                    filename = paste0(gsub("-", "", Sys.Date()), "_output"),
                    initText = plotTitlesOutputPlot,
-                   initRanges = userRangesOutputPlot
-  )
+                   initRanges = userRangesOutputPlot)
   
   dataFunTarget <- reactive({
     validate(validModelOutput(model()))
@@ -288,24 +294,11 @@ outputPlot <- function(input, output, session, model, values) {
     updateSelectInput(session, "estType", choices = estTypChoices)
     
     updateSelectInput(session, "groupType", choices = groupTypChoices)
-    
-    observeEvent(input$estType, {
-      if (grepl(
-        paste(
-          c(
-            "Source contributions",
-            "Component contributions",
-            "Source contributions by proxy"
-          ),
-          collapse = "|"
-        ),
-        input$estType
-      )) {
-        updateSelectInput(session, "contributionLimit", selected = "0-1")
-      } else {
-        updateSelectInput(session, "contributionLimit", selected = "None")
-      }
-    })
+  })
+  
+  observeEvent(input$estType, {
+    contribLimit <- extractContributionLimit(input$estType, userEstimateGroups = values$userEstimateGroups)
+    updateSelectInput(session, "contributionLimit", selected = contribLimit)
   })
   
   observe({
@@ -478,6 +471,40 @@ outputPlot <- function(input, output, session, model, values) {
   outputOptions(output, "n", suspendWhenHidden = FALSE)
 }
 
+#' Extract contribution limit
+#' 
+#' @param estType (character) type of estimates, e.g. "Source contributions", 
+#'  "Component contributions", ...
+#' @param userEstimateGroups (list) list of user estimate groups
+extractContributionLimit <- function(estType, userEstimateGroups) {
+  # create general pattern
+  pattern <- c("Source contributions", "Component contributions", "Source contributions by proxy")
+  
+  if (length(userEstimateGroups) > 0) {
+    # create pattern for user estimates
+    userPattern <- sapply(userEstimateGroups, function(x) x$name) %>%
+      sprintf(fmt = "User estimate %s")
+    
+    # filter only normalized user groups
+    userPattern <- userPattern[sapply(userEstimateGroups, function(x) x$normalize)]
+    
+    # add to general pattern
+    pattern <- c(pattern, userPattern)
+  }
+  
+  # create pattern string
+  pattern <- paste(pattern, collapse = "|")
+  
+  # apply pattern
+  if (grepl(pattern = pattern, estType)) {
+    res <- "0-100%"
+  } else {
+    res <- "None"
+  }
+  
+  return(res)
+}
+
 createPointInputGroup <- function(df, groupChoices, ns) {
   lapply(seq_len(nrow(df)), function(i) {
     createPointInput(
@@ -541,6 +568,7 @@ createPointInput <- function(index,
   )
 }
 
-availableFonts <- function() {
-  intersect(names(postscriptFonts()), names(pdfFonts()))
-}
+# currently disabled feature
+# availableFonts <- function() {
+#   intersect(names(postscriptFonts()), names(pdfFonts()))
+# }

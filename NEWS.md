@@ -1,3 +1,12 @@
+# ReSources 24.05.4
+
+## New Features
+- _Result graphs_: default y range is now set to 0-100% for several estimate types (#120)
+
+## Bug Fixes
+- _Result graphs_: add missing default (empty) header to fix the crashing of the app when selecting
+  an estimate type different than "Source contributions" (#121)
+
 # ReSources 24.05.3
 
 ## New Features
