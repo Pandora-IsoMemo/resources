@@ -1,7 +1,7 @@
 # ReSources 24.07.0
 
 ## New Features
-- _Result graphs_: optionally select the smoothing method (default is "loess") and the amount of 
+- _Result graphs_: optionally select the smoothing method (default is "lm") and the amount of 
   smoothing when displaying line plots, now called "Smooth Line" (#54)
 
 # ReSources 24.05.4
