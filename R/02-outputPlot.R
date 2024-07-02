@@ -142,7 +142,7 @@ lineSmoothingUI <- function(id) {
         label = "Smoothing method",
         choices = c("Linear Model" = "lm",
                     "Locally Wighted Scatterplot Smoothing" = "loess"),
-        selected = "loess"
+        selected = "lm"
       ),
       conditionalPanel(
         ns = ns,

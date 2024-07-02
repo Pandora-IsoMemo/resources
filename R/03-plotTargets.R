@@ -191,7 +191,7 @@ plotTargets <- function(fruitsObj, modelResults, individual, estType = "Source c
       ungroup()
     dataSummary$group <- as.numeric(dataSummary$group)
     
-    if (nrow(dataSummary) < 3 && lineSmoothingMethod != "lm") { # before we had nrow(dataSummary) < 7 for "lm"
+    if (nrow(dataSummary) < 4 && lineSmoothingMethod != "lm") { # before we had nrow(dataSummary) < 7 for "lm"
       method = "lm"
       warning("Too few groups to use loess smoothing. Using linear regression instead.")
     } else {
